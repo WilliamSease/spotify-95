@@ -1,5 +1,5 @@
 {
-  "main": "./src/electron.js",
+  "main": "./src/main.js",
   "name": "spotify-95",
   "version": "0.1.0",
   "private": true,
@@ -12,6 +12,8 @@
     "@types/react": "^18.2.8",
     "@types/react-dom": "^18.2.4",
     "axios": "^1.4.0",
+    "electron": "^25.0.1",
+    "esm": "^3.2.25",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -49,8 +51,6 @@
   "devDependencies": {
     "@types/lodash": "^4.14.195",
     "@types/styled-components": "^5.1.26",
-    "election": "^0.0.0",
-    "electron": "^25.0.1",
     "electron-is-dev": "^2.0.0",
     "spotify-web-api-js": "^1.5.2"
   }

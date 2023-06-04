@@ -19,9 +19,14 @@ const GlobalStyles = createGlobalStyle`
     font-weight: bold;
     font-style: normal
   }
+  html {
+    height:100%,
+    width:100%
+  }
   body {
     font-family: 'ms_sans_serif';
-    transformOrigin: top left;
+    height:100%,
+    width:100%
   }
   .window-title{
     display: flex;
