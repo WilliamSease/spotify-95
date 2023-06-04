@@ -1,7 +1,7 @@
 import { ApiTester } from "./ApiTester/ApiTester";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import original from "react95/dist/themes/original";
-import { styleReset } from "react95";
+import { Button, styleReset, Window, WindowHeader } from "react95";
 import ms_sans_serif from "react95/dist/fonts/ms_sans_serif.woff2";
 import ms_sans_serif_bold from "react95/dist/fonts/ms_sans_serif_bold.woff2";
 
@@ -21,24 +21,29 @@ const GlobalStyles = createGlobalStyle`
   }
   body {
     font-family: 'ms_sans_serif';
+    transformOrigin: top left;
+  }
+  .window-title{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 `;
 
 function App() {
   return (
-    <div
-      style={{
-        transform: "scale(0.7)",
-        transformOrigin: "top left",
-        width: "100%",
-        height: "100%",
-      }}
-    >
-      <ThemeProvider theme={original}>
-        <GlobalStyles />
+    <ThemeProvider theme={original}>
+      <GlobalStyles />
+      <Window style={{ height: "100%", width: "100%" }}>
+        <WindowHeader title="Spotify95" className="window-title">
+          <span>Spotify95</span>
+          <Button onClick={() => {}}>
+            <span className="close-icon" />
+          </Button>
+        </WindowHeader>
         <ApiTester />
-      </ThemeProvider>
-    </div>
+      </Window>
+    </ThemeProvider>
   );
 }
 
