@@ -104,7 +104,7 @@ export const ApiTester = () => {
             </GroupBox>
             <GroupBox variant="flat" label="getNewReleases">
               <div>
-                new Releases:
+                New Releases:
                 {(
                   newReleases ?? { albums: { items: [] } }
                 ).albums.items.length.toString()}
