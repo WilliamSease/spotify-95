@@ -19,14 +19,8 @@ const GlobalStyles = createGlobalStyle`
     font-weight: bold;
     font-style: normal
   }
-  html {
-    height:100%,
-    width:100%
-  }
   body {
     font-family: 'ms_sans_serif';
-    height:100%,
-    width:100%
   }
   .window-title{
     display: flex;
@@ -39,7 +33,7 @@ function App() {
   return (
     <ThemeProvider theme={original}>
       <GlobalStyles />
-      <Window style={{ height: "100%", width: "100%" }}>
+      <Window style={{ width: "100%", height: "100%" }}>
         <WindowHeader title="Spotify95" className="window-title">
           <span>Spotify95</span>
           <Button onClick={() => {}}>

@@ -2,6 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import "./styles.css";
+
+document.getElementById("root")?.setAttribute("style", "height:100%");
 
 ReactDOM.render(
   <React.StrictMode>
