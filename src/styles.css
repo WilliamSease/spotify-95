@@ -4,3 +4,6 @@ html {
 body {    
     height:100% !important 
 }
+.dragApplication {
+    -webkit-app-region: drag;
+  }

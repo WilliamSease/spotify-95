@@ -84,7 +84,6 @@ export const ApiTester = () => {
           </WindowContent>
         </Window>
       </div>
-      <div></div>
       <Window style={{ width: 600, marginTop: 20 }}>
         <WindowHeader>Function Tester</WindowHeader>
         <WindowContent>

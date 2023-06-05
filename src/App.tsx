@@ -4,6 +4,8 @@ import original from "react95/dist/themes/original";
 import { Button, styleReset, Window, WindowHeader } from "react95";
 import ms_sans_serif from "react95/dist/fonts/ms_sans_serif.woff2";
 import ms_sans_serif_bold from "react95/dist/fonts/ms_sans_serif_bold.woff2";
+import Draggable from "react-draggable";
+import { Ref, RefObject, useRef } from "react";
 const { ipcRenderer } = window.require("electron");
 
 const GlobalStyles = createGlobalStyle`
@@ -34,8 +36,11 @@ function App() {
   return (
     <ThemeProvider theme={original}>
       <GlobalStyles />
-      <Window style={{ width: "100%", height: "100%" }}>
-        <WindowHeader title="Spotify95" className="window-title">
+      <Window style={{ width: "100%", height: "100%" }} resizable>
+        <WindowHeader
+          title="Spotify95"
+          className="window-title dragApplication"
+        >
           <span>Spotify95</span>
           <Button
             onClick={() => {
