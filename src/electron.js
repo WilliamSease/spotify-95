@@ -43,7 +43,7 @@ app.on("window-all-closed", function () {
 });
 
 ipcMain.on('minimize-window', () => {
-    mainWindow.minimize();
+    mainWindow.hide();
 });
 
 ipcMain.on("quit", function () {
