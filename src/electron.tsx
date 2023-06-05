@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -9,6 +9,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true, // Enable Node integration
       zoomFactor: 0.6, // Set the default zoom factor here
+      contextIsolation: false,
     },
   });
 
@@ -28,5 +29,9 @@ app.whenReady().then(() => {
 });
 
 app.on("window-all-closed", function () {
+  if (process.platform !== "darwin") app.quit();
+});
+
+ipcMain.on("quit", function () {
   if (process.platform !== "darwin") app.quit();
 });

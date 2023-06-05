@@ -4,7 +4,7 @@ import original from "react95/dist/themes/original";
 import { Button, styleReset, Window, WindowHeader } from "react95";
 import ms_sans_serif from "react95/dist/fonts/ms_sans_serif.woff2";
 import ms_sans_serif_bold from "react95/dist/fonts/ms_sans_serif_bold.woff2";
-import { ipcRenderer } from "electron";
+const { ipcRenderer } = window.require("electron");
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -39,7 +39,7 @@ function App() {
           <span>Spotify95</span>
           <Button
             onClick={() => {
-              ipcRenderer.emit("close");
+              ipcRenderer.send("quit");
             }}
           >
             <span className="close-icon" />
