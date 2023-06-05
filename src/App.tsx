@@ -4,8 +4,6 @@ import original from "react95/dist/themes/original";
 import { Button, styleReset, Window, WindowHeader } from "react95";
 import ms_sans_serif from "react95/dist/fonts/ms_sans_serif.woff2";
 import ms_sans_serif_bold from "react95/dist/fonts/ms_sans_serif_bold.woff2";
-import Draggable from "react-draggable";
-import { Ref, RefObject, useRef } from "react";
 const { ipcRenderer } = window.require("electron");
 
 const GlobalStyles = createGlobalStyle`
@@ -41,13 +39,22 @@ function App() {
           title="Spotify95"
           className="window-title dragApplication"
         >
-          <span>Spotify95</span>
+          <span style={{ flexGrow: 1 }}>Spotify95</span>
           <Button
+            className="clickableUnderDraggable"
+            onClick={() => {
+              ipcRenderer.send("minimize-window");
+            }}
+          >
+            _
+          </Button>
+          <Button
+            className="clickableUnderDraggable dialogButton"
             onClick={() => {
               ipcRenderer.send("quit");
             }}
           >
-            <span className="close-icon" />
+            ✕
           </Button>
         </WindowHeader>
         <ApiTester />

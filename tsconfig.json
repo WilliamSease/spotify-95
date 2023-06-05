@@ -22,5 +22,5 @@
   },
   "include": [
     "src"
-  ]
+, "webpack.main.config.js"  ]
 }

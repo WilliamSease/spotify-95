@@ -42,15 +42,15 @@ app.on("window-all-closed", function () {
   if (process.platform !== "darwin") app.quit();
 });
 
+ipcMain.on('minimize-window', () => {
+    mainWindow.minimize();
+});
 
 ipcMain.on("quit", function () {
   if (process.platform !== "darwin") app.quit();
 });
 
-ipcMain.on('move', (offsetX, offsetY) => {
-    const { x, y } = mainWindow.getPosition();
-    mainWindow.setPosition(x + 10, y + 10);
-});
+
 
 
 
