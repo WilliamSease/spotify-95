@@ -2,10 +2,6 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import isDev from "electron-is-dev";
 
 let mainWindow = null;
-      // Handle window dragging
-      let isDragging = false;
-      let offsetX = 0;
-      let offsetY = 0;
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -27,8 +23,8 @@ function createWindow() {
 
   } else {
     // Load the compiled JavaScript file
-    mainWindow.loadFile(path.join(__dirname, './index.tsx'));
-  }
+    mainWindow.loadURL(`file://${path.join(__dirname, 'index.html')}`);  }
+    mainWindow.webContents.openDevTools();
   return mainWindow
 
 }
