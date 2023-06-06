@@ -1,0 +1,16 @@
+html {
+  height: 100% !important; 
+}
+body {    
+  height:100% !important 
+}
+.dragApplication {
+  -webkit-app-region: drag;
+}
+.clickableUnderDraggable {
+  -webkit-app-region: no-drag;
+  pointer-events: auto;
+}
+.dialogButton {
+  margin-left:3px;
+}
