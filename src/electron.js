@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain } from "electron";
+import isDev from "electron-is-dev";
 
 let mainWindow = null;
       // Handle window dragging
@@ -20,12 +21,14 @@ function createWindow() {
     focusable:false
   });
 
-  // Load the React app
-  mainWindow.loadURL("http://localhost:3000");
+  if (isDev) {
+    // Load from localhost:3000 during development
+    mainWindow.loadURL('http://localhost:3000');
 
-  // Open the DevTools
-  mainWindow.webContents.openDevTools();
-
+  } else {
+    // Load the compiled JavaScript file
+    mainWindow.loadFile(path.join(__dirname, './index.tsx'));
+  }
   return mainWindow
 
 }

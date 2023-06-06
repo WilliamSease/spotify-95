@@ -63,7 +63,13 @@
     },
     "linux": {
       "target": "AppImage"
-    }
+    },
+    "files": [
+      "dist/**/*",
+      "src/main.js",
+      "src/electron.js"
+    ],
+    "extends": null
   },
   "devDependencies": {
     "@types/lodash": "^4.14.195",
