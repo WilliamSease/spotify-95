@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button, GroupBox, WindowContent, Window } from 'react95';
 import { isNil } from 'lodash';
+import axios from 'axios';
 import SpotifyWebApi from 'spotify-web-api-js';
 
 export const ApiTester = () => {
@@ -16,6 +17,7 @@ export const ApiTester = () => {
   const [newReleases, setNewReleases] =
     useState<SpotifyApi.ListOfNewReleasesResponse>();
   const [me, setMe] = useState<SpotifyApi.CurrentUsersProfileResponse>();
+  const [audioUrl, setAudioUrl] = useState<string>();
 
   const getTestDisplayValue = (untested: boolean, check: boolean) => {
     return untested ? (
@@ -88,6 +90,25 @@ export const ApiTester = () => {
             setMe(undefined);
           }}
         />
+        <Button
+          children={'Play Help By the Beatles'}
+          disabled={!accessToken}
+          onClick={async () => {
+            await axios
+              .put(
+                `https://api.spotify.com/v1/me/player/play`,
+                {
+                  uris: ['spotify:track:7DD7eSuYSC5xk2ArU62esN'],
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                }
+              )
+              .then((response) => {});
+          }}
+        />
       </GroupBox>
 
       <GroupBox label="access token">
@@ -122,6 +143,12 @@ export const ApiTester = () => {
         <div>email: {me?.email}</div>
         <div>country: {me?.country}</div>
         <div>Make sure this is you!</div>
+      </GroupBox>
+      <GroupBox label="sound test">
+        <div>
+          Open spotify and play any song. Then click the "Play Help" button.
+        </div>
+        {audioUrl && <audio id="audio" src={audioUrl} autoPlay />}
       </GroupBox>
     </>
   );
