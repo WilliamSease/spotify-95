@@ -4,6 +4,10 @@ html {
 body {    
   height:100% !important 
 }
+.fullsize{
+  height: 100%;
+  width: 100%;
+}
 .dragApplication {
   -webkit-app-region: drag;
 }
