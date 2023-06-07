@@ -79,6 +79,9 @@ const createWindow = async () => {
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
       zoomFactor: 0.6,
+      allowRunningInsecureContent: true,
+      webSecurity: false,
+      webviewTag: true,
     },
     frame: false,
   });
@@ -124,6 +127,18 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+ipcMain.on('quitButton', () => {
+  app.quit();
+});
+
+ipcMain.on('minimizeButton', () => {
+  mainWindow?.minimize();
+});
+
+ipcMain.on('redirect', (e, args: string[]) => {
+  mainWindow?.loadURL(args[0]);
 });
 
 app

@@ -40,12 +40,19 @@ export default function App() {
           className="window-title dragApplication"
         >
           <span style={{ flexGrow: 1 }}>Spotify95</span>
-          <Button className="clickableUnderDraggable" onClick={() => {}}>
+          <Button
+            className="clickableUnderDraggable"
+            onClick={() => {
+              window.electron.ipcRenderer.sendMessage('minimizeButton');
+            }}
+          >
             _
           </Button>
           <Button
             className="clickableUnderDraggable dialogButton"
-            onClick={() => {}}
+            onClick={() => {
+              window.electron.ipcRenderer.sendMessage('quitButton');
+            }}
           >
             ✕
           </Button>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Button,
   Window,
@@ -6,16 +6,17 @@ import {
   WindowContent,
   GroupBox,
   ScrollView,
-} from "react95";
-import { isNil } from "lodash";
-import SpotifyWebApi from "spotify-web-api-js";
+} from 'react95';
+import { isNil } from 'lodash';
+import SpotifyWebApi from 'spotify-web-api-js';
+import { ipcMain } from 'electron';
 
 export const ApiTester = () => {
   // Parse the access token from the URL fragment
   const urlParams = new URLSearchParams(window.location.hash.substring(1));
-  const accessToken = urlParams.get("access_token");
-  const tokenType = urlParams.get("token_type");
-  const expiresIn = urlParams.get("expires_in");
+  const accessToken = urlParams.get('access_token');
+  const tokenType = urlParams.get('token_type');
+  const expiresIn = urlParams.get('expires_in');
   let spotify = new SpotifyWebApi();
   spotify.setAccessToken(accessToken);
 
@@ -39,46 +40,48 @@ export const ApiTester = () => {
           <WindowHeader>Token Information</WindowHeader>
           <WindowContent>
             <ScrollView
-              style={{ padding: "1rem", background: "white", width: 300 }}
+              style={{ padding: '1rem', background: 'white', width: 300 }}
             >
               <GroupBox variant="flat" label="access token">
-                {accessToken ? "Defined!" : "Not Defined"}
+                {accessToken ? 'Defined!' : 'Not Defined'}
                 <div>token type: {tokenType}</div>
                 <div>expires in: {expiresIn}</div>
               </GroupBox>
             </ScrollView>
             <Button
-              children={"Get Token"}
+              children={'Get Token'}
               onClick={async () => {
-                const clientId = "2d8d7d7d0f6241fcb7cf54fc5b2e24a8";
-                const redirectUri = "http://localhost:3000";
+                const clientId = '2d8d7d7d0f6241fcb7cf54fc5b2e24a8';
+                const redirectUri = 'http://localhost:1212';
                 const scopes = [
-                  "ugc-image-upload",
-                  "user-read-playback-state",
-                  "user-modify-playback-state",
-                  "app-remote-control",
-                  "streaming",
-                  "playlist-read-private",
-                  "playlist-read-collaborative",
-                  "playlist-modify-private",
-                  "playlist-modify-public",
-                  "user-follow-modify",
-                  "user-follow-read",
-                  "user-read-playback-position",
-                  "user-top-read",
-                  "user-read-recently-played",
-                  "user-library-modify",
-                  "user-library-read",
-                  "user-read-email",
-                  "user-read-private",
+                  'ugc-image-upload',
+                  'user-read-playback-state',
+                  'user-modify-playback-state',
+                  'app-remote-control',
+                  'streaming',
+                  'playlist-read-private',
+                  'playlist-read-collaborative',
+                  'playlist-modify-private',
+                  'playlist-modify-public',
+                  'user-follow-modify',
+                  'user-follow-read',
+                  'user-read-playback-position',
+                  'user-top-read',
+                  'user-read-recently-played',
+                  'user-library-modify',
+                  'user-library-read',
+                  'user-read-email',
+                  'user-read-private',
                 ];
 
                 const authorizationUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
-                  "%20"
+                  '%20'
                 )}&response_type=token`;
 
                 // Redirect the user to the authorization URL
-                window.location.href = authorizationUrl;
+                window.electron.ipcRenderer.sendMessage('redirect', [
+                  authorizationUrl,
+                ]);
               }}
             />
           </WindowContent>
@@ -88,7 +91,7 @@ export const ApiTester = () => {
         <WindowHeader>Function Tester</WindowHeader>
         <WindowContent>
           <ScrollView
-            style={{ padding: "1rem", background: "white", width: 570 }}
+            style={{ padding: '1rem', background: 'white', width: 570 }}
           >
             <GroupBox variant="flat" label="getAlbum">
               <div>id: {album?.id}</div>
@@ -97,7 +100,7 @@ export const ApiTester = () => {
               <div>tracks: {album?.tracks.items.length}</div>
               {getTestDisplayValue(
                 isNil(album),
-                album?.id === "0PT5m6hwPRrpBwIHVnvbFX"
+                album?.id === '0PT5m6hwPRrpBwIHVnvbFX'
               )}
             </GroupBox>
             <GroupBox variant="flat" label="getNewReleases">
@@ -120,10 +123,10 @@ export const ApiTester = () => {
             </GroupBox>
           </ScrollView>
           <Button
-            children={"Test Functions"}
+            children={'Test Functions'}
             disabled={!accessToken}
             onClick={async () => {
-              spotify.getAlbum("0PT5m6hwPRrpBwIHVnvbFX").then((value) => {
+              spotify.getAlbum('0PT5m6hwPRrpBwIHVnvbFX').then((value) => {
                 setAlbum(value);
               });
               spotify.getNewReleases().then((value) => {
@@ -135,7 +138,7 @@ export const ApiTester = () => {
             }}
           />
           <Button
-            children={"Reset Panel"}
+            children={'Reset Panel'}
             disabled={!accessToken}
             onClick={async () => {
               setAlbum(undefined);

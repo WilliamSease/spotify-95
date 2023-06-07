@@ -1,6 +1,6 @@
 {
     "name": "spotify-95",
-    "version": "0",
+    "version": "0.1.0",
     "description": "A React95 frontend for spotify",
     "main": "./dist/main/main.js",
     "scripts": {
