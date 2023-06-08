@@ -1,10 +1,11 @@
 import { ApiTester } from './ApiTester';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import original from 'react95/dist/themes/original';
-import { Button, styleReset, Window, WindowHeader } from 'react95';
+import { Button, Separator, styleReset, Toolbar, Window, WindowHeader } from 'react95';
 import ms_sans_serif from 'react95/dist/fonts/ms_sans_serif.woff2';
 import ms_sans_serif_bold from 'react95/dist/fonts/ms_sans_serif_bold.woff2';
 import './App.css';
+import MenuButtonWithDropDown from './sdk/MenuButtonWithDropDown';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -57,6 +58,8 @@ export default function App() {
             ✕
           </Button>
         </WindowHeader>
+        <Toolbar><MenuButtonWithDropDown buttonText='File' menuOptions={[{text:"Option",onClick:() => {}}]}/></Toolbar>
+        <Separator/>
         <ApiTester />
       </Window>
     </ThemeProvider>
