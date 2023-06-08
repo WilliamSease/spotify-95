@@ -27,8 +27,8 @@ export default function MenuButtonWithDropDown(props:IProps) {
                   style={{
                     position: 'absolute',
                     left: '0',
-                    top: '100%'
-                  }}
+                    top: '100%',
+                    zIndex:1               }}
                   onClick={() => setOpen(false)}
                 >
                     {menuOptions.map((mo, i) => {
