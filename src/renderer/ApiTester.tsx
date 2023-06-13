@@ -5,13 +5,13 @@ import axios from 'axios';
 import SpotifyWebApi from 'spotify-web-api-js';
 import { TokenInfo } from './representations/apiTypes';
 
-type IProps = { tokenInfo?: TokenInfo };
+type IProps = {
+  tokenInfo?: TokenInfo;
+  spotify: SpotifyWebApi.SpotifyWebApiJs;
+};
 
 export const ApiTester = (props: IProps) => {
-  const { tokenInfo } = props;
-
-  let spotify = new SpotifyWebApi();
-  spotify.setAccessToken(tokenInfo?.token ?? '');
+  const { tokenInfo, spotify } = props;
 
   const [album, setAlbum] = useState<SpotifyApi.SingleAlbumResponse>();
   const [newReleases, setNewReleases] =
@@ -95,19 +95,7 @@ export const ApiTester = (props: IProps) => {
           children={'Play Help By the Beatles'}
           disabled={!tokenInfo}
           onClick={async () => {
-            await axios
-              .put(
-                `https://api.spotify.com/v1/me/player/play`,
-                {
-                  uris: ['spotify:track:7DD7eSuYSC5xk2ArU62esN'],
-                },
-                {
-                  headers: {
-                    Authorization: `Bearer ${!tokenInfo}`,
-                  },
-                }
-              )
-              .then((response) => {});
+            spotify.play({ uris: ['spotify:track:7DD7eSuYSC5xk2ArU62esN'] });
           }}
         />
       </GroupBox>

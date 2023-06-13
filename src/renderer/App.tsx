@@ -15,7 +15,7 @@ import './App.css';
 import MenuButtonWithDropDown from './sdk/MenuButtonWithDropDown';
 import { useState } from 'react';
 import { TokenInfo } from './representations/apiTypes';
-import { toString } from 'lodash';
+import SpotifyWebApi from 'spotify-web-api-js';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -43,6 +43,9 @@ const GlobalStyles = createGlobalStyle`
 
 export default function App() {
   const [tokenInfo, setTokenInfo] = useState<TokenInfo>();
+  const [spotify, setSpotify] = useState<SpotifyWebApi.SpotifyWebApiJs>(
+    new SpotifyWebApi()
+  );
 
   window.electron.ipcRenderer.on('gotNewToken', (args) => {
     const urlParams = new URLSearchParams(args as string).values();
@@ -54,6 +57,10 @@ export default function App() {
       type: type,
       expiresIn: expiresIn,
       expirationTime: Date.now() + expiresIn,
+    });
+    setSpotify((oldSpotify) => {
+      oldSpotify.setAccessToken(token);
+      return oldSpotify;
     });
   });
 
@@ -90,7 +97,7 @@ export default function App() {
           />
         </Toolbar>
         <Separator />
-        <ApiTester tokenInfo={tokenInfo} />
+        <ApiTester tokenInfo={tokenInfo} spotify={spotify} />
       </Window>
     </ThemeProvider>
   );
