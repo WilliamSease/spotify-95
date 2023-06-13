@@ -9,7 +9,14 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  shell,
+  ipcMain,
+  protocol,
+  ipcRenderer,
+} from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -24,6 +31,7 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+let authWindow: BrowserWindow | null = null;
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -137,8 +145,18 @@ ipcMain.on('minimizeButton', () => {
   mainWindow?.minimize();
 });
 
-ipcMain.on('redirect', (e, args: string[]) => {
-  mainWindow?.loadURL(args[0]);
+ipcMain.on('logintospotify', (e, args: string[]) => {
+  authWindow = new BrowserWindow({
+    // Configuration options for the main window
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true, // Enable Node.js integration in the new window
+    },
+  });
+
+  // Load the HTML file of the main window
+  authWindow.loadURL(args[0]);
 });
 
 app
@@ -152,3 +170,11 @@ app
     });
   })
   .catch(console.log);
+
+app.on('ready', () => {
+  protocol.handle('spotify-95', (request: Request) => {
+    mainWindow?.webContents.send('gotNewToken', request.url);
+    authWindow?.close();
+    return {} as Response;
+  });
+});

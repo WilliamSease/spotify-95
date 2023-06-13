@@ -6,7 +6,8 @@ export type Channels =
   | 'ipc-example'
   | 'quitButton'
   | 'minimizeButton'
-  | 'redirect';
+  | 'logintospotify'
+  | 'gotNewToken';
 
 const electronHandler = {
   ipcRenderer: {

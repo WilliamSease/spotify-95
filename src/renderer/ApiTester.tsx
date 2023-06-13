@@ -3,15 +3,15 @@ import { Button, GroupBox, WindowContent, Window } from 'react95';
 import { isNil } from 'lodash';
 import axios from 'axios';
 import SpotifyWebApi from 'spotify-web-api-js';
+import { TokenInfo } from './representations/apiTypes';
 
-export const ApiTester = () => {
-  // Parse the access token from the URL fragment
-  const urlParams = new URLSearchParams(window.location.hash.substring(1));
-  const accessToken = urlParams.get('access_token');
-  const tokenType = urlParams.get('token_type');
-  const expiresIn = urlParams.get('expires_in');
+type IProps = { tokenInfo?: TokenInfo };
+
+export const ApiTester = (props: IProps) => {
+  const { tokenInfo } = props;
+
   let spotify = new SpotifyWebApi();
-  spotify.setAccessToken(accessToken);
+  spotify.setAccessToken(tokenInfo?.token ?? '');
 
   const [album, setAlbum] = useState<SpotifyApi.SingleAlbumResponse>();
   const [newReleases, setNewReleases] =
@@ -34,7 +34,7 @@ export const ApiTester = () => {
           children={'Get Token'}
           onClick={async () => {
             const clientId = '2d8d7d7d0f6241fcb7cf54fc5b2e24a8';
-            const redirectUri = 'http://localhost:1212';
+            const redirectUri = 'spotify-95://gotToken';
             const scopes = [
               'ugc-image-upload',
               'user-read-playback-state',
@@ -61,14 +61,15 @@ export const ApiTester = () => {
             )}&response_type=token`;
 
             // Redirect the user to the authorization URL
-            window.electron.ipcRenderer.sendMessage('redirect', [
+
+            window.electron.ipcRenderer.sendMessage('logintospotify', [
               authorizationUrl,
             ]);
           }}
         />
         <Button
           children={'Test Functions'}
-          disabled={!accessToken}
+          disabled={!tokenInfo}
           onClick={async () => {
             spotify.getAlbum('0PT5m6hwPRrpBwIHVnvbFX').then((value) => {
               setAlbum(value);
@@ -83,7 +84,7 @@ export const ApiTester = () => {
         />
         <Button
           children={'Reset Panel'}
-          disabled={!accessToken}
+          disabled={!tokenInfo}
           onClick={async () => {
             setAlbum(undefined);
             setNewReleases(undefined);
@@ -92,7 +93,7 @@ export const ApiTester = () => {
         />
         <Button
           children={'Play Help By the Beatles'}
-          disabled={!accessToken}
+          disabled={!tokenInfo}
           onClick={async () => {
             await axios
               .put(
@@ -102,7 +103,7 @@ export const ApiTester = () => {
                 },
                 {
                   headers: {
-                    Authorization: `Bearer ${accessToken}`,
+                    Authorization: `Bearer ${!tokenInfo}`,
                   },
                 }
               )
@@ -112,9 +113,10 @@ export const ApiTester = () => {
       </GroupBox>
 
       <GroupBox label="access token">
-        {accessToken ? 'Defined!' : 'Not Defined'}
-        <div>token type: {tokenType}</div>
-        <div>expires in: {expiresIn}</div>
+        <div>token:{tokenInfo?.token}</div>
+        <div>token type: {tokenInfo?.type}</div>
+        <div>expires in: {tokenInfo?.expiresIn}</div>
+        <div>expires time: {tokenInfo?.expirationTime}</div>
       </GroupBox>
       <GroupBox label="getAlbum">
         <div>id: {album?.id}</div>

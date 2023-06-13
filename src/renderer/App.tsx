@@ -1,11 +1,21 @@
 import { ApiTester } from './ApiTester';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import original from 'react95/dist/themes/original';
-import { Button, Separator, styleReset, Toolbar, Window, WindowHeader } from 'react95';
+import {
+  Button,
+  Separator,
+  styleReset,
+  Toolbar,
+  Window,
+  WindowHeader,
+} from 'react95';
 import ms_sans_serif from 'react95/dist/fonts/ms_sans_serif.woff2';
 import ms_sans_serif_bold from 'react95/dist/fonts/ms_sans_serif_bold.woff2';
 import './App.css';
 import MenuButtonWithDropDown from './sdk/MenuButtonWithDropDown';
+import { useState } from 'react';
+import { TokenInfo } from './representations/apiTypes';
+import { toString } from 'lodash';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -32,6 +42,21 @@ const GlobalStyles = createGlobalStyle`
 `;
 
 export default function App() {
+  const [tokenInfo, setTokenInfo] = useState<TokenInfo>();
+
+  window.electron.ipcRenderer.on('gotNewToken', (args) => {
+    const urlParams = new URLSearchParams(args as string).values();
+    const token = urlParams.next().value;
+    const type = urlParams.next().value;
+    const expiresIn = urlParams.next().value;
+    setTokenInfo({
+      token: token,
+      type: type,
+      expiresIn: expiresIn,
+      expirationTime: Date.now() + expiresIn,
+    });
+  });
+
   return (
     <ThemeProvider theme={original}>
       <GlobalStyles />
@@ -58,9 +83,14 @@ export default function App() {
             ✕
           </Button>
         </WindowHeader>
-        <Toolbar><MenuButtonWithDropDown buttonText='File' menuOptions={[{text:"Option",onClick:() => {}}]}/></Toolbar>
-        <Separator/>
-        <ApiTester />
+        <Toolbar>
+          <MenuButtonWithDropDown
+            buttonText="File"
+            menuOptions={[{ text: 'Option', onClick: () => {} }]}
+          />
+        </Toolbar>
+        <Separator />
+        <ApiTester tokenInfo={tokenInfo} />
       </Window>
     </ThemeProvider>
   );
