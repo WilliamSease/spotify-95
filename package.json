@@ -151,8 +151,8 @@
     "webpack-merge": "^5.9.0"
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "spotify95",
+    "appId": "org.erb.spotify95",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
