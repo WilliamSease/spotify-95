@@ -43,7 +43,9 @@
       "jsx",
       "ts",
       "tsx",
-      "json"
+      "json",
+      "css",
+      "woff2"
     ],
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.erb/mocks/fileMock.js",
@@ -79,6 +81,7 @@
     "@electron/notarize": "^1.2.3",
     "@electron/rebuild": "^3.2.13",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
+    "@reduxjs/toolkit": "^1.9.5",
     "@svgr/webpack": "^8.0.1",
     "@teamsupercell/typings-for-css-modules-loader": "^2.5.2",
     "@testing-library/jest-dom": "^5.16.5",
@@ -126,8 +129,10 @@
     "jest-environment-jsdom": "^29.5.0",
     "mini-css-extract-plugin": "^2.7.6",
     "prettier": "^2.8.8",
+    "react-redux": "^8.1.0",
     "react-refresh": "^0.14.0",
     "react-test-renderer": "^18.2.0",
+    "redux": "^4.2.1",
     "rimraf": "^5.0.1",
     "sass": "^1.62.1",
     "sass-loader": "^13.3.1",

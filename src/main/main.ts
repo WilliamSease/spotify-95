@@ -9,14 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import {
-  app,
-  BrowserWindow,
-  shell,
-  ipcMain,
-  protocol,
-  ipcRenderer,
-} from 'electron';
+import { app, BrowserWindow, shell, ipcMain, protocol } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -86,10 +79,6 @@ const createWindow = async () => {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
-      zoomFactor: 0.6,
-      allowRunningInsecureContent: true,
-      webSecurity: false,
-      webviewTag: true,
     },
     frame: false,
   });
@@ -105,6 +94,7 @@ const createWindow = async () => {
     } else {
       mainWindow.show();
     }
+    mainWindow.webContents.setZoomFactor(0.8);
   });
 
   mainWindow.on('closed', () => {
