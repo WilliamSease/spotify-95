@@ -1,13 +1,24 @@
 import { createSlice, createSelector, configureStore } from '@reduxjs/toolkit';
 import original from 'react95/dist/themes/original';
 import { Theme } from 'react95/dist/types';
+import SpotifyWebApi from 'spotify-web-api-js';
 
 interface appState {
   theme: Theme;
+  searchTerm: '';
+  spotify: SpotifyWebApi.SpotifyWebApiJs;
+  artURL?: string;
+  searchResult?: {
+    music: SpotifyApi.SearchResponse;
+    shows: SpotifyApi.ShowSearchResponse;
+    episodes: SpotifyApi.EpisodeSearchResponse;
+  } | null;
 }
 
 const initialState: appState = {
   theme: original,
+  searchTerm: '',
+  spotify: new SpotifyWebApi(),
 };
 
 const appSlice = createSlice({
@@ -17,16 +28,44 @@ const appSlice = createSlice({
     setTheme: (state, action) => {
       state.theme = action.payload;
     },
+    setSearchTerm: (state, action) => {
+      state.searchTerm = action.payload;
+    },
+    setArtURL: (state, action) => {
+      state.artURL = action.payload;
+    },
+    setSearchResult: (state, action) => {
+      state.searchResult = action.payload;
+    },
   },
 });
 
-export const { setTheme } = appSlice.actions;
+export const { setTheme, setSearchTerm, setArtURL, setSearchResult } =
+  appSlice.actions;
 
 export const selectTheme = createSelector(
-  (state: appState) => {
-    return state.theme;
-  },
+  (state: appState) => state.theme,
   (theme) => theme
+);
+
+export const selectSearchTerm = createSelector(
+  (state: appState) => state.searchTerm,
+  (searchTerm) => searchTerm
+);
+
+export const selectSpotify = createSelector(
+  (state: appState) => state.spotify,
+  (spotify) => spotify
+);
+
+export const selectArtURL = createSelector(
+  (state: appState) => state.artURL,
+  (artURL) => artURL
+);
+
+export const selectSearchResult = createSelector(
+  (state: appState) => state.searchResult,
+  (searchResult) => searchResult
 );
 
 const store = configureStore({

@@ -1,8 +1,8 @@
-import { ApiTester } from './ApiTester';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
-import original from 'react95/dist/themes/original';
 import {
   Button,
+  Frame,
+  MenuList,
   Separator,
   styleReset,
   TextInput,
@@ -19,10 +19,20 @@ import { TokenInfo } from './representations/apiTypes';
 import SpotifyWebApi from 'spotify-web-api-js';
 import { triggerLogin } from './functions';
 import { isNil } from 'lodash';
-import { useSelector } from 'react-redux';
-import { selectTheme } from './state/store';
-import { SettingsWindow } from './SettingsWindow';
-import { Modal } from './sdk/Modal';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  selectSearchTerm,
+  selectSpotify,
+  selectTheme,
+  setArtURL,
+  setSearchTerm,
+} from './state/store';
+import { SettingsDialog } from './dialogs/SettingsDialog';
+import { SearchDialog } from './dialogs/SearchDialog';
+import { ApiTester } from './dialogs/ApiTester';
+import { VolumeSlider } from './components/VolumeSlider';
+import { ArtDialog } from './dialogs/ArtDialog';
+import { LibraryTree } from './components/LibraryTree';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -49,10 +59,10 @@ const GlobalStyles = createGlobalStyle`
 `;
 
 export default function App() {
+  const dispatch = useDispatch();
+
+  const spotify = useSelector(selectSpotify);
   const [tokenInfo, setTokenInfo] = useState<TokenInfo>();
-  const [spotify, setSpotify] = useState<SpotifyWebApi.SpotifyWebApiJs>(
-    new SpotifyWebApi()
-  );
 
   useEffect(() => {
     triggerLogin();
@@ -71,25 +81,40 @@ export default function App() {
       expiresIn: expiresIn,
       expirationTime: Date.now() + expiresIn * 1000,
     });
-    setSpotify((oldSpotify) => {
-      oldSpotify.setAccessToken(token);
-      return oldSpotify;
-    });
+    spotify.setAccessToken(token);
   });
 
-  const [searchBarValue, setSearchBarValue] = useState('');
   const [tokenButtonHover, setTokenButtonHover] = useState(false);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [apiTesterOpen, setApiTesterOpen] = useState(false);
 
   return (
     <ThemeProvider theme={useSelector(selectTheme)}>
       <GlobalStyles />
-      <Window style={{ width: '100%', height: '100%' }} resizable>
-        <SettingsWindow
+      <Window
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+        resizable
+      >
+        <SearchDialog
+          isOpen={searchOpen}
+          closeThisWindow={() => setSearchOpen(false)}
+        />
+        <SettingsDialog
           isOpen={settingsOpen}
           closeThisWindow={() => setSettingsOpen(false)}
         />
+        <ApiTester
+          isOpen={apiTesterOpen}
+          onClose={() => setApiTesterOpen(false)}
+        />
+        <ArtDialog />
         <WindowHeader
           title="Spotify95"
           className="window-title dragApplication"
@@ -117,16 +142,22 @@ export default function App() {
             buttonText="File"
             menuOptions={[
               { text: 'Settings', onClick: () => setSettingsOpen(true) },
+              { text: 'API Tester', onClick: () => setApiTesterOpen(true) },
             ]}
           />
           <span style={{ flexGrow: 1 }} />
           <TextInput
-            value={searchBarValue}
+            value={useSelector(selectSearchTerm)}
             placeholder="Search"
-            onChange={(e) => setSearchBarValue(e.target.value)}
+            onChange={(e) => dispatch(setSearchTerm(e.target.value))}
             width={20}
           />
-          <Button onClick={() => {}} style={{ marginLeft: 4 }}>
+          <Button
+            onClick={() => {
+              setSearchOpen(true);
+            }}
+            style={{ marginLeft: 4 }}
+          >
             mag
           </Button>
           <Button
@@ -147,6 +178,46 @@ export default function App() {
           </Button>
         </Toolbar>
         <Separator />
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            flexGrow: 1,
+            marginTop: 10,
+            marginLeft: 10,
+            marginRight: 10,
+            marginBottom: 40,
+          }}
+        >
+          <div style={{ width: '30%', height: '100%' }}>
+            <LibraryTree />
+          </div>
+          <div
+            style={{
+              width: '70%',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <Toolbar>
+              <span style={{ flexGrow: 1 }}></span>
+              <Button
+                onClick={() => {
+                  dispatch(
+                    setArtURL(
+                      'https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228'
+                    )
+                  );
+                }}
+              >
+                Show Art
+              </Button>
+              <VolumeSlider />
+            </Toolbar>
+            <Frame variant="field" style={{ flexGrow: 1 }}></Frame>
+          </div>
+        </div>
       </Window>
     </ThemeProvider>
   );

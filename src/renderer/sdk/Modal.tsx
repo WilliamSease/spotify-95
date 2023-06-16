@@ -13,7 +13,7 @@ export const Modal = (props: IProps) => {
         width: '100%',
         height: '100%',
         position: 'fixed',
-        zIndex: 2,
+        zIndex: 3,
         backgroundColor: 'rgba(255,255,255,0.5)',
         display: 'flex',
         alignContent: 'center',

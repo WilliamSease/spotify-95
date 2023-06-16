@@ -2,21 +2,25 @@ import { useState } from 'react';
 import { Button, GroupBox, WindowContent, Window } from 'react95';
 import { isNil } from 'lodash';
 import SpotifyWebApi from 'spotify-web-api-js';
-import { TokenInfo } from './representations/apiTypes';
+import { TokenInfo } from '../representations/apiTypes';
+import { FlexWindowModal } from 'renderer/conveniencesdk/FlexWindowModal';
+import { useSelector } from 'react-redux';
+import { selectSpotify } from 'renderer/state/store';
 
 type IProps = {
-  tokenInfo?: TokenInfo;
-  spotify: SpotifyWebApi.SpotifyWebApiJs;
+  isOpen: boolean;
+  onClose: () => void;
 };
 
 export const ApiTester = (props: IProps) => {
-  const { tokenInfo, spotify } = props;
+  const { isOpen, onClose } = props;
 
   const [album, setAlbum] = useState<SpotifyApi.SingleAlbumResponse>();
   const [newReleases, setNewReleases] =
     useState<SpotifyApi.ListOfNewReleasesResponse>();
   const [me, setMe] = useState<SpotifyApi.CurrentUsersProfileResponse>();
-  const [audioUrl, setAudioUrl] = useState<string>();
+
+  const spotify = useSelector(selectSpotify);
 
   const getTestDisplayValue = (untested: boolean, check: boolean) => {
     return untested ? (
@@ -27,12 +31,17 @@ export const ApiTester = (props: IProps) => {
   };
 
   return (
-    <>
-      <GroupBox variant="default">
-        <Button
-          children={'Test Functions'}
-          disabled={!tokenInfo}
-          onClick={async () => {
+    <FlexWindowModal
+      title={'Api Tester'}
+      height={800}
+      width={500}
+      isOpen={isOpen}
+      onClose={onClose}
+      provideCloseButton
+      bottomButtons={[
+        {
+          text: 'Test Functions',
+          onPress: async () => {
             spotify.getAlbum('0PT5m6hwPRrpBwIHVnvbFX').then((value) => {
               setAlbum(value);
             });
@@ -42,31 +51,26 @@ export const ApiTester = (props: IProps) => {
             spotify.getMe().then((value) => {
               setMe(value);
             });
-          }}
-        />
-        <Button
-          children={'Reset Panel'}
-          disabled={!tokenInfo}
-          onClick={async () => {
+          },
+        },
+        {
+          text: 'Reset Panel',
+          onPress: async () => {
             setAlbum(undefined);
             setNewReleases(undefined);
             setMe(undefined);
-          }}
-        />
-        <Button
-          children={'Play Help By the Beatles'}
-          disabled={!tokenInfo}
-          onClick={async () => {
+          },
+        },
+        {
+          text: 'Play Help By the Beatles',
+          onPress: async () => {
             spotify.play({ uris: ['spotify:track:7DD7eSuYSC5xk2ArU62esN'] });
-          }}
-        />
-      </GroupBox>
-
-      <GroupBox label="access token">
-        <div>token:{tokenInfo?.token}</div>
-        <div>token type: {tokenInfo?.type}</div>
-        <div>expires in: {tokenInfo?.expiresIn}</div>
-        <div>expires time: {tokenInfo?.expirationTime}</div>
+          },
+        },
+      ]}
+    >
+      <GroupBox style={{ marginTop: '1rem' }} label="access token">
+        <div>token:{spotify.getAccessToken()?.length}</div>
       </GroupBox>
       <GroupBox label="getAlbum">
         <div>id: {album?.id}</div>
@@ -100,8 +104,7 @@ export const ApiTester = (props: IProps) => {
         <div>
           Open spotify and play any song. Then click the "Play Help" button.
         </div>
-        {audioUrl && <audio id="audio" src={audioUrl} autoPlay />}
       </GroupBox>
-    </>
+    </FlexWindowModal>
   );
 };

@@ -25,16 +25,14 @@ export default function MenuButtonWithDropDown(props: IProps) {
             position: 'absolute',
             left: '0',
             top: '100%',
-            zIndex: 1,
+            zIndex: 2,
           }}
           onClick={() => setOpen(false)}
         >
           {menuOptions.map((mo, i) => {
             return (
-              <MenuListItem key={i}>
-                <Button onClick={mo.onClick} variant="thin">
-                  <span>{mo.text}</span>
-                </Button>
+              <MenuListItem key={i} onClick={mo.onClick}>
+                <span>{mo.text}</span>
               </MenuListItem>
             );
           })}
