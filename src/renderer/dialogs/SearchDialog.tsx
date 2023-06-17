@@ -64,7 +64,10 @@ export const SearchDialog = (props: IProps) => {
       onClose={closeThisWindow}
       height={700}
       width={600}
-      bottomButtons={[{ text: 'ok', onPress: () => {}, closesWindow: true }]}
+      bottomButtons={[
+        { text: 'Append to current', onPress: () => {}, closesWindow: true },
+        { text: 'Select only this', onPress: () => {}, closesWindow: true },
+      ]}
       provideCloseButton
     >
       <Toolbar style={{ marginTop: '1rem' }}>
@@ -75,7 +78,7 @@ export const SearchDialog = (props: IProps) => {
           style={{ width: '100%' }}
         />
         <Button onClick={() => runSearch(searchTerm)} style={{ marginLeft: 4 }}>
-          mag
+          🔎
         </Button>
       </Toolbar>
       <Tabs value={activeTab} onChange={setActiveTab} style={{ marginLeft: 3 }}>
@@ -106,7 +109,7 @@ export const SearchDialog = (props: IProps) => {
               flexGrow: 1,
             }}
           >
-            Loading...
+            ⏳
           </div>
         )}
         {!loading && activeTab === 0 && (

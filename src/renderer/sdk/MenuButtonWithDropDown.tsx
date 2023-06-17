@@ -17,7 +17,7 @@ export default function MenuButtonWithDropDown(props: IProps) {
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
       <Button variant="thin" onClick={() => setOpen(!open)} active={open}>
-        Start
+        {buttonText}
       </Button>
       {open && (
         <MenuList

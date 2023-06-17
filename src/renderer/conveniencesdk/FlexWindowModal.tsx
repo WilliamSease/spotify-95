@@ -6,6 +6,7 @@ type BottomButton = {
   text: string;
   onPress: () => void;
   closesWindow?: boolean;
+  disabled?: boolean;
 };
 
 type IProps = {
@@ -68,6 +69,7 @@ export const FlexWindowModal = (props: IProps) => {
                       onClose();
                     }
                   }}
+                  disabled={bb.disabled}
                 >
                   {bb.text}
                 </Button>

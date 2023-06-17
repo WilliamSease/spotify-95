@@ -3,6 +3,7 @@ import {
   Button,
   Frame,
   MenuList,
+  ScrollView,
   Separator,
   styleReset,
   TextInput,
@@ -14,10 +15,9 @@ import ms_sans_serif from 'react95/dist/fonts/ms_sans_serif.woff2';
 import ms_sans_serif_bold from 'react95/dist/fonts/ms_sans_serif_bold.woff2';
 import './App.css';
 import MenuButtonWithDropDown from './sdk/MenuButtonWithDropDown';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { TokenInfo } from './representations/apiTypes';
-import SpotifyWebApi from 'spotify-web-api-js';
-import { triggerLogin } from './functions';
+import { populateLibrary, triggerLogin } from './functions';
 import { isNil } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -33,6 +33,9 @@ import { ApiTester } from './dialogs/ApiTester';
 import { VolumeSlider } from './components/VolumeSlider';
 import { ArtDialog } from './dialogs/ArtDialog';
 import { LibraryTree } from './components/LibraryTree';
+import { PlayerList } from './components/PlayerList';
+import { AboutDialog } from './dialogs/AboutDialog';
+import { DeviceDialog } from './dialogs/DeviceDialog';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -64,6 +67,8 @@ export default function App() {
   const spotify = useSelector(selectSpotify);
   const [tokenInfo, setTokenInfo] = useState<TokenInfo>();
 
+  const [leftPanelBigger, setLeftPanelBigger] = useState(false);
+
   useEffect(() => {
     triggerLogin();
     const interval = setInterval(triggerLogin, 1000 * 60 * 30);
@@ -89,6 +94,8 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [apiTesterOpen, setApiTesterOpen] = useState(false);
+  const [aboutDialogOpen, setAboutDialogOpen] = useState(false);
+  const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
 
   return (
     <ThemeProvider theme={useSelector(selectTheme)}>
@@ -115,6 +122,14 @@ export default function App() {
           onClose={() => setApiTesterOpen(false)}
         />
         <ArtDialog />
+        <AboutDialog
+          isOpen={aboutDialogOpen}
+          closeThisWindow={() => setAboutDialogOpen(false)}
+        />
+        <DeviceDialog
+          isOpen={deviceDialogOpen}
+          closeThisWindow={() => setDeviceDialogOpen(false)}
+        />
         <WindowHeader
           title="Spotify95"
           className="window-title dragApplication"
@@ -145,6 +160,28 @@ export default function App() {
               { text: 'API Tester', onClick: () => setApiTesterOpen(true) },
             ]}
           />
+          <Button variant="thin" onClick={() => setDeviceDialogOpen(true)}>
+            Device
+          </Button>
+          <MenuButtonWithDropDown
+            buttonText="About"
+            menuOptions={[
+              {
+                text: 'About',
+                onClick: () => {
+                  setAboutDialogOpen(true);
+                },
+              },
+              {
+                text: 'Buy me a coffee',
+                onClick: () => {},
+              },
+              {
+                text: 'Buy React95 a coffee',
+                onClick: () => {},
+              },
+            ]}
+          />
           <span style={{ flexGrow: 1 }} />
           <TextInput
             value={useSelector(selectSearchTerm)}
@@ -158,22 +195,22 @@ export default function App() {
             }}
             style={{ marginLeft: 4 }}
           >
-            mag
+            🔎
           </Button>
           <Button
             onMouseOver={() => setTokenButtonHover(true)}
             onMouseLeave={() => setTokenButtonHover(false)}
             onClick={triggerLogin}
-            style={{ marginLeft: 4, width: 150 }}
+            style={{ marginLeft: 4, width: 100 }}
           >
-            <div style={{ color: tokenInfo ? 'green' : 'red' }}>
+            <div>
               {!isNil(tokenInfo)
                 ? tokenButtonHover
                   ? `${Math.floor(
                       (tokenInfo.expirationTime - Date.now()) / (1000 * 60)
                     )} min`
-                  : 'Token GOOD'
-                : 'Token BAD'}
+                  : 'Auth ✔️'
+                : 'Auth ❌'}
             </div>
           </Button>
         </Toolbar>
@@ -189,19 +226,31 @@ export default function App() {
             marginBottom: 40,
           }}
         >
-          <div style={{ width: '30%', height: '100%' }}>
+          <div
+            style={{ width: `${leftPanelBigger ? 70 : 30}%`, height: '100%' }}
+          >
             <LibraryTree />
           </div>
           <div
             style={{
-              width: '70%',
+              width: `${leftPanelBigger ? 30 : 70}%`,
               height: '100%',
               display: 'flex',
               flexDirection: 'column',
             }}
           >
             <Toolbar>
+              <Button
+                variant="thin"
+                onClick={() => setLeftPanelBigger(!leftPanelBigger)}
+                style={{
+                  transform: leftPanelBigger ? 'scaleX(-1)' : undefined,
+                }}
+              >
+                👉
+              </Button>
               <span style={{ flexGrow: 1 }}></span>
+              <Button onClick={() => {}}>Clear</Button>
               <Button
                 onClick={() => {
                   dispatch(
@@ -211,11 +260,11 @@ export default function App() {
                   );
                 }}
               >
-                Show Art
+                Show art
               </Button>
               <VolumeSlider />
             </Toolbar>
-            <Frame variant="field" style={{ flexGrow: 1 }}></Frame>
+            <PlayerList />
           </div>
         </div>
       </Window>

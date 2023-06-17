@@ -7,7 +7,7 @@ export const VolumeSlider = () => {
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
       <Button variant="thin" onClick={() => setIsOpen(!isOpen)} active={isOpen}>
-        Vol
+        🔊
       </Button>
       {isOpen && (
         <Frame
