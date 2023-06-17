@@ -1,4 +1,5 @@
-import { Frame, ScrollView } from 'react95';
+import { Anchor, Frame, ScrollView } from 'react95';
+import Label from 'renderer/sdk/Label';
 
 type ListType = {
   artistName: string;
@@ -38,9 +39,7 @@ export const PlayerList = () => {
       >
         {mockData.map((data) => (
           <>
-            <div
-              style={{ color: 'blue' }}
-            >{`${data.artistName} / ${data.albumName}`}</div>
+            <Label>{`${data.artistName} / ${data.albumName}`}</Label>
             {data.tracks.map((track) => (
               <div
                 style={{ marginLeft: '1rem' }}
