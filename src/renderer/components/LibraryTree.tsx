@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
   Frame,
+  Hourglass,
   ScrollView,
   Tab,
   TabBody,
@@ -90,7 +91,7 @@ export const LibraryTree = () => {
                   width: '50%',
                 }}
               >
-                ⏳
+                <Hourglass size={16} />
               </div>
             ) : (
               <TreeView tree={nodes ?? []} />

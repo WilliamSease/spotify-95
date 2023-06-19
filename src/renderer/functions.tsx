@@ -1,8 +1,7 @@
-import { Dispatch } from 'redux';
 import SpotifyWebApi from 'spotify-web-api-js';
-import { LibraryType } from './representations/apiTypes';
-import { setLibrary } from './state/store';
+import { LibraryType, SearchResultType } from './representations/apiTypes';
 import axios from 'axios';
+import { cloneDeep, isNil } from 'lodash';
 
 export const triggerLogin = () => {
   const clientId = '2d8d7d7d0f6241fcb7cf54fc5b2e24a8';
@@ -84,4 +83,66 @@ export async function populateLibrary(spotify: SpotifyWebApi.SpotifyWebApiJs) {
     shows: out.shows.sort((a, b) => a.name.localeCompare(b.name)),
     playlists: out.playlists.sort((a, b) => a.name.localeCompare(b.name)),
   };
+}
+
+export async function appendToSearchResult(
+  spotify: SpotifyWebApi.SpotifyWebApiJs,
+  current: SearchResultType
+): Promise<SearchResultType> {
+  const copy = cloneDeep(current);
+  if (!isNil(copy.music.artists)) {
+    const newArtists: SpotifyApi.SearchResponse = (
+      await axios.get(current.music.artists?.next ?? '', {
+        headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+      })
+    ).data;
+    copy.music.artists?.items.push(...(newArtists.artists?.items ?? []));
+    copy.music.artists.next = newArtists.artists?.next ?? '';
+  }
+  if (!isNil(copy.music.albums)) {
+    const newArtists: SpotifyApi.SearchResponse = (
+      await axios.get(current.music.albums?.next ?? '', {
+        headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+      })
+    ).data;
+    copy.music.albums?.items.push(...(newArtists.albums?.items ?? []));
+    copy.music.albums.next = newArtists.albums?.next ?? '';
+  }
+  if (!isNil(copy.music.tracks)) {
+    const newArtists: SpotifyApi.SearchResponse = (
+      await axios.get(current.music.tracks?.next ?? '', {
+        headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+      })
+    ).data;
+    copy.music.tracks?.items.push(...(newArtists.tracks?.items ?? []));
+    copy.music.tracks.next = newArtists.tracks?.next ?? '';
+  }
+  if (!isNil(copy.music.playlists)) {
+    const newArtists: SpotifyApi.SearchResponse = (
+      await axios.get(current.music.playlists?.next ?? '', {
+        headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+      })
+    ).data;
+    copy.music.playlists?.items.push(...(newArtists.playlists?.items ?? []));
+    copy.music.playlists.next = newArtists.playlists?.next ?? '';
+  }
+  if (!isNil(copy.episodes)) {
+    const newArtists: SpotifyApi.SearchResponse = (
+      await axios.get(current.episodes?.episodes.next ?? '', {
+        headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+      })
+    ).data;
+    copy.episodes.episodes.items.push(...(newArtists.episodes?.items ?? []));
+    copy.episodes.episodes.next = newArtists.episodes?.next ?? '';
+  }
+  if (!isNil(copy.shows)) {
+    const newArtists: SpotifyApi.SearchResponse = (
+      await axios.get(current.shows?.shows.next ?? '', {
+        headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+      })
+    ).data;
+    copy.shows.shows.items.push(...(newArtists.shows?.items ?? []));
+    copy.shows.shows.next = newArtists.shows?.next ?? '';
+  }
+  return copy;
 }

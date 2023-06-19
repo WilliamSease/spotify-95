@@ -7,8 +7,21 @@ import {
   selectSpotify,
   setSearchResult,
 } from 'renderer/state/store';
-import { Button, Frame, Tab, Tabs, TextInput, Toolbar } from 'react95';
+import {
+  Button,
+  Frame,
+  Hourglass,
+  ScrollView,
+  Tab,
+  Tabs,
+  TextInput,
+  Toolbar,
+} from 'react95';
 import { messages } from 'renderer/representations/messages';
+import styled from 'styled-components';
+import { List } from 'renderer/conveniencesdk/List';
+import { appendToSearchResult } from 'renderer/functions';
+import { isEmpty, isNil } from 'lodash';
 
 type IProps = {
   isOpen: boolean;
@@ -24,13 +37,16 @@ export const SearchDialog = (props: IProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [selected, setSelected] = useState<{ tab: Number; item: number }>();
 
   const runSearch = useCallback((search: string) => {
     setLoading(true);
     Promise.all([
-      spotify.search(search, ['artist', 'album', 'track', 'playlist']),
-      spotify.searchShows(search),
-      spotify.searchEpisodes(search),
+      spotify.search(search, ['artist', 'album', 'track', 'playlist'], {
+        limit: 50,
+      }),
+      spotify.searchShows(search, { limit: 50 }),
+      spotify.searchEpisodes(search, { limit: 50 }),
     ])
       .then((result) =>
         dispatch(
@@ -65,7 +81,24 @@ export const SearchDialog = (props: IProps) => {
       height={700}
       width={600}
       bottomButtons={[
-        { text: 'Append to current', onPress: () => {}, closesWindow: true },
+        {
+          text: 'Load More',
+          disabled: loading,
+          onPress: () => {
+            if (!isNil(searchResult)) {
+              setLoading(true);
+              appendToSearchResult(spotify, searchResult)
+                .then((result) => dispatch(setSearchResult(result)))
+                .catch(() => dispatch(setSearchResult(null)))
+                .finally(() => setLoading(false));
+            }
+          },
+        },
+        {
+          text: 'Append to current player',
+          onPress: () => {},
+          closesWindow: false,
+        },
         { text: 'Select only this', onPress: () => {}, closesWindow: true },
       ]}
       provideCloseButton
@@ -77,7 +110,11 @@ export const SearchDialog = (props: IProps) => {
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ width: '100%' }}
         />
-        <Button onClick={() => runSearch(searchTerm)} style={{ marginLeft: 4 }}>
+        <Button
+          onClick={() => runSearch(searchTerm)}
+          style={{ marginLeft: 4 }}
+          disabled={isNil(searchTerm) || isEmpty(searchTerm)}
+        >
           🔎
         </Button>
       </Toolbar>
@@ -98,27 +135,82 @@ export const SearchDialog = (props: IProps) => {
           flexDirection: 'column',
         }}
       >
-        {searchResult === null && <div>{messages.errorContactDev}</div>}
-        {loading && (
-          <div
-            style={{
-              placeContent: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              flexGrow: 1,
-            }}
-          >
-            ⏳
-          </div>
-        )}
-        {!loading && activeTab === 0 && (
-          <div style={{ height: '100%' }}>
-            {searchResult?.music.tracks?.items.map((v) => {
-              return <div>{v.name}</div>;
-            })}
-          </div>
-        )}
+        <ScrollView
+          style={{
+            height: '100%',
+            width: '100%',
+            position: 'absolute',
+            display: 'flex',
+          }}
+        >
+          {searchResult === null && <div>{messages.errorContactDev}</div>}
+          {loading && (
+            <div
+              style={{
+                position: 'relative',
+                top: '50%',
+                left: '48%',
+                width: '50%',
+              }}
+            >
+              <Hourglass size={16} />
+            </div>
+          )}
+          {!loading && activeTab === 0 && (
+            <List
+              items={searchResult?.music.artists?.items.map((v) => (
+                <span>👨 {v.name}</span>
+              ))}
+              selected={selected?.tab === 0 ? selected.item : undefined}
+              onSelect={(i) => setSelected({ tab: 0, item: i })}
+            />
+          )}
+          {!loading && activeTab === 1 && (
+            <List
+              items={searchResult?.music.albums?.items.map((v) => (
+                <span>💿 {v.name}</span>
+              ))}
+              selected={selected?.tab === 1 ? selected.item : undefined}
+              onSelect={(i) => setSelected({ tab: 1, item: i })}
+            />
+          )}
+          {!loading && activeTab === 2 && (
+            <List
+              items={searchResult?.music.tracks?.items.map((v) => (
+                <span>🎵 {v.name}</span>
+              ))}
+              selected={selected?.tab === 2 ? selected.item : undefined}
+              onSelect={(i) => setSelected({ tab: 2, item: i })}
+            />
+          )}
+          {!loading && activeTab === 3 && (
+            <List
+              items={searchResult?.shows.shows?.items.map((v) => (
+                <span>📻 {v.name}</span>
+              ))}
+              selected={selected?.tab === 3 ? selected.item : undefined}
+              onSelect={(i) => setSelected({ tab: 3, item: i })}
+            />
+          )}
+          {!loading && activeTab === 4 && (
+            <List
+              items={searchResult?.episodes.episodes?.items.map((v) => (
+                <span>📻 {v.name}</span>
+              ))}
+              selected={selected?.tab === 4 ? selected.item : undefined}
+              onSelect={(i) => setSelected({ tab: 4, item: i })}
+            />
+          )}
+          {!loading && activeTab === 5 && (
+            <List
+              items={searchResult?.music.playlists?.items.map((v) => (
+                <span>📝 {v.name}</span>
+              ))}
+              selected={selected?.tab === 5 ? selected.item : undefined}
+              onSelect={(i) => setSelected({ tab: 5, item: i })}
+            />
+          )}
+        </ScrollView>
       </Frame>
     </FlexWindowModal>
   );
