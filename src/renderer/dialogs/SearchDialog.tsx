@@ -87,7 +87,7 @@ export const SearchDialog = (props: IProps) => {
           onPress: () => {
             if (!isNil(searchResult)) {
               setLoading(true);
-              appendToSearchResult(spotify, searchResult)
+              appendToSearchResult(spotify, searchResult, activeTab)
                 .then((result) => dispatch(setSearchResult(result)))
                 .catch(() => dispatch(setSearchResult(null)))
                 .finally(() => setLoading(false));
