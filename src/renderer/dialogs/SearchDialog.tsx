@@ -20,8 +20,9 @@ import {
 import { messages } from 'renderer/representations/messages';
 import styled from 'styled-components';
 import { List } from 'renderer/conveniencesdk/List';
-import { appendToSearchResult } from 'renderer/functions';
+import { appendToSearchResult } from 'renderer/functions/apiFunctions';
 import { isEmpty, isNil } from 'lodash';
+import { formatAlbumToIncludeArtists } from 'renderer/functions/formatFunctions';
 
 type IProps = {
   isOpen: boolean;
@@ -168,7 +169,7 @@ export const SearchDialog = (props: IProps) => {
           {!loading && activeTab === 1 && (
             <List
               items={searchResult?.music.albums?.items.map((v) => (
-                <span>💿 {v.name}</span>
+                <span>💿 {formatAlbumToIncludeArtists(v)}</span>
               ))}
               selected={selected?.tab === 1 ? selected.item : undefined}
               onSelect={(i) => setSelected({ tab: 1, item: i })}

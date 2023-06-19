@@ -1,5 +1,5 @@
 import SpotifyWebApi from 'spotify-web-api-js';
-import { LibraryType, SearchResultType } from './representations/apiTypes';
+import { LibraryType, SearchResultType } from '../representations/apiTypes';
 import axios from 'axios';
 import { cloneDeep, isNil } from 'lodash';
 

@@ -17,7 +17,7 @@ import './App.css';
 import MenuButtonWithDropDown from './sdk/MenuButtonWithDropDown';
 import { useCallback, useEffect, useState } from 'react';
 import { TokenInfo } from './representations/apiTypes';
-import { populateLibrary, triggerLogin } from './functions';
+import { populateLibrary, triggerLogin } from './functions/apiFunctions';
 import { isNil } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {

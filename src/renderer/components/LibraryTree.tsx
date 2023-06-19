@@ -10,7 +10,7 @@ import {
   Tabs,
   TreeView,
 } from 'react95';
-import { populateLibrary } from 'renderer/functions';
+import { populateLibrary } from 'renderer/functions/apiFunctions';
 import { selectLibrary, selectSpotify, setLibrary } from 'renderer/state/store';
 import SpotifyWebApi from 'spotify-web-api-js';
 
