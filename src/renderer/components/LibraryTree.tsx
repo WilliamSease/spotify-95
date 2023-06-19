@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
@@ -12,6 +12,7 @@ import {
 } from 'react95';
 import { populateLibrary } from 'renderer/functions';
 import { selectLibrary, selectSpotify, setLibrary } from 'renderer/state/store';
+import SpotifyWebApi from 'spotify-web-api-js';
 
 export const LibraryTree = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -19,6 +20,17 @@ export const LibraryTree = () => {
   const spotify = useSelector(selectSpotify);
   const dispatch = useDispatch();
   const library = useSelector(selectLibrary);
+
+  const libraryCallback = useCallback(
+    (spotify: SpotifyWebApi.SpotifyWebApiJs) => {
+      setLoading(true);
+      populateLibrary(spotify).then((library) => {
+        dispatch(setLibrary(library));
+        setLoading(false);
+      });
+    },
+    [setLoading, dispatch]
+  );
 
   const nodes = useMemo(() => {
     switch (activeTab) {
@@ -61,13 +73,7 @@ export const LibraryTree = () => {
         <Button
           variant="thin"
           style={{ width: '20%' }}
-          onClick={() => {
-            setLoading(true);
-            populateLibrary(spotify).then((library) => {
-              dispatch(setLibrary(library));
-              setLoading(false);
-            });
-          }}
+          onClick={() => libraryCallback(spotify)}
         >
           Refresh
         </Button>
