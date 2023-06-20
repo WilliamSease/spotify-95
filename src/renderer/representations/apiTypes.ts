@@ -17,3 +17,15 @@ export type LibraryType = {
   shows: SpotifyApi.ShowObjectSimplified[];
   playlists: SpotifyApi.PlaylistObjectSimplified[];
 };
+
+export type AddDialogType = {
+  type:
+    | 'artistTopTracks'
+    | 'artistAlbums'
+    | 'artistPlaylists'
+    | 'album'
+    | 'playlist'
+    | 'showEpisodes';
+  label: 'string';
+  id: 'string';
+};

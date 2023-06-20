@@ -2,6 +2,7 @@ import { createSlice, createSelector, configureStore } from '@reduxjs/toolkit';
 import original from 'react95/dist/themes/original';
 import { Theme } from 'react95/dist/types';
 import {
+  AddDialogType,
   LibraryType,
   SearchResultType,
 } from 'renderer/representations/apiTypes';
@@ -14,6 +15,7 @@ interface appState {
   artURL?: string;
   searchResult?: SearchResultType | null;
   library?: LibraryType | null;
+  addToDialog?: AddDialogType;
 }
 
 const initialState: appState = {
@@ -39,11 +41,12 @@ const appSlice = createSlice({
       state.searchResult = action.payload;
     },
     setLibrary: (state, action) => {
-      {
-        state.library = action.payload;
-        console.log('LIBRARY:');
-        console.log(state.library);
-      }
+      state.library = action.payload;
+      console.log('LIBRARY:');
+      console.log(state.library);
+    },
+    setAddDialog: (state, action) => {
+      state.addToDialog = action.payload;
     },
   },
 });
@@ -54,6 +57,7 @@ export const {
   setArtURL,
   setSearchResult,
   setLibrary,
+  setAddDialog,
 } = appSlice.actions;
 
 export const selectTheme = createSelector(
@@ -84,6 +88,11 @@ export const selectSearchResult = createSelector(
 export const selectLibrary = createSelector(
   (state: appState) => state.library,
   (library) => library
+);
+
+export const addToDialog = createSelector(
+  (state: appState) => state.addToDialog,
+  (addToDialog) => addToDialog
 );
 
 const store = configureStore({

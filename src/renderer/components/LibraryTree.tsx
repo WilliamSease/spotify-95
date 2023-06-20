@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
@@ -11,8 +11,14 @@ import {
   TreeView,
 } from 'react95';
 import { populateLibrary } from 'renderer/functions/apiFunctions';
-import { selectLibrary, selectSpotify, setLibrary } from 'renderer/state/store';
+import {
+  selectLibrary,
+  selectSpotify,
+  setAddDialog,
+  setLibrary,
+} from 'renderer/state/store';
 import SpotifyWebApi from 'spotify-web-api-js';
+import './LibraryTree.css';
 
 export const LibraryTree = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -35,20 +41,29 @@ export const LibraryTree = () => {
   const nodes = useMemo(() => {
     switch (activeTab) {
       case 0:
-        return library?.artists.map((a, i) => {
-          return { id: i, label: a.name, icon: <>👨</> };
+        return library?.artists.map((a) => {
+          return {
+            id: a.id,
+            label: a.name,
+            icon: <>👨</>,
+            items: [
+              { id: `${a.id}_topSongs`, label: 'Top Songs', icon: <>🎵</> },
+              { id: `${a.id}_artistAlbums`, label: 'Albums', icon: <>💿</> },
+              { id: `${a.id}_playlists`, label: 'Playlists', icon: <>📝</> },
+            ],
+          };
         });
       case 1:
-        return library?.albums.map((a, i) => {
-          return { id: i, label: a.name, icon: <>💿</> };
+        return library?.albums.map((a) => {
+          return { id: a.id, label: a.name, icon: <>💿</> };
         });
       case 2:
-        return library?.shows.map((a, i) => {
-          return { id: i, label: a.name, icon: <>📻</> };
+        return library?.shows.map((a) => {
+          return { id: a.id, label: a.name, icon: <>📻</> };
         });
       case 3:
-        return library?.playlists.map((a, i) => {
-          return { id: i, label: a.name, icon: <>📝</> };
+        return library?.playlists.map((a) => {
+          return { id: a.id, label: a.name, icon: <>📝</> };
         });
     }
   }, [activeTab, library]);
@@ -100,7 +115,55 @@ export const LibraryTree = () => {
                 <Hourglass size={16} />
               </div>
             ) : (
-              <TreeView tree={nodes ?? []} />
+              <TreeView
+                tree={nodes ?? []}
+                onNodeSelect={(_e, id) => {
+                  switch (activeTab) {
+                    case 0:
+                      const toSplit = id.split('_');
+                      if (toSplit.length === 2) {
+                        const [id, type] = toSplit;
+                        dispatch(
+                          setAddDialog({
+                            type: type,
+                            id: id,
+                            label: nodes?.find((n) => n.id === id)?.label,
+                          })
+                        );
+                      }
+
+                      break;
+                    case 1:
+                      dispatch(
+                        setAddDialog({
+                          type: 'album',
+                          id: id,
+                          label: nodes?.find((n) => n.id === id)?.label,
+                        })
+                      );
+                      break;
+                    case 2:
+                      dispatch(
+                        setAddDialog({
+                          type: 'showEpisodes',
+                          id: id,
+                          label: nodes?.find((n) => n.id === id)?.label,
+                        })
+                      );
+                      break;
+
+                    case 3:
+                      dispatch(
+                        setAddDialog({
+                          type: 'playlist',
+                          id: id,
+                          label: nodes?.find((n) => n.id === id)?.label,
+                        })
+                      );
+                      break;
+                  }
+                }}
+              />
             )}
           </ScrollView>
         </Frame>

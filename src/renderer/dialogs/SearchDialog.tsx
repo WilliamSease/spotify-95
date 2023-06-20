@@ -18,7 +18,6 @@ import {
   Toolbar,
 } from 'react95';
 import { messages } from 'renderer/representations/messages';
-import styled from 'styled-components';
 import { List } from 'renderer/conveniencesdk/List';
 import { appendToSearchResult } from 'renderer/functions/apiFunctions';
 import { isEmpty, isNil } from 'lodash';
@@ -196,7 +195,7 @@ export const SearchDialog = (props: IProps) => {
           {!loading && activeTab === 4 && (
             <List
               items={searchResult?.episodes.episodes?.items.map((v) => (
-                <span>📻 {v.name}</span>
+                <span>📺 {v.name}</span>
               ))}
               selected={selected?.tab === 4 ? selected.item : undefined}
               onSelect={(i) => setSelected({ tab: 4, item: i })}

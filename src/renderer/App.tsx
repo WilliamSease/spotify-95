@@ -36,6 +36,7 @@ import { LibraryTree } from './components/LibraryTree';
 import { PlayerList } from './components/PlayerList';
 import { AboutDialog } from './dialogs/AboutDialog';
 import { DeviceDialog } from './dialogs/DeviceDialog';
+import { AddToPlayerDialog } from './dialogs/AddToPlayerDialog';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -130,6 +131,7 @@ export default function App() {
           isOpen={deviceDialogOpen}
           closeThisWindow={() => setDeviceDialogOpen(false)}
         />
+        <AddToPlayerDialog />
         <WindowHeader
           title="Spotify95"
           className="window-title dragApplication"
