@@ -23,6 +23,7 @@ export const AddToPlayerDialog = () => {
   const [loaded, setLoaded] = useState<number>(0);
   const [range, setRange] = useState<[number, number]>([0, 0]);
   const [filter, setFilter] = useState('');
+  const [selectAll, setSelectAll] = useState<boolean>(false);
   const [items, setItems] = useState<
     | { type: 'episodes'; items: SpotifyApi.EpisodeObjectSimplified[] }
     | { type: 'playlistTracks'; items: SpotifyApi.PlaylistTrackObject[] }
@@ -32,14 +33,28 @@ export const AddToPlayerDialog = () => {
   useEffect(() => {
     if (toAdd) {
       setCount(undefined);
-      if (toAdd.type === 'artistTopTracks') {
+      setLoaded(0)
+      setItems(undefined)
+      if (toAdd.type === 'topSongs') {
         spotify
-          .getArtistTopTracks(toAdd.id, 'US')
-          .then((result) => setCount(result.tracks.length));
+          .getArtistTopTracks(toAdd.id, 'US',{limit:50})
+          .then((result) =>  {setCount(result.tracks.length); setItems({type:"tracks", items:result.tracks}) });
       } else if (toAdd.type === 'album') {
+        console.info("Hello")
         spotify
           .getAlbum(toAdd.id)
-          .then((result) => setCount(result.tracks.total));
+          .then(async (result) => {
+            let total = result.tracks.total;
+            let idx = 0;
+            let out = [];
+
+            while (idx < total) {
+              out.push(...(await spotify.getAlbumTracks(toAdd.id, {limit:50, offset:idx})).items)
+              idx += 50;
+            }
+          setItems({type:"tracks", items:out})
+          setCount(out.length)
+          });
       } else if (toAdd.type === 'showEpisodes') {
         spotify.getShowEpisodes(toAdd.id).then((result) => {
           setCount(result.total);
@@ -91,8 +106,7 @@ export const AddToPlayerDialog = () => {
           <div
             style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
           >
-            {toAdd?.type === 'artistAlbums' ||
-            toAdd?.type === 'artistPlaylists' ||
+            {
             toAdd?.type === 'playlist' ||
             toAdd?.type === 'showEpisodes' ? (
               <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -137,14 +151,28 @@ export const AddToPlayerDialog = () => {
                       alignItems: 'center',
                     }}
                   >
-                    <Button style={{ width: '50%' }}>Load Items</Button>
+                    <Button style={{ width: '50%' }} onClick={async () => {
+                                              let idx = range[0];
+                                              let out = [];
+                        while (idx < range[1]) {
+                          if (toAdd.type === "showEpisodes") {
+                          out.push( ... (await spotify.getShowEpisodes(toAdd.id,{offset:idx, limit: 50})).items);
+                          } 
+                          idx += 50;
+                          setLoaded(out.length)
+                        }
+                      
+                      if (toAdd.type === "showEpisodes") {
+                        setItems({type:"episodes", items:out as SpotifyApi.EpisodeObjectSimplified[]})
+                      } 
+                    }}>Load Items</Button>
                     <span style={{ flexGrow: 1, marginLeft: '1rem' }}>
                       <span>
                         {loaded} / {range[1] - range[0]}
                       </span>
                     </span>
                   </div>
-                  <Checkbox label={'Select All'} />
+                  <Checkbox label={'Select All'} checked={selectAll} onClick={() => setSelectAll(!selectAll)}/>
                 </div>
               </div>
             ) : (
@@ -187,7 +215,14 @@ export const AddToPlayerDialog = () => {
                     position: 'absolute',
                     display: 'flex',
                   }}
-                ></ScrollView>
+                >
+                  {(items?.type === "tracks" || items?.type === 'episodes') && items?.items.map((itm,i) => {
+                    return (itm.name.includes(filter) ? <div><Checkbox/>{items.type === "tracks" ? '🎵' : '📝' } {itm.name}</div> : <></>)
+                  })}
+                  {items?.type === "episodes" && items?.items.map((epi,i) => {
+                    return (epi.name.includes(filter) ? <div><Checkbox/>📝 {epi.name}</div> : <></>)
+                  })}
+                </ScrollView>
               </Frame>
             </div>
           </div>

@@ -20,9 +20,7 @@ export type LibraryType = {
 
 export type AddDialogType = {
   type:
-    | 'artistTopTracks'
-    | 'artistAlbums'
-    | 'artistPlaylists'
+    | 'topSongs'
     | 'album'
     | 'playlist'
     | 'showEpisodes';
