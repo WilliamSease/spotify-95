@@ -8,9 +8,13 @@ import {
   Tab,
   TabBody,
   Tabs,
+  TreeLeaf,
   TreeView,
 } from 'react95';
-import { populateLibrary } from 'renderer/functions/apiFunctions';
+import {
+  addBearerTokenToRequest,
+  populateLibrary,
+} from 'renderer/functions/apiFunctions';
 import {
   selectLibrary,
   selectSpotify,
@@ -19,6 +23,7 @@ import {
 } from 'renderer/state/store';
 import SpotifyWebApi from 'spotify-web-api-js';
 import './LibraryTree.css';
+import { cloneDeep } from 'lodash';
 
 export const LibraryTree = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -26,6 +31,13 @@ export const LibraryTree = () => {
   const spotify = useSelector(selectSpotify);
   const dispatch = useDispatch();
   const library = useSelector(selectLibrary);
+  const [albumMap, setAlbumMap] = useState<Map<string, TreeLeaf<string>[]>>(
+    new Map<string, TreeLeaf<string>[]>()
+  );
+  const [playlistMap, setPlaylistMap] = useState<
+    Map<string, TreeLeaf<string>[]>
+  >(new Map<string, TreeLeaf<string>[]>());
+  const [lastLength, setLastLength] = useState(0);
 
   const libraryCallback = useCallback(
     (spotify: SpotifyWebApi.SpotifyWebApiJs) => {
@@ -47,9 +59,44 @@ export const LibraryTree = () => {
             label: a.name,
             icon: <>👨</>,
             items: [
-              { id: `${a.id}_topSongs`, label: 'Top Songs', icon: <>🎵</> },
-              { id: `${a.id}_artistAlbums`, label: 'Albums', icon: <>💿</> },
-              { id: `${a.id}_playlists`, label: 'Playlists', icon: <>📝</> },
+              {
+                id: `${a.id}_topSongs_${a.name}`,
+                label: 'Top Songs',
+                icon: <>🎵</>,
+              },
+              {
+                id: `${a.id}_allSongs_${a.name}`,
+                label: 'All Songs',
+                icon: <>🎵</>,
+              },
+              {
+                id: `${a.id}_artistAlbums_${a.name}`,
+                label: 'Albums',
+                icon: <>💿</>,
+                items: albumMap.has(a.id)
+                  ? albumMap.get(a.id)
+                  : [
+                      {
+                        id: `${a.id}_artistAlbums_placeholder`,
+                        label: 'Loading...',
+                        icon: <> ⏳</>,
+                      },
+                    ],
+              },
+              {
+                id: `${a.id}_playlists_${a.name}`,
+                label: 'Playlists',
+                icon: <>📝</>,
+                items: playlistMap.has(a.id)
+                  ? playlistMap.get(a.id)
+                  : [
+                      {
+                        id: `${a.id}_playlists_placeholder`,
+                        label: 'Loading...',
+                        icon: <> ⏳</>,
+                      },
+                    ],
+              },
             ],
           };
         });
@@ -66,7 +113,7 @@ export const LibraryTree = () => {
           return { id: a.id, label: a.name, icon: <>📝</> };
         });
     }
-  }, [activeTab, library]);
+  }, [activeTab, library, albumMap, playlistMap]);
 
   return (
     <div
@@ -121,15 +168,21 @@ export const LibraryTree = () => {
                   switch (activeTab) {
                     case 0:
                       const toSplit = id.split('_');
-                      if (toSplit.length === 2) {
-                        const [id, type] = toSplit;
-                        dispatch(
-                          setAddDialog({
-                            type: type,
-                            id: id,
-                            label: nodes?.find((n) => n.id === id)?.label,
-                          })
-                        );
+                      if (toSplit.length === 3) {
+                        const [id, type, label] = toSplit;
+                        if (
+                          type === 'topSongs' ||
+                          type === 'allSongs' ||
+                          type === 'album' ||
+                          type === 'playlist'
+                        )
+                          dispatch(
+                            setAddDialog({
+                              type: type,
+                              id: id,
+                              label: label,
+                            })
+                          );
                       }
 
                       break;
@@ -162,6 +215,77 @@ export const LibraryTree = () => {
                       );
                       break;
                   }
+                }}
+                onNodeToggle={async (e, nodes) => {
+                  if (nodes.length > lastLength) {
+                    const operatingOn = nodes[nodes.length - 1];
+                    if (operatingOn.split('_').length == 3) {
+                      const [id, type, label] = operatingOn.split('_');
+                      if (type === 'artistAlbums') {
+                        let items: SpotifyApi.AlbumObjectSimplified[] = [];
+                        let albumResponse = await spotify.getArtistAlbums(id, {
+                          limit: 50,
+                        });
+                        items.push(...albumResponse.items);
+                        while (albumResponse.next) {
+                          albumResponse = await addBearerTokenToRequest(
+                            albumResponse.next,
+                            spotify
+                          );
+                          items.push(...albumResponse.items);
+                        }
+                        setAlbumMap((prev) => {
+                          const neu: Map<string, TreeLeaf<string>[]> =
+                            cloneDeep(prev);
+                          neu.set(
+                            id,
+                            items.map((a) => {
+                              return {
+                                id: `${a.id}_album_${a.name}`,
+                                label: a.name,
+                                icon: <>💿</>,
+                              };
+                            })
+                          );
+                          return neu;
+                        });
+                      }
+                      if (type === 'playlists') {
+                        let items: SpotifyApi.PlaylistObjectSimplified[] = [];
+                        let playlistResponse = (
+                          await spotify.searchPlaylists(`artist%20${label}`, {
+                            limit: 50,
+                          })
+                        ).playlists;
+                        items.push(...playlistResponse.items);
+                        while (playlistResponse.next) {
+                          playlistResponse = (
+                            await addBearerTokenToRequest(
+                              playlistResponse.next,
+                              spotify
+                            )
+                          ).playlists;
+                          items.push(...playlistResponse.items);
+                        }
+                        setPlaylistMap((prev) => {
+                          const neu: Map<string, TreeLeaf<string>[]> =
+                            cloneDeep(prev);
+                          neu.set(
+                            id,
+                            items.map((a) => {
+                              return {
+                                id: `${a.id}_playlist_${a.name}`,
+                                label: a.name,
+                                icon: <>📝</>,
+                              };
+                            })
+                          );
+                          return neu;
+                        });
+                      }
+                    }
+                  }
+                  setLastLength(nodes.length);
                 }}
               />
             )}

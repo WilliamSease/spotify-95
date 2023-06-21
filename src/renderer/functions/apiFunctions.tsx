@@ -147,3 +147,14 @@ export async function appendToSearchResult(
   }
   return copy;
 }
+
+export const addBearerTokenToRequest = async (
+  url: string,
+  spotify: SpotifyWebApi.SpotifyWebApiJs
+) => {
+  return (
+    await axios.get(url, {
+      headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+    })
+  ).data;
+};

@@ -3,11 +3,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
+  Checkbox,
   Frame,
   Hourglass,
   ProgressBar,
   Radio,
   ScrollView,
+  TextInput,
 } from 'react95';
 import { FlexWindowModal } from 'renderer/conveniencesdk/FlexWindowModal';
 import Label from 'renderer/sdk/Label';
@@ -20,20 +22,17 @@ export const AddToPlayerDialog = () => {
   const [count, setCount] = useState<number>();
   const [loaded, setLoaded] = useState<number>(0);
   const [range, setRange] = useState<[number, number]>([0, 0]);
-  const [items, setItems] =
-    useState<
-      (SpotifyApi.EpisodeObjectSimplified | SpotifyApi.PlaylistTrackObject)[]
-    >();
+  const [filter, setFilter] = useState('');
+  const [items, setItems] = useState<
+    | { type: 'episodes'; items: SpotifyApi.EpisodeObjectSimplified[] }
+    | { type: 'playlistTracks'; items: SpotifyApi.PlaylistTrackObject[] }
+    | { type: 'tracks'; items: SpotifyApi.TrackObjectSimplified[] }
+  >();
 
   useEffect(() => {
     if (toAdd) {
       setCount(undefined);
-      if (toAdd.type === 'artistAlbums') {
-        spotify
-          .getArtistAlbums(toAdd.id)
-          .then((result) => setCount(result.total));
-      } else if (toAdd.type === 'artistPlaylists') {
-      } else if (toAdd.type === 'artistTopTracks') {
+      if (toAdd.type === 'artistTopTracks') {
         spotify
           .getArtistTopTracks(toAdd.id, 'US')
           .then((result) => setCount(result.tracks.length));
@@ -145,10 +144,31 @@ export const AddToPlayerDialog = () => {
                       </span>
                     </span>
                   </div>
+                  <Checkbox label={'Select All'} />
                 </div>
               </div>
             ) : (
-              <Label>{`Adding ${count} items from ${toAdd?.label}`}</Label>
+              <>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    marginTop: 5,
+                    alignItems: 'center',
+                  }}
+                >
+                  <Label
+                    style={{ width: '50%' }}
+                  >{`Adding ${count} items from ${toAdd?.label}`}</Label>
+                  <TextInput
+                    value={filter}
+                    placeholder="filter..."
+                    onChange={(e) => setFilter(e.target.value)}
+                    style={{ width: '50%' }}
+                  />
+                </div>
+                <Checkbox label={'Select All'} />
+              </>
             )}
             <div style={{ flexGrow: 1 }}>
               <Frame
