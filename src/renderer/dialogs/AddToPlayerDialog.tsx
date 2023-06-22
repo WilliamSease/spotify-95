@@ -130,6 +130,8 @@ export const AddToPlayerDialog = () => {
                     onChange={() => setRange([0, 100])}
                     label={`Query items 0 to 100`}
                   />
+                                    <Checkbox label={'Select All'} checked={selectAll} onClick={() => setSelectAll(!selectAll)}/>
+
                 </div>
                 <div
                   style={{
@@ -151,7 +153,7 @@ export const AddToPlayerDialog = () => {
                       alignItems: 'center',
                     }}
                   >
-                    <Button style={{ width: '50%' }} onClick={async () => {
+                    <Button style={{ width: '30%' }} onClick={async () => {
                                               let idx = range[0];
                                               let out = [];
                         while (idx < range[1]) {
@@ -166,13 +168,18 @@ export const AddToPlayerDialog = () => {
                         setItems({type:"episodes", items:out as SpotifyApi.EpisodeObjectSimplified[]})
                       } 
                     }}>Load Items</Button>
-                    <span style={{ flexGrow: 1, marginLeft: '1rem' }}>
+                    <span style={{ flexGrow: 1, marginLeft: '.5rem' }}>
                       <span>
                         {loaded} / {range[1] - range[0]}
                       </span>
                     </span>
+                    <TextInput
+                    value={filter}
+                    placeholder="filter..."
+                    onChange={(e) => setFilter(e.target.value)}
+                    style={{ flexGrow:1 }}
+                  />
                   </div>
-                  <Checkbox label={'Select All'} checked={selectAll} onClick={() => setSelectAll(!selectAll)}/>
                 </div>
               </div>
             ) : (
