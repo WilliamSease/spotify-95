@@ -1,5 +1,5 @@
-import { isNil } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
+import { cloneDeep, isNil } from 'lodash';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
@@ -13,10 +13,16 @@ import {
 } from 'react95';
 import { FlexWindowModal } from 'renderer/conveniencesdk/FlexWindowModal';
 import Label from 'renderer/sdk/Label';
-import { addToDialog, selectSpotify, setAddDialog } from 'renderer/state/store';
+import {
+  appendToPlayer,
+  selectAddToDialog,
+  selectSpotify,
+  setAddDialog,
+  setToPlayer,
+} from 'renderer/state/store';
 
 export const AddToPlayerDialog = () => {
-  const toAdd = useSelector(addToDialog);
+  const toAdd = useSelector(selectAddToDialog);
   const spotify = useSelector(selectSpotify);
   const dispatch = useDispatch();
   const [count, setCount] = useState<number>();
@@ -24,46 +30,73 @@ export const AddToPlayerDialog = () => {
   const [range, setRange] = useState<[number, number]>([0, 0]);
   const [filter, setFilter] = useState('');
   const [selectAll, setSelectAll] = useState<boolean>(false);
-  const [items, setItems] = useState<
-    | { type: 'episodes'; items: SpotifyApi.EpisodeObjectSimplified[] }
-    | { type: 'playlistTracks'; items: SpotifyApi.PlaylistTrackObject[] }
-    | { type: 'tracks'; items: SpotifyApi.TrackObjectSimplified[] }
-  >();
+  const [items, setItems] =
+    useState<(SpotifyApi.EpisodeObjectFull | SpotifyApi.TrackObjectFull)[]>();
+  const [checkedArray, setCheckedArray] = useState<boolean[]>([]);
+  const modifyCheck = useCallback(
+    (to: number) =>
+      setCheckedArray((prev) => {
+        prev[to] = !prev[to];
+        return cloneDeep(prev);
+      }),
+    [setCheckedArray]
+  );
+  useEffect(
+    () => setCheckedArray(items?.map(() => false) ?? []),
+    [setCheckedArray, items]
+  );
+
+  const selectedItems = useMemo(
+    () => items?.filter((_itm, i) => checkedArray[i] || selectAll),
+    [items, checkedArray, selectAll]
+  );
 
   useEffect(() => {
     if (toAdd) {
       setCount(undefined);
-      setLoaded(0)
-      setItems(undefined)
+      setLoaded(0);
+      setItems(undefined);
       if (toAdd.type === 'topSongs') {
         spotify
-          .getArtistTopTracks(toAdd.id, 'US',{limit:50})
-          .then((result) =>  {setCount(result.tracks.length); setItems({type:"tracks", items:result.tracks}) });
-      } else if (toAdd.type === 'album') {
-        console.info("Hello")
-        spotify
-          .getAlbum(toAdd.id)
-          .then(async (result) => {
-            let total = result.tracks.total;
-            let idx = 0;
-            let out = [];
-
-            while (idx < total) {
-              out.push(...(await spotify.getAlbumTracks(toAdd.id, {limit:50, offset:idx})).items)
-              idx += 50;
-            }
-          setItems({type:"tracks", items:out})
-          setCount(out.length)
+          .getArtistTopTracks(toAdd.id, 'US', { limit: 50 })
+          .then((result) => {
+            setCount(result.tracks.length);
+            setItems(result.tracks);
           });
+      } else if (toAdd.type === 'album') {
+        spotify.getAlbum(toAdd.id).then(async (result) => {
+          let total = result.tracks.total;
+          let idx = 0;
+          let out = [];
+
+          while (idx < total) {
+            const ids = (
+              await spotify.getAlbumTracks(toAdd.id, {
+                limit: 50,
+                offset: idx,
+              })
+            ).items.map((i) => i.id);
+
+            out.push(...(await spotify.getTracks(ids)).tracks);
+            idx += 50;
+          }
+          setItems(out);
+          setCount(out.length);
+        });
       } else if (toAdd.type === 'showEpisodes') {
         spotify.getShowEpisodes(toAdd.id).then((result) => {
           setCount(result.total);
           setRange([0, result.total]);
         });
       } else if (toAdd.type === 'playlist') {
-        spotify
-          .getPlaylistTracks(toAdd.id)
-          .then((result) => setCount(result.total));
+        spotify.getPlaylistTracks(toAdd.id).then((result) => {
+          setCount(result.total);
+          if (result.total > 50) {
+            setRange([0, result.total]);
+          } else {
+            setItems(result.items.map((t) => t.track));
+          }
+        });
       }
     }
   }, [toAdd]);
@@ -79,12 +112,16 @@ export const AddToPlayerDialog = () => {
       bottomButtons={[
         {
           text: 'Append to current player',
-          onPress: () => {},
-          closesWindow: false,
+          onPress: () => {
+            dispatch(appendToPlayer(selectedItems));
+          },
+          closesWindow: true,
         },
         {
           text: 'Select only these item(s)',
-          onPress: () => {},
+          onPress: () => {
+            dispatch(setToPlayer(selectedItems));
+          },
           closesWindow: true,
         },
       ]}
@@ -106,9 +143,8 @@ export const AddToPlayerDialog = () => {
           <div
             style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
           >
-            {
-            toAdd?.type === 'playlist' ||
-            toAdd?.type === 'showEpisodes' ? (
+            {(toAdd?.type === 'playlist' || toAdd?.type === 'showEpisodes') &&
+            count > 50 ? (
               <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <div
                   style={{
@@ -130,8 +166,11 @@ export const AddToPlayerDialog = () => {
                     onChange={() => setRange([0, 100])}
                     label={`Query items 0 to 100`}
                   />
-                                    <Checkbox label={'Select All'} checked={selectAll} onClick={() => setSelectAll(!selectAll)}/>
-
+                  <Checkbox
+                    label={'Select All'}
+                    checked={selectAll}
+                    onClick={() => setSelectAll(!selectAll)}
+                  />
                 </div>
                 <div
                   style={{
@@ -149,36 +188,55 @@ export const AddToPlayerDialog = () => {
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
-                      marginTop: 5,
+                      marginTop: '1rem',
                       alignItems: 'center',
                     }}
                   >
-                    <Button style={{ width: '30%' }} onClick={async () => {
-                                              let idx = range[0];
-                                              let out = [];
+                    <Button
+                      style={{ width: '30%' }}
+                      onClick={async () => {
+                        let idx = range[0];
+                        let out = [];
                         while (idx < range[1]) {
-                          if (toAdd.type === "showEpisodes") {
-                          out.push( ... (await spotify.getShowEpisodes(toAdd.id,{offset:idx, limit: 50})).items);
-                          } 
+                          if (toAdd.type === 'showEpisodes') {
+                            const ids = (
+                              await spotify.getShowEpisodes(toAdd.id, {
+                                offset: idx,
+                                limit: 50,
+                              })
+                            ).items.map((i) => i.id);
+                            out.push(
+                              ...(await spotify.getEpisodes(ids)).episodes
+                            );
+                          } else if (toAdd.type === 'playlist') {
+                            const ids = (
+                              await spotify.getPlaylistTracks(toAdd.id, {
+                                offset: idx,
+                                limit: 50,
+                              })
+                            ).items.map((i) => i.track.id);
+                            out.push(...(await spotify.getTracks(ids)).tracks);
+                          }
                           idx += 50;
-                          setLoaded(out.length)
+                          setLoaded(out.length);
                         }
-                      
-                      if (toAdd.type === "showEpisodes") {
-                        setItems({type:"episodes", items:out as SpotifyApi.EpisodeObjectSimplified[]})
-                      } 
-                    }}>Load Items</Button>
+
+                        setItems(out);
+                      }}
+                    >
+                      Load Items
+                    </Button>
                     <span style={{ flexGrow: 1, marginLeft: '.5rem' }}>
                       <span>
                         {loaded} / {range[1] - range[0]}
                       </span>
                     </span>
                     <TextInput
-                    value={filter}
-                    placeholder="filter..."
-                    onChange={(e) => setFilter(e.target.value)}
-                    style={{ flexGrow:1 }}
-                  />
+                      value={filter}
+                      placeholder="filter..."
+                      onChange={(e) => setFilter(e.target.value)}
+                      style={{ flexGrow: 1 }}
+                    />
                   </div>
                 </div>
               </div>
@@ -188,7 +246,8 @@ export const AddToPlayerDialog = () => {
                   style={{
                     display: 'flex',
                     flexDirection: 'row',
-                    marginTop: 5,
+                    marginTop: '1rem',
+                    marginLeft: '1rem',
                     alignItems: 'center',
                   }}
                 >
@@ -202,7 +261,12 @@ export const AddToPlayerDialog = () => {
                     style={{ width: '50%' }}
                   />
                 </div>
-                <Checkbox label={'Select All'} />
+                <Checkbox
+                  style={{ marginLeft: '1rem' }}
+                  label={'Select All'}
+                  checked={selectAll}
+                  onClick={() => setSelectAll(!selectAll)}
+                />
               </>
             )}
             <div style={{ flexGrow: 1 }}>
@@ -223,11 +287,16 @@ export const AddToPlayerDialog = () => {
                     display: 'flex',
                   }}
                 >
-                  {(items?.type === "tracks" || items?.type === 'episodes') && items?.items.map((itm,i) => {
-                    return (itm.name.includes(filter) ? <div><Checkbox/>{items.type === "tracks" ? '🎵' : '📝' } {itm.name}</div> : <></>)
-                  })}
-                  {items?.type === "episodes" && items?.items.map((epi,i) => {
-                    return (epi.name.includes(filter) ? <div><Checkbox/>📝 {epi.name}</div> : <></>)
+                  {items?.map((itm, i) => {
+                    return !isNil(itm) &&
+                      itm.name.toUpperCase().includes(filter.toUpperCase()) ? (
+                      <div onClick={() => modifyCheck(i)}>
+                        <Checkbox checked={checkedArray[i] || selectAll} />
+                        {itm.type === 'track' ? '🎵' : '📝'} {itm.name}
+                      </div>
+                    ) : (
+                      <></>
+                    );
                   })}
                 </ScrollView>
               </Frame>

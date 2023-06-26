@@ -19,11 +19,11 @@ export type LibraryType = {
 };
 
 export type AddDialogType = {
-  type:
-    | 'topSongs'
-    | 'album'
-    | 'playlist'
-    | 'showEpisodes';
+  type: 'topSongs' | 'album' | 'playlist' | 'showEpisodes';
   label: 'string';
   id: 'string';
+};
+
+export type PlayerType = {
+  playingItems: (SpotifyApi.EpisodeObjectFull | SpotifyApi.TrackObjectFull)[];
 };

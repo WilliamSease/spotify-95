@@ -108,7 +108,6 @@ export default function App() {
           display: 'flex',
           flexDirection: 'column',
         }}
-        resizable
       >
         <SearchDialog
           isOpen={searchOpen}

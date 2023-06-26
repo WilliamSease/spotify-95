@@ -1,31 +1,10 @@
-import { Anchor, Frame, ScrollView } from 'react95';
-import Label from 'renderer/sdk/Label';
-
-type ListType = {
-  artistName: string;
-  albumName: string;
-  tracks: {
-    trackName: string;
-  }[];
-}[];
+import { useSelector } from 'react-redux';
+import { Frame, ScrollView } from 'react95';
+import { selectPlayer, selectSpotify } from 'renderer/state/store';
 
 export const PlayerList = () => {
-  const mockData: ListType = [
-    {
-      artistName: 'Mock Artist 1',
-      albumName: 'Mock Album 1',
-      tracks: Array.from({ length: 5 }, (_, i) => i + 1).map((n) => {
-        return { trackName: `Mock track ${n}` };
-      }),
-    },
-    {
-      artistName: 'Mock Artist 2',
-      albumName: 'Mock Album 2',
-      tracks: Array.from({ length: 50 }, (_, i) => i + 1).map((n) => {
-        return { trackName: `Mock track ${n}` };
-      }),
-    },
-  ];
+  const player = useSelector(selectPlayer);
+  const spotify = useSelector(selectSpotify);
 
   return (
     <Frame variant="field" style={{ flexGrow: 1 }}>
@@ -37,16 +16,19 @@ export const PlayerList = () => {
           display: 'flex',
         }}
       >
-        {mockData.map((data) => (
-          <>
-            <Label>{`${data.artistName} / ${data.albumName}`}</Label>
-            {data.tracks.map((track) => (
-              <div
-                style={{ marginLeft: '1rem' }}
-              >{`🎵 ${track.trackName}`}</div>
-            ))}
-          </>
-        ))}
+        {player.playingItems.map((item) => {
+          if (item.type === 'track') {
+            return (
+              <div style={{ marginLeft: '1rem' }}>{`🎵 ${
+                item.name
+              } ${item.artists.map((a) => a.name)}`}</div>
+            );
+          } else if (item.type === 'episode') {
+            return (
+              <div style={{ marginLeft: '1rem' }}>{`📝 ${item.name}`}</div>
+            );
+          }
+        })}
       </ScrollView>
     </Frame>
   );

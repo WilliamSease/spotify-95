@@ -4,6 +4,7 @@ import { Theme } from 'react95/dist/types';
 import {
   AddDialogType,
   LibraryType,
+  PlayerType,
   SearchResultType,
 } from 'renderer/representations/apiTypes';
 import SpotifyWebApi from 'spotify-web-api-js';
@@ -16,12 +17,16 @@ interface appState {
   searchResult?: SearchResultType | null;
   library?: LibraryType | null;
   addToDialog?: AddDialogType;
+  player: PlayerType;
 }
 
 const initialState: appState = {
   theme: original,
   searchTerm: '',
   spotify: new SpotifyWebApi(),
+  player: {
+    playingItems: [],
+  },
 };
 
 const appSlice = createSlice({
@@ -42,11 +47,15 @@ const appSlice = createSlice({
     },
     setLibrary: (state, action) => {
       state.library = action.payload;
-      console.log('LIBRARY:');
-      console.log(state.library);
     },
     setAddDialog: (state, action) => {
       state.addToDialog = action.payload;
+    },
+    setToPlayer: (state, action) => {
+      state.player.playingItems = action.payload;
+    },
+    appendToPlayer: (state, action) => {
+      state.player.playingItems.push(...action.payload);
     },
   },
 });
@@ -58,6 +67,8 @@ export const {
   setSearchResult,
   setLibrary,
   setAddDialog,
+  setToPlayer,
+  appendToPlayer,
 } = appSlice.actions;
 
 export const selectTheme = createSelector(
@@ -90,9 +101,14 @@ export const selectLibrary = createSelector(
   (library) => library
 );
 
-export const addToDialog = createSelector(
+export const selectAddToDialog = createSelector(
   (state: appState) => state.addToDialog,
   (addToDialog) => addToDialog
+);
+
+export const selectPlayer = createSelector(
+  (state: appState) => state.player,
+  (player) => player
 );
 
 const store = configureStore({

@@ -34,9 +34,9 @@ export const AboutDialog = (props: IProps) => {
           Spotify95 June 2023 [Unreleased]
         </div>
         <Anchor href="https://WilliamASease.github.io" target="_blank">
-          About William Sease
+          William Sease
         </Anchor>
-        <Anchor href="https://react95.io/">About React95</Anchor>
+        <Anchor href="https://react95.io/">React95</Anchor>
         <Anchor href="https://github.com/JMPerez/spotify-web-api-js">
           JS Spotify Web API
         </Anchor>
