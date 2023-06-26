@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import { Frame, ScrollView } from 'react95';
 import { selectPlayer, selectSpotify } from 'renderer/state/store';
 import { formatMs } from 'renderer/functions/formatFunctions';
+import { AlternateGrey } from 'renderer/conveniencesdk/ThemedComponents';
 
 export const PlayerList = () => {
   const player = useSelector(selectPlayer);
@@ -19,11 +20,7 @@ export const PlayerList = () => {
       >
         {player.playingItems.map((itm, i) => {
           return (
-            <div
-              style={{
-                backgroundColor: i % 2 == 0 ? 'white' : 'lightgray',
-              }}
-            >
+            <AlternateGrey index={i}>
               <div
                 style={{
                   display: 'flex',
@@ -43,7 +40,7 @@ export const PlayerList = () => {
                     : itm.show.name}
                 </div>
               </div>
-            </div>
+            </AlternateGrey>
           );
         })}
       </ScrollView>

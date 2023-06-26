@@ -69,7 +69,7 @@ export const SearchDialog = (props: IProps) => {
       );
       setLoading(false);
     },
-    [setSearchResult, dispatch, setLoading, setStoredSearchTerm]
+    [setSearchResult, dispatch, setLoading, setStoredSearchTerm, spotify]
   );
 
   useEffect(() => {
@@ -80,7 +80,7 @@ export const SearchDialog = (props: IProps) => {
         runSearch(loadSearchTerm);
       }
     }
-  }, [isOpen]);
+  }, [isOpen, loadSearchTerm, runSearch]);
 
   const loadMoreButton: BottomButton = useMemo(() => {
     return {
@@ -104,17 +104,21 @@ export const SearchDialog = (props: IProps) => {
       },
       closesWindow: false,
     };
-  }, []);
+  }, [activeTab, dispatch, loading, searchResult, spotify, storedSearchTerm]);
 
   const addToPlayerButtons: BottomButton[] = useMemo(() => {
     const process = (type: 'append' | 'open') => {
       if (activeTab === 2 && selected?.tab === 2) {
         const item = searchResult.tracks[selected.item];
-        dispatch(type === 'append' ? appendToPlayer(item) : setToPlayer(item));
+        dispatch(
+          type === 'append' ? appendToPlayer([item]) : setToPlayer([item])
+        );
       }
       if (activeTab === 4 && selected?.tab === 4) {
         const item = searchResult.episodes[selected.item];
-        dispatch(type === 'append' ? appendToPlayer(item) : setToPlayer(item));
+        dispatch(
+          type === 'append' ? appendToPlayer([item]) : setToPlayer([item])
+        );
       }
     };
     return [
@@ -131,7 +135,14 @@ export const SearchDialog = (props: IProps) => {
         closesWindow: true,
       },
     ];
-  }, []);
+  }, [
+    activeTab,
+    dispatch,
+    searchResult.episodes,
+    searchResult.tracks,
+    selected?.item,
+    selected?.tab,
+  ]);
 
   const openButtons: BottomButton[] = useMemo(
     () => [
@@ -187,7 +198,7 @@ export const SearchDialog = (props: IProps) => {
         closesWindow: false,
       },
     ],
-    [activeTab, selected, searchResult]
+    [activeTab, selected, searchResult, dispatch]
   );
 
   return (

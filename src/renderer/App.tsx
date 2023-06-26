@@ -1,9 +1,6 @@
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import {
   Button,
-  Frame,
-  MenuList,
-  ScrollView,
   Separator,
   styleReset,
   TextInput,
@@ -15,9 +12,9 @@ import ms_sans_serif from 'react95/dist/fonts/ms_sans_serif.woff2';
 import ms_sans_serif_bold from 'react95/dist/fonts/ms_sans_serif_bold.woff2';
 import './App.css';
 import MenuButtonWithDropDown from './sdk/MenuButtonWithDropDown';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TokenInfo } from './representations/apiTypes';
-import { populateLibrary, triggerLogin } from './functions/apiFunctions';
+import { triggerLogin } from './functions/apiFunctions';
 import { isNil } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -230,7 +227,7 @@ export default function App() {
           <div
             style={{ width: `${leftPanelBigger ? 70 : 30}%`, height: '100%' }}
           >
-            <LibraryTree />
+            <LibraryTree token={tokenInfo?.token} />
           </div>
           <div
             style={{

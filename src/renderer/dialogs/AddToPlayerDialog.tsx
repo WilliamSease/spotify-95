@@ -12,6 +12,7 @@ import {
   TextInput,
 } from 'react95';
 import { FlexWindowModal } from 'renderer/conveniencesdk/FlexWindowModal';
+import { AlternateGrey } from 'renderer/conveniencesdk/ThemedComponents';
 import Label from 'renderer/sdk/Label';
 import { WindowShade } from 'renderer/sdk/WindowShade';
 import {
@@ -56,7 +57,7 @@ export const AddToPlayerDialog = () => {
           (itm) =>
             !isNil(itm) && itm.name.toUpperCase().includes(filter.toUpperCase())
         ),
-    [items, checkedArray, selectAll]
+    [items, checkedArray, selectAll, filter]
   );
 
   useEffect(() => {
@@ -299,11 +300,7 @@ export const AddToPlayerDialog = () => {
                   {items?.map((itm, i) => {
                     return !isNil(itm) &&
                       itm.name.toUpperCase().includes(filter.toUpperCase()) ? (
-                      <div
-                        style={{
-                          backgroundColor: i % 2 == 0 ? 'white' : 'lightgray',
-                        }}
-                      >
+                      <AlternateGrey index={i}>
                         <div
                           style={{
                             display: 'flex',
@@ -330,7 +327,7 @@ export const AddToPlayerDialog = () => {
                         {itm.type === 'episode' && itm.description && (
                           <WindowShade>{itm.description}</WindowShade>
                         )}
-                      </div>
+                      </AlternateGrey>
                     ) : (
                       <></>
                     );

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
@@ -23,14 +23,16 @@ import {
 } from 'renderer/state/store';
 import SpotifyWebApi from 'spotify-web-api-js';
 import './LibraryTree.css';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, isNil } from 'lodash';
 
-export const LibraryTree = () => {
+export const LibraryTree = (props: { token?: string }) => {
+  const { token } = props;
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const spotify = useSelector(selectSpotify);
   const dispatch = useDispatch();
   const library = useSelector(selectLibrary);
+  const [initialLoad, setInitialLoad] = useState(true);
   const [albumMap, setAlbumMap] = useState<Map<string, TreeLeaf<string>[]>>(
     new Map<string, TreeLeaf<string>[]>()
   );
@@ -49,6 +51,13 @@ export const LibraryTree = () => {
     },
     [setLoading, dispatch]
   );
+
+  useEffect(() => {
+    if (initialLoad && !isNil(token)) {
+      libraryCallback(spotify);
+      setInitialLoad(false);
+    }
+  }, [token, initialLoad, setInitialLoad]);
 
   const nodes = useMemo(() => {
     switch (activeTab) {
