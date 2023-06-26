@@ -14,7 +14,7 @@ interface appState {
   searchTerm: '';
   spotify: SpotifyWebApi.SpotifyWebApiJs;
   artURL?: string;
-  searchResult?: SearchResultType | null;
+  searchResult: SearchResultType;
   library?: LibraryType | null;
   addToDialog?: AddDialogType;
   player: PlayerType;
@@ -24,6 +24,14 @@ const initialState: appState = {
   theme: original,
   searchTerm: '',
   spotify: new SpotifyWebApi(),
+  searchResult: {
+    artists: [],
+    albums: [],
+    tracks: [],
+    shows: [],
+    episodes: [],
+    playlists: [],
+  },
   player: {
     playingItems: [],
   },

@@ -87,63 +87,74 @@ export async function populateLibrary(spotify: SpotifyWebApi.SpotifyWebApiJs) {
 
 export async function appendToSearchResult(
   spotify: SpotifyWebApi.SpotifyWebApiJs,
+  searchTerm: string,
   current: SearchResultType,
-  type: number
+  type: number | 'ALL'
 ): Promise<SearchResultType> {
   const copy = cloneDeep(current);
-  if (!isNil(copy.music.artists) && type === 0) {
-    const newArtists: SpotifyApi.SearchResponse = (
-      await axios.get(current.music.artists?.next ?? '', {
-        headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+  if (type === 0 || type === 'ALL') {
+    const newArtists = (
+      await spotify.searchArtists(searchTerm, {
+        offset: copy.artists.length,
+        limit: 10,
       })
-    ).data;
-    copy.music.artists?.items.push(...(newArtists.artists?.items ?? []));
-    copy.music.artists.next = newArtists.artists?.next ?? '';
+    ).artists.items;
+    copy.artists.push(...newArtists);
   }
-  if (!isNil(copy.music.albums) && type === 1) {
-    const newArtists: SpotifyApi.SearchResponse = (
-      await axios.get(current.music.albums?.next ?? '', {
-        headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+  if (type === 1 || type === 'ALL') {
+    const newAlbums = (
+      await spotify.searchAlbums(searchTerm, {
+        offset: copy.albums.length,
+        limit: 10,
       })
-    ).data;
-    copy.music.albums?.items.push(...(newArtists.albums?.items ?? []));
-    copy.music.albums.next = newArtists.albums?.next ?? '';
+    ).albums.items;
+    copy.albums.push(
+      ...(await spotify.getAlbums(newAlbums.map((na) => na.id))).albums
+    );
   }
-  if (!isNil(copy.music.tracks) && type === 2) {
-    const newArtists: SpotifyApi.SearchResponse = (
-      await axios.get(current.music.tracks?.next ?? '', {
-        headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+  if (type === 2 || type === 'ALL') {
+    const newTracks = (
+      await spotify.searchTracks(searchTerm, {
+        offset: copy.tracks.length,
+        limit: 10,
       })
-    ).data;
-    copy.music.tracks?.items.push(...(newArtists.tracks?.items ?? []));
-    copy.music.tracks.next = newArtists.tracks?.next ?? '';
+    ).tracks.items;
+    copy.tracks.push(
+      ...(await spotify.getTracks(newTracks.map((na) => na.id))).tracks
+    );
   }
-  if (!isNil(copy.music.playlists) && type === 3) {
-    const newArtists: SpotifyApi.SearchResponse = (
-      await axios.get(current.music.playlists?.next ?? '', {
-        headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+  if (type === 3 || type === 'ALL') {
+    const newShows = (
+      await spotify.searchShows(searchTerm, {
+        offset: copy.shows.length,
+        limit: 10,
       })
-    ).data;
-    copy.music.playlists?.items.push(...(newArtists.playlists?.items ?? []));
-    copy.music.playlists.next = newArtists.playlists?.next ?? '';
+    ).shows.items;
+    copy.shows.push(
+      ...(await spotify.getShows(newShows.map((na) => na.id))).shows
+    );
   }
-  if (!isNil(copy.episodes) && type === 4) {
-    const newArtists: SpotifyApi.SearchResponse = (
-      await axios.get(current.episodes?.episodes.next ?? '', {
-        headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+  if (type === 4 || type === 'ALL') {
+    const newEpisodes = (
+      await spotify.searchEpisodes(searchTerm, {
+        offset: copy.episodes.length,
+        limit: 10,
       })
-    ).data;
-    copy.episodes.episodes.items.push(...(newArtists.episodes?.items ?? []));
-    copy.episodes.episodes.next = newArtists.episodes?.next ?? '';
+    ).episodes.items;
+    copy.episodes.push(
+      ...(await spotify.getEpisodes(newEpisodes.map((na) => na.id))).episodes
+    );
   }
-  if (!isNil(copy.shows) && type === 5) {
-    const newArtists: SpotifyApi.SearchResponse = (
-      await axios.get(current.shows?.shows.next ?? '', {
-        headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+  if (type === 5 || type === 'ALL') {
+    const newPlaylists = (
+      await spotify.searchPlaylists(searchTerm, {
+        offset: copy.playlists.length,
+        limit: 10,
       })
-    ).data;
-    copy.shows.shows.items.push(...(newArtists.shows?.items ?? []));
-    copy.shows.shows.next = newArtists.shows?.next ?? '';
+    ).playlists.items;
+    for (let i = 0; i < newPlaylists.length; i++) {
+      copy.playlists.push(await spotify.getPlaylist(newPlaylists[i].id));
+    }
   }
   return copy;
 }

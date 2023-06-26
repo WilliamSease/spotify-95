@@ -13,6 +13,7 @@ import {
 } from 'react95';
 import { FlexWindowModal } from 'renderer/conveniencesdk/FlexWindowModal';
 import Label from 'renderer/sdk/Label';
+import { WindowShade } from 'renderer/sdk/WindowShade';
 import {
   appendToPlayer,
   selectAddToDialog,
@@ -30,6 +31,7 @@ export const AddToPlayerDialog = () => {
   const [range, setRange] = useState<[number, number]>([0, 0]);
   const [filter, setFilter] = useState('');
   const [selectAll, setSelectAll] = useState<boolean>(false);
+
   const [items, setItems] =
     useState<(SpotifyApi.EpisodeObjectFull | SpotifyApi.TrackObjectFull)[]>();
   const [checkedArray, setCheckedArray] = useState<boolean[]>([]);
@@ -47,7 +49,13 @@ export const AddToPlayerDialog = () => {
   );
 
   const selectedItems = useMemo(
-    () => items?.filter((_itm, i) => checkedArray[i] || selectAll),
+    () =>
+      items
+        ?.filter((_itm, i) => checkedArray[i] || selectAll)
+        .filter(
+          (itm) =>
+            !isNil(itm) && itm.name.toUpperCase().includes(filter.toUpperCase())
+        ),
     [items, checkedArray, selectAll]
   );
 
@@ -109,6 +117,7 @@ export const AddToPlayerDialog = () => {
       isOpen={!isNil(toAdd)}
       onClose={() => dispatch(setAddDialog(undefined))}
       provideCloseButton
+      endLabel={`${selectedItems?.length ?? 0} item(s) selected`}
       bottomButtons={[
         {
           text: 'Append to current player',
@@ -290,9 +299,37 @@ export const AddToPlayerDialog = () => {
                   {items?.map((itm, i) => {
                     return !isNil(itm) &&
                       itm.name.toUpperCase().includes(filter.toUpperCase()) ? (
-                      <div onClick={() => modifyCheck(i)}>
-                        <Checkbox checked={checkedArray[i] || selectAll} />
-                        {itm.type === 'track' ? '🎵' : '📝'} {itm.name}
+                      <div
+                        style={{
+                          backgroundColor: i % 2 == 0 ? 'white' : 'lightgray',
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                          }}
+                          onClick={() => modifyCheck(i)}
+                        >
+                          <div style={{ width: '10%' }}>
+                            <Checkbox
+                              checked={checkedArray[i] || selectAll}
+                              onClick={() => modifyCheck(i)}
+                            />
+                            {itm.type === 'track' ? '🎵' : '📝'}
+                          </div>
+                          <div style={{ width: '45%' }}>{itm.name}</div>
+                          <div style={{ width: '45%' }}>
+                            {itm.type === 'track'
+                              ? itm.artists.map((a) => a.name).join(', ')
+                              : !isNil(itm.show)
+                              ? itm.show.name
+                              : ''}
+                          </div>
+                        </div>
+                        {itm.type === 'episode' && itm.description && (
+                          <WindowShade>{itm.description}</WindowShade>
+                        )}
                       </div>
                     ) : (
                       <></>

@@ -1,8 +1,9 @@
 import { Button, Toolbar, Window, WindowHeader } from 'react95';
 import { ReactNode } from 'react';
 import { Modal } from 'renderer/sdk/Modal';
+import Label from 'renderer/sdk/Label';
 
-type BottomButton = {
+export type BottomButton = {
   text: string;
   onPress: () => void;
   closesWindow?: boolean;
@@ -17,6 +18,7 @@ type IProps = {
   onClose: () => void;
   provideCloseButton?: boolean;
   children?: ReactNode;
+  endLabel?: string;
   bottomButtons?: BottomButton[];
 };
 
@@ -29,6 +31,7 @@ export const FlexWindowModal = (props: IProps) => {
     onClose,
     provideCloseButton,
     children,
+    endLabel,
     bottomButtons,
   } = props;
   return (
@@ -58,6 +61,7 @@ export const FlexWindowModal = (props: IProps) => {
           <Toolbar
             style={{ flexGrow: 1, alignItems: 'end', justifyContent: 'end' }}
           >
+            {endLabel && <Label>{endLabel}</Label>}
             {bottomButtons?.map((bb, i) => {
               return (
                 <Button

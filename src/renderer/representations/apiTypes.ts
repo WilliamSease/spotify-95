@@ -6,9 +6,12 @@ export type TokenInfo = {
 };
 
 export type SearchResultType = {
-  music: SpotifyApi.SearchResponse;
-  shows: SpotifyApi.ShowSearchResponse;
-  episodes: SpotifyApi.EpisodeSearchResponse;
+  artists: SpotifyApi.ArtistObjectFull[];
+  albums: SpotifyApi.AlbumObjectFull[];
+  tracks: SpotifyApi.TrackObjectFull[];
+  shows: SpotifyApi.ShowObjectFull[];
+  episodes: SpotifyApi.EpisodeObjectFull[];
+  playlists: SpotifyApi.PlaylistObjectFull[];
 };
 
 export type LibraryType = {

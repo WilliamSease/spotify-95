@@ -1,11 +1,17 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { useCallback, useEffect, useState } from 'react';
-import { FlexWindowModal } from 'renderer/conveniencesdk/FlexWindowModal';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  BottomButton,
+  FlexWindowModal,
+} from 'renderer/conveniencesdk/FlexWindowModal';
+import {
+  appendToPlayer,
   selectSearchResult,
   selectSearchTerm,
   selectSpotify,
+  setAddDialog,
   setSearchResult,
+  setToPlayer,
 } from 'renderer/state/store';
 import {
   Button,
@@ -21,7 +27,7 @@ import { messages } from 'renderer/representations/messages';
 import { List } from 'renderer/conveniencesdk/List';
 import { appendToSearchResult } from 'renderer/functions/apiFunctions';
 import { isEmpty, isNil } from 'lodash';
-import { formatAlbumToIncludeArtists } from 'renderer/functions/formatFunctions';
+import { current } from '@reduxjs/toolkit';
 
 type IProps = {
   isOpen: boolean;
@@ -35,33 +41,36 @@ export const SearchDialog = (props: IProps) => {
   const spotify = useSelector(selectSpotify);
   const searchResult = useSelector(selectSearchResult);
   const [searchTerm, setSearchTerm] = useState('');
+  const [storedSearchTerm, setStoredSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [selected, setSelected] = useState<{ tab: Number; item: number }>();
 
-  const runSearch = useCallback((search: string) => {
-    setLoading(true);
-    Promise.all([
-      spotify.search(search, ['artist', 'album', 'track', 'playlist'], {
-        limit: 50,
-      }),
-      spotify.searchShows(search, { limit: 50 }),
-      spotify.searchEpisodes(search, { limit: 50 }),
-    ])
-      .then((result) =>
-        dispatch(
-          setSearchResult({
-            music: result[0],
-            shows: result[1],
-            episodes: result[2],
-          })
+  const runSearch = useCallback(
+    async (search: string) => {
+      setLoading(true);
+      setStoredSearchTerm(search);
+      dispatch(
+        setSearchResult(
+          await appendToSearchResult(
+            spotify,
+            search,
+            {
+              artists: [],
+              albums: [],
+              tracks: [],
+              shows: [],
+              episodes: [],
+              playlists: [],
+            },
+            'ALL'
+          )
         )
-      )
-      .catch(() => {
-        dispatch(setSearchResult(null));
-      })
-      .finally(() => setLoading(false));
-  }, []);
+      );
+      setLoading(false);
+    },
+    [setSearchResult, dispatch, setLoading, setStoredSearchTerm]
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -73,6 +82,114 @@ export const SearchDialog = (props: IProps) => {
     }
   }, [isOpen]);
 
+  const loadMoreButton: BottomButton = useMemo(() => {
+    return {
+      text: 'Load More',
+      disabled: loading,
+      onPress: async () => {
+        if (!isNil(searchResult)) {
+          setLoading(true);
+          dispatch(
+            setSearchResult(
+              await appendToSearchResult(
+                spotify,
+                storedSearchTerm,
+                searchResult,
+                activeTab
+              )
+            )
+          );
+          setLoading(false);
+        }
+      },
+      closesWindow: false,
+    };
+  }, []);
+
+  const addToPlayerButtons: BottomButton[] = useMemo(() => {
+    const process = (type: 'append' | 'open') => {
+      if (activeTab === 2 && selected?.tab === 2) {
+        const item = searchResult.tracks[selected.item];
+        dispatch(type === 'append' ? appendToPlayer(item) : setToPlayer(item));
+      }
+      if (activeTab === 4 && selected?.tab === 4) {
+        const item = searchResult.episodes[selected.item];
+        dispatch(type === 'append' ? appendToPlayer(item) : setToPlayer(item));
+      }
+    };
+    return [
+      {
+        text: 'Append to current player',
+        disabled: false,
+        onPress: async () => process('append'),
+        closesWindow: true,
+      },
+      {
+        text: 'Select only these item(s)',
+        disabled: false,
+        onPress: async () => process('open'),
+        closesWindow: true,
+      },
+    ];
+  }, []);
+
+  const openButtons: BottomButton[] = useMemo(
+    () => [
+      {
+        text: 'Open',
+        disabled: false,
+        onPress: async () => {
+          if (activeTab === 0) {
+          } else if (activeTab === 1) {
+            const item =
+              selected?.tab === 1
+                ? searchResult.albums[selected.item]
+                : undefined;
+            if (!isNil(item)) {
+              dispatch(
+                setAddDialog({
+                  type: 'album',
+                  id: item.id,
+                  label: item.name,
+                })
+              );
+            }
+          } else if (activeTab === 3) {
+            const item =
+              selected?.tab === 3
+                ? searchResult.shows[selected.item]
+                : undefined;
+            if (!isNil(item)) {
+              dispatch(
+                setAddDialog({
+                  type: 'showEpisodes',
+                  id: item.id,
+                  label: item.name,
+                })
+              );
+            }
+          } else if (activeTab === 5) {
+            const item =
+              selected?.tab === 5
+                ? searchResult.playlists[selected.item]
+                : undefined;
+            if (!isNil(item)) {
+              dispatch(
+                setAddDialog({
+                  type: 'playlist',
+                  id: item.id,
+                  label: item.name,
+                })
+              );
+            }
+          }
+        },
+        closesWindow: false,
+      },
+    ],
+    [activeTab, selected, searchResult]
+  );
+
   return (
     <FlexWindowModal
       title="Search"
@@ -80,27 +197,11 @@ export const SearchDialog = (props: IProps) => {
       onClose={closeThisWindow}
       height={700}
       width={600}
-      bottomButtons={[
-        {
-          text: 'Load More',
-          disabled: loading,
-          onPress: () => {
-            if (!isNil(searchResult)) {
-              setLoading(true);
-              appendToSearchResult(spotify, searchResult, activeTab)
-                .then((result) => dispatch(setSearchResult(result)))
-                .catch(() => dispatch(setSearchResult(null)))
-                .finally(() => setLoading(false));
-            }
-          },
-        },
-        {
-          text: 'Append to current player',
-          onPress: () => {},
-          closesWindow: false,
-        },
-        { text: 'Select only this', onPress: () => {}, closesWindow: true },
-      ]}
+      bottomButtons={[loadMoreButton].concat(
+        ...(activeTab === 2 || activeTab === 4
+          ? addToPlayerButtons
+          : openButtons)
+      )}
       provideCloseButton
     >
       <Toolbar style={{ marginTop: '1rem' }}>
@@ -158,7 +259,7 @@ export const SearchDialog = (props: IProps) => {
           )}
           {!loading && activeTab === 0 && (
             <List
-              items={searchResult?.music.artists?.items.map((v) => (
+              items={searchResult?.artists.map((v) => (
                 <span>👨 {v.name}</span>
               ))}
               selected={selected?.tab === 0 ? selected.item : undefined}
@@ -167,8 +268,8 @@ export const SearchDialog = (props: IProps) => {
           )}
           {!loading && activeTab === 1 && (
             <List
-              items={searchResult?.music.albums?.items.map((v) => (
-                <span>💿 {formatAlbumToIncludeArtists(v)}</span>
+              items={searchResult.albums.map((v) => (
+                <span>💿 {v.name}</span>
               ))}
               selected={selected?.tab === 1 ? selected.item : undefined}
               onSelect={(i) => setSelected({ tab: 1, item: i })}
@@ -176,7 +277,7 @@ export const SearchDialog = (props: IProps) => {
           )}
           {!loading && activeTab === 2 && (
             <List
-              items={searchResult?.music.tracks?.items.map((v) => (
+              items={searchResult.tracks.map((v) => (
                 <span>🎵 {v.name}</span>
               ))}
               selected={selected?.tab === 2 ? selected.item : undefined}
@@ -185,7 +286,7 @@ export const SearchDialog = (props: IProps) => {
           )}
           {!loading && activeTab === 3 && (
             <List
-              items={searchResult?.shows.shows?.items.map((v) => (
+              items={searchResult.shows.map((v) => (
                 <span>📻 {v.name}</span>
               ))}
               selected={selected?.tab === 3 ? selected.item : undefined}
@@ -194,7 +295,7 @@ export const SearchDialog = (props: IProps) => {
           )}
           {!loading && activeTab === 4 && (
             <List
-              items={searchResult?.episodes.episodes?.items.map((v) => (
+              items={searchResult.episodes.map((v) => (
                 <span>📺 {v.name}</span>
               ))}
               selected={selected?.tab === 4 ? selected.item : undefined}
@@ -203,7 +304,7 @@ export const SearchDialog = (props: IProps) => {
           )}
           {!loading && activeTab === 5 && (
             <List
-              items={searchResult?.music.playlists?.items.map((v) => (
+              items={searchResult.playlists.map((v) => (
                 <span>📝 {v.name}</span>
               ))}
               selected={selected?.tab === 5 ? selected.item : undefined}

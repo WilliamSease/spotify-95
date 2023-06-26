@@ -1,5 +1,13 @@
-export const formatAlbumToIncludeArtists = (
-  album: SpotifyApi.AlbumObjectSimplified
-) => {
-  return `${album.name}`;
-};
+export function formatMs(totalMilliseconds: number): string {
+  const totalSeconds = Math.floor(totalMilliseconds / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  if (minutes < 1) {
+    return `:${seconds.toString().padStart(2, '0')}`;
+  } else if (minutes < 10) {
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  } else {
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
