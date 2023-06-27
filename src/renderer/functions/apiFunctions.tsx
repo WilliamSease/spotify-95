@@ -1,7 +1,7 @@
 import SpotifyWebApi from 'spotify-web-api-js';
 import { LibraryType, SearchResultType } from '../representations/apiTypes';
 import axios from 'axios';
-import { cloneDeep, isNil } from 'lodash';
+import { cloneDeep } from 'lodash';
 
 export const triggerLogin = () => {
   const clientId = '2d8d7d7d0f6241fcb7cf54fc5b2e24a8';

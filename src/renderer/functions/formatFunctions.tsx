@@ -11,3 +11,7 @@ export function formatMs(totalMilliseconds: number): string {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }
 }
+
+export function formatArtists(artists: SpotifyApi.ArtistObjectSimplified[]) {
+  return artists.map((a) => a.name).join(', ');
+}

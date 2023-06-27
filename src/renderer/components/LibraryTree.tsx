@@ -125,10 +125,7 @@ export const LibraryTree = (props: { token?: string }) => {
   }, [activeTab, library, albumMap, playlistMap]);
 
   return (
-    <div
-      className="fullsize"
-      style={{ display: 'flex', flexDirection: 'column' }}
-    >
+    <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <Tabs
           style={{ marginTop: 6, width: '80%' }}

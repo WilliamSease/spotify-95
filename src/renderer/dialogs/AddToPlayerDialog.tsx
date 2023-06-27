@@ -31,7 +31,7 @@ export const AddToPlayerDialog = () => {
   const [loaded, setLoaded] = useState<number>(0);
   const [range, setRange] = useState<[number, number]>([0, 0]);
   const [filter, setFilter] = useState('');
-  const [selectAll, setSelectAll] = useState<boolean>(false);
+  const [selectAll, setSelectAll] = useState<boolean>(true);
 
   const [items, setItems] =
     useState<(SpotifyApi.EpisodeObjectFull | SpotifyApi.TrackObjectFull)[]>();
@@ -316,7 +316,7 @@ export const AddToPlayerDialog = () => {
                             {itm.type === 'track' ? '🎵' : '📝'}
                           </div>
                           <div style={{ width: '45%' }}>{itm.name}</div>
-                          <div style={{ width: '45%' }}>
+                          <div style={{ width: '40%' }}>
                             {itm.type === 'track'
                               ? itm.artists.map((a) => a.name).join(', ')
                               : !isNil(itm.show)

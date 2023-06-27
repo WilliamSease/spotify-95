@@ -7,7 +7,9 @@ export type Channels =
   | 'quitButton'
   | 'minimizeButton'
   | 'logintospotify'
-  | 'gotNewToken';
+  | 'logoutofspotify'
+  | 'gotNewToken'
+  | 'possiblyRevoked';
 
 const electronHandler = {
   ipcRenderer: {

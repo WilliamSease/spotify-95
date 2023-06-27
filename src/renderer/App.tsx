@@ -6,23 +6,29 @@ import {
   TextInput,
   Toolbar,
   Window,
+  WindowContent,
   WindowHeader,
 } from 'react95';
 import ms_sans_serif from 'react95/dist/fonts/ms_sans_serif.woff2';
 import ms_sans_serif_bold from 'react95/dist/fonts/ms_sans_serif_bold.woff2';
 import './App.css';
 import MenuButtonWithDropDown from './sdk/MenuButtonWithDropDown';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { TokenInfo } from './representations/apiTypes';
 import { triggerLogin } from './functions/apiFunctions';
 import { isNil } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  selectNowPlaying,
   selectSearchTerm,
+  selectShowAlbumArt,
   selectSpotify,
   selectTheme,
   setArtURL,
   setSearchTerm,
+  setToPlayer,
+  togglePlayerView,
+  toggleShowAlbumArt,
 } from './state/store';
 import { SettingsDialog } from './dialogs/SettingsDialog';
 import { SearchDialog } from './dialogs/SearchDialog';
@@ -34,6 +40,8 @@ import { PlayerList } from './components/PlayerList';
 import { AboutDialog } from './dialogs/AboutDialog';
 import { DeviceDialog } from './dialogs/DeviceDialog';
 import { AddToPlayerDialog } from './dialogs/AddToPlayerDialog';
+import { FlexColumn } from './sdk/FlexElements';
+import { AuthDialog } from './dialogs/AuthDialog';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -63,6 +71,21 @@ export default function App() {
   const dispatch = useDispatch();
 
   const spotify = useSelector(selectSpotify);
+  const nowPlaying = useSelector(selectNowPlaying);
+  const nowPlayingImage = useMemo(
+    () =>
+      isNil(nowPlaying)
+        ? undefined
+        : nowPlaying.current.type === 'track'
+        ? nowPlaying.current.album.images[0]
+        : nowPlaying.current.images[0],
+    [nowPlaying]
+  );
+  const currentAlbumArtText =
+    nowPlaying?.current.type === 'track'
+      ? nowPlaying.current.album.name
+      : nowPlaying?.current.name;
+  const showAlbumArt = useSelector(selectShowAlbumArt);
   const [tokenInfo, setTokenInfo] = useState<TokenInfo>();
 
   const [leftPanelBigger, setLeftPanelBigger] = useState(false);
@@ -87,6 +110,11 @@ export default function App() {
     spotify.setAccessToken(token);
   });
 
+  window.electron.ipcRenderer.on('possiblyRevoked', (args) => {
+    spotify.setAccessToken('');
+    setTokenInfo(undefined);
+  });
+
   const [tokenButtonHover, setTokenButtonHover] = useState(false);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -94,6 +122,7 @@ export default function App() {
   const [apiTesterOpen, setApiTesterOpen] = useState(false);
   const [aboutDialogOpen, setAboutDialogOpen] = useState(false);
   const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
 
   return (
     <ThemeProvider theme={useSelector(selectTheme)}>
@@ -128,6 +157,12 @@ export default function App() {
           closeThisWindow={() => setDeviceDialogOpen(false)}
         />
         <AddToPlayerDialog />
+        <AuthDialog
+          isOpen={authDialogOpen}
+          closeThisWindow={() => setAuthDialogOpen(false)}
+          tokenInfo={tokenInfo}
+          triggerLogin={triggerLogin}
+        />
         <WindowHeader
           title="Spotify95"
           className="window-title dragApplication"
@@ -198,7 +233,7 @@ export default function App() {
           <Button
             onMouseOver={() => setTokenButtonHover(true)}
             onMouseLeave={() => setTokenButtonHover(false)}
-            onClick={triggerLogin}
+            onClick={() => setAuthDialogOpen(true)}
             style={{ marginLeft: 4, width: 100 }}
           >
             <div>
@@ -224,11 +259,47 @@ export default function App() {
             marginBottom: 40,
           }}
         >
-          <div
+          <FlexColumn
             style={{ width: `${leftPanelBigger ? 70 : 30}%`, height: '100%' }}
           >
             <LibraryTree token={tokenInfo?.token} />
-          </div>
+            {nowPlayingImage && showAlbumArt && !leftPanelBigger && (
+              <Window
+                title={'Artwork'}
+                style={{
+                  height: 410,
+                  width: 375,
+                }}
+              >
+                <WindowHeader
+                  title="AlbumArt"
+                  className="window-title dragApplication"
+                >
+                  <div
+                    style={{
+                      maxWidth: '300px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {currentAlbumArtText}
+                  </div>
+
+                  <Button
+                    className="dialogButton clickableUnderDraggable"
+                    onClick={() => dispatch(toggleShowAlbumArt())}
+                  >
+                    ✕
+                  </Button>
+                </WindowHeader>
+                <img
+                  style={{ height: 365, width: 365 }}
+                  src={nowPlayingImage.url}
+                />
+              </Window>
+            )}
+          </FlexColumn>
           <div
             style={{
               width: `${leftPanelBigger ? 30 : 70}%`,
@@ -248,17 +319,23 @@ export default function App() {
                 👉
               </Button>
               <span style={{ flexGrow: 1 }}></span>
-              <Button onClick={() => {}}>Clear</Button>
               <Button
-                onClick={() => {
-                  dispatch(
-                    setArtURL(
-                      'https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228'
-                    )
-                  );
-                }}
+                style={{ marginLeft: '.5rem' }}
+                onClick={() => dispatch(togglePlayerView())}
               >
-                Show art
+                Player View
+              </Button>
+              <Button
+                style={{ marginLeft: '.5rem' }}
+                onClick={() => dispatch(toggleShowAlbumArt())}
+              >
+                Toggle Album Art
+              </Button>
+              <Button
+                style={{ marginLeft: '.5rem' }}
+                onClick={() => dispatch(setToPlayer([]))}
+              >
+                Clear
               </Button>
               <VolumeSlider />
             </Toolbar>

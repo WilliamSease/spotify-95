@@ -1,9 +1,17 @@
 import styled, { css } from 'styled-components';
 
-export const AlternateGrey = styled.div<{ index: number }>`
-  ${({ index, theme }) =>
+export const AlternateGrey = styled.div<{
+  index: number;
+  isSelected?: boolean;
+}>`
+  ${({ index, isSelected, theme }) =>
     css`
-      background: ${index % 2 === 0 ? theme.borderLightest : 'unset'};
+      background: ${isSelected
+        ? theme.borderDark
+        : index % 2 === 0
+        ? theme.borderLight
+        : 'unset'};
+      color: ${isSelected ? theme.materialTextInvert : theme.materialText};
       margin-top: 0.2rem;
     `}
 `;

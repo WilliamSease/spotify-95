@@ -150,6 +150,23 @@ ipcMain.on('logintospotify', (e, args: string[]) => {
   authWindow.loadURL(args[0]);
 });
 
+ipcMain.on('logoutofspotify', (e) => {
+  authWindow = new BrowserWindow({
+    // Configuration options for the main window
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true, // Enable Node.js integration in the new window
+    },
+  });
+
+  // Load the HTML file of the main window
+  authWindow.loadURL('https://www.spotify.com/us/account/apps/');
+  authWindow.on('close', () => {
+    mainWindow?.webContents.send('possiblyRevoked');
+  });
+});
+
 app
   .whenReady()
   .then(() => {

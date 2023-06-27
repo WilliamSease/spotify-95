@@ -4,7 +4,7 @@ import { Theme } from 'react95/dist/types';
 import {
   AddDialogType,
   LibraryType,
-  PlayerType,
+  Playable,
   SearchResultType,
 } from 'renderer/representations/apiTypes';
 import SpotifyWebApi from 'spotify-web-api-js';
@@ -17,7 +17,10 @@ interface appState {
   searchResult: SearchResultType;
   library?: LibraryType | null;
   addToDialog?: AddDialogType;
-  player: PlayerType;
+  tracksInPlayer: Playable[];
+  nowPlaying?: { index: number; current: Playable };
+  playerView: 'individual' | 'group';
+  showAlbumArt: boolean;
 }
 
 const initialState: appState = {
@@ -32,9 +35,9 @@ const initialState: appState = {
     episodes: [],
     playlists: [],
   },
-  player: {
-    playingItems: [],
-  },
+  tracksInPlayer: [],
+  playerView: 'individual',
+  showAlbumArt: true,
 };
 
 const appSlice = createSlice({
@@ -60,10 +63,20 @@ const appSlice = createSlice({
       state.addToDialog = action.payload;
     },
     setToPlayer: (state, action) => {
-      state.player.playingItems = action.payload;
+      state.tracksInPlayer = action.payload;
     },
     appendToPlayer: (state, action) => {
-      state.player.playingItems.push(...action.payload);
+      state.tracksInPlayer.push(...action.payload);
+    },
+    togglePlayerView: (state) => {
+      state.playerView =
+        state.playerView === 'individual' ? 'group' : 'individual';
+    },
+    setNowPlaying: (state, action) => {
+      state.nowPlaying = action.payload;
+    },
+    toggleShowAlbumArt: (state) => {
+      state.showAlbumArt = !state.showAlbumArt;
     },
   },
 });
@@ -77,6 +90,9 @@ export const {
   setAddDialog,
   setToPlayer,
   appendToPlayer,
+  togglePlayerView,
+  setNowPlaying,
+  toggleShowAlbumArt,
 } = appSlice.actions;
 
 export const selectTheme = createSelector(
@@ -114,9 +130,24 @@ export const selectAddToDialog = createSelector(
   (addToDialog) => addToDialog
 );
 
-export const selectPlayer = createSelector(
-  (state: appState) => state.player,
-  (player) => player
+export const selectTracksInPlayer = createSelector(
+  (state: appState) => state.tracksInPlayer,
+  (tracksInPlayer) => tracksInPlayer
+);
+
+export const selectPlayerView = createSelector(
+  (state: appState) => state.playerView,
+  (playerView) => playerView
+);
+
+export const selectNowPlaying = createSelector(
+  (state: appState) => state.nowPlaying,
+  (nowPlaying) => nowPlaying
+);
+
+export const selectShowAlbumArt = createSelector(
+  (state: appState) => state.showAlbumArt,
+  (showAlbumArt) => showAlbumArt
 );
 
 const store = configureStore({

@@ -14,6 +14,10 @@ export type SearchResultType = {
   playlists: SpotifyApi.PlaylistObjectFull[];
 };
 
+export type Playable =
+  | SpotifyApi.TrackObjectFull
+  | SpotifyApi.EpisodeObjectFull;
+
 export type LibraryType = {
   artists: SpotifyApi.ArtistObjectFull[];
   albums: SpotifyApi.AlbumObjectFull[];
@@ -25,8 +29,4 @@ export type AddDialogType = {
   type: 'topSongs' | 'album' | 'playlist' | 'showEpisodes';
   label: 'string';
   id: 'string';
-};
-
-export type PlayerType = {
-  playingItems: (SpotifyApi.EpisodeObjectFull | SpotifyApi.TrackObjectFull)[];
 };
