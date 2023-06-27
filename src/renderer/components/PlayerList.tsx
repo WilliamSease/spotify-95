@@ -109,7 +109,9 @@ export const PlayerList = () => {
           </>
         )}
       </Toolbar>
-      <Toolbar style={{ marginLeft: '1rem' }}>Hello!</Toolbar>
+      <Toolbar style={{ marginLeft: '1rem' }}>
+        There will be player buttons here soon.
+      </Toolbar>
     </FlexColumn>
   );
 };
