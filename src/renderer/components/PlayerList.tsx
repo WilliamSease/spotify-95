@@ -96,33 +96,37 @@ export function PlayerList() {
                 )}
                 {playerView === 'group' && (
                   <>
-                    {
-                      (i === 0 || JSON.stringify(
+                    {(i === 0 ||
+                      JSON.stringify(
                         compileTrackInfo(tracksInPlayer[i - 1])
                       ) !== JSON.stringify(compileTrackInfo(itm))) && (
-                        <div>
-                          <Label>{`${compiledTrackInfo[0]} / ${compiledTrackInfo[1]}`}</Label>
-                        </div>
-                      )}
+                      <div>
+                        <Label>{`${compiledTrackInfo[0]} ${
+                          itm.type === 'track'
+                            ? `/ ${compiledTrackInfo[1]}`
+                            : ``
+                        }`}</Label>
+                      </div>
+                    )}
                     <AlternateGrey
-                    index={1}
-                    isSelected={i === highlighted}
+                      index={1}
+                      isSelected={i === highlighted}
                       style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        marginLeft:"2rem"
+                        marginLeft: '2rem',
                       }}
-                    onClick={() => {
-                      if (i === highlighted) {
-                        dispatch(
-                          setNowPlaying({
-                            index: i,
-                            current: tracksInPlayer[i],
-                          })
-                        );
-                      }
-                      setHighlighted(i);
-                    }}
+                      onClick={() => {
+                        if (i === highlighted) {
+                          dispatch(
+                            setNowPlaying({
+                              index: i,
+                              current: tracksInPlayer[i],
+                            })
+                          );
+                        }
+                        setHighlighted(i);
+                      }}
                     >
                       <div style={{ width: '3rem' }}>
                         {formatMs(itm.duration_ms)}
