@@ -50,7 +50,7 @@ export const FlexWindowModal = (props: IProps) => {
             <span style={{ flexGrow: 1 }}>{title}</span>
             {provideCloseButton && (
               <Button
-                className="dialogButton clickableUnderDraggable"
+                className="toolbarButton clickableUnderDraggable"
                 onClick={onClose}
               >
                 ✕

@@ -74,11 +74,6 @@ export const LibraryTree = (props: { token?: string }) => {
                 icon: <>🎵</>,
               },
               {
-                id: `${a.id}_allSongs_${a.name}`,
-                label: 'All Songs',
-                icon: <>🎵</>,
-              },
-              {
                 id: `${a.id}_artistAlbums_${a.name}`,
                 label: 'Albums',
                 icon: <>💿</>,
@@ -178,7 +173,6 @@ export const LibraryTree = (props: { token?: string }) => {
                         const [id, type, label] = toSplit;
                         if (
                           type === 'topSongs' ||
-                          type === 'allSongs' ||
                           type === 'album' ||
                           type === 'playlist'
                         )

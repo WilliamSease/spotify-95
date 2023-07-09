@@ -177,7 +177,7 @@ export default function App() {
             _
           </Button>
           <Button
-            className="clickableUnderDraggable dialogButton"
+            className="clickableUnderDraggable toolbarButton"
             onClick={() => {
               window.electron.ipcRenderer.sendMessage('quitButton');
             }}
@@ -287,7 +287,7 @@ export default function App() {
                   </div>
 
                   <Button
-                    className="dialogButton clickableUnderDraggable"
+                    className="toolbarButton clickableUnderDraggable"
                     onClick={() => dispatch(toggleShowAlbumArt())}
                   >
                     ✕
