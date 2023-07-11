@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Frame, ScrollView, Toolbar } from 'react95';
 import {
+  selectCurrentDevice,
   selectNowPlaying,
   selectPlayerView,
   selectSpotify,
@@ -10,7 +11,7 @@ import {
 import { formatArtists, formatMs } from 'renderer/functions/formatFunctions';
 import { AlternateGrey } from 'renderer/conveniencesdk/ThemedComponents';
 import { FlexColumn } from 'renderer/sdk/FlexElements';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Label from 'renderer/sdk/Label';
 import { isNil } from 'lodash';
 import { Playable } from 'renderer/representations/apiTypes';
@@ -22,6 +23,11 @@ export function PlayerList() {
   const spotify = useSelector(selectSpotify);
   const playerView = useSelector(selectPlayerView);
   const nowPlaying = useSelector(selectNowPlaying);
+  const currentDevice = useSelector(selectCurrentDevice);
+
+  useEffect(() => {
+    spotify.play({ uris: [nowPlaying?.current.uri ?? ''] });
+  }, [nowPlaying]);
 
   const [highlighted, setHighlighted] = useState<number>(0);
   const compileTrackInfo = useCallback(

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { Checkbox, Toolbar } from 'react95';
 import { FlexWindowModal } from 'renderer/conveniencesdk/FlexWindowModal';
 import Label from 'renderer/sdk/Label';
-import { selectSpotify } from 'renderer/state/store';
+import { selectSpotify, setCurrentDevice } from 'renderer/state/store';
 
 type IProps = {
   isOpen: boolean;
@@ -74,6 +74,7 @@ export const DeviceDialog = (props: IProps) => {
               spotify.transferMyPlayback([
                 devices?.devices[selectedIndex].id ?? '',
               ]);
+              setCurrentDevice(devices?.devices[selectedIndex]);
             }
           },
           closesWindow: true,

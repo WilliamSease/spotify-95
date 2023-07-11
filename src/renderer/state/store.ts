@@ -18,6 +18,7 @@ interface appState {
   library?: LibraryType | null;
   addToDialog?: AddDialogType;
   tracksInPlayer: Playable[];
+  currentDevice?: string;
   nowPlaying?: { index: number; current: Playable };
   playerView: 'individual' | 'group';
   showAlbumArt: boolean;
@@ -72,6 +73,9 @@ const appSlice = createSlice({
       state.playerView =
         state.playerView === 'individual' ? 'group' : 'individual';
     },
+    setCurrentDevice: (state, action) => {
+      state.currentDevice = action.payload;
+    },
     setNowPlaying: (state, action) => {
       state.nowPlaying = action.payload;
     },
@@ -91,6 +95,7 @@ export const {
   setToPlayer,
   appendToPlayer,
   togglePlayerView,
+  setCurrentDevice,
   setNowPlaying,
   toggleShowAlbumArt,
 } = appSlice.actions;
@@ -148,6 +153,11 @@ export const selectNowPlaying = createSelector(
 export const selectShowAlbumArt = createSelector(
   (state: appState) => state.showAlbumArt,
   (showAlbumArt) => showAlbumArt
+);
+
+export const selectCurrentDevice = createSelector(
+  (state: appState) => state.currentDevice,
+  (currentDevice) => currentDevice
 );
 
 const store = configureStore({
