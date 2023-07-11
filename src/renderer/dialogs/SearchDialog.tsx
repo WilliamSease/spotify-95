@@ -123,13 +123,13 @@ export const SearchDialog = (props: IProps) => {
     };
     return [
       {
-        text: 'Append to current player',
+        text: 'Add to Queue',
         disabled: false,
         onPress: async () => process('append'),
         closesWindow: true,
       },
       {
-        text: 'Select only these item(s)',
+        text: 'Replace Queue',
         disabled: false,
         onPress: async () => process('open'),
         closesWindow: true,

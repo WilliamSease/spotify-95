@@ -30,7 +30,7 @@ export const AboutDialog = (props: IProps) => {
       >
         <img style={{ borderRadius: 300 }} src={logo} />
         <div style={{ marginTop: '.25rem' }}>
-          Spotify95 June 2023 [Unreleased]
+          Spotify95 July 2023 [Unreleased]
         </div>
         <Anchor href="https://WilliamASease.github.io" target="_blank">
           William Sease

@@ -224,7 +224,9 @@ export const AddToPlayerDialog = () => {
                                 offset: idx,
                                 limit: 50,
                               })
-                            ).items.map((i) => i.track.id);
+                            ).items
+                              .filter((i) => i.track)
+                              .map((i) => i.track.id);
                             out.push(...(await spotify.getTracks(ids)).tracks);
                           }
                           idx += 50;
