@@ -26,7 +26,9 @@ export function PlayerList() {
   const currentDevice = useSelector(selectCurrentDevice);
 
   useEffect(() => {
-    spotify.play({ uris: [nowPlaying?.current.uri ?? ''] });
+    if (!isNil(nowPlaying)) {
+      spotify.play({ uris: [nowPlaying?.current.uri ?? ''] });
+    }
   }, [nowPlaying]);
 
   const [highlighted, setHighlighted] = useState<number>(0);
