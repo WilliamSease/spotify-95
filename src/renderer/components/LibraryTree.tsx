@@ -141,7 +141,7 @@ export const LibraryTree = (props: { token?: string }) => {
           Refresh
         </Button>
       </div>
-      <TabBody style={{ flexGrow: 1, display: 'flex' }}>
+      <div style={{ flexGrow: 1, display: 'flex' }}>
         <Frame variant="field" style={{ display: 'flex', flexGrow: 1 }}>
           <ScrollView
             style={{
@@ -291,7 +291,7 @@ export const LibraryTree = (props: { token?: string }) => {
             )}
           </ScrollView>
         </Frame>
-      </TabBody>
+      </div>
     </div>
   );
 };
