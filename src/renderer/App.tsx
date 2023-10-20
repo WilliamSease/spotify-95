@@ -42,6 +42,7 @@ import { DeviceDialog } from './dialogs/DeviceDialog';
 import { AddToPlayerDialog } from './dialogs/AddToPlayerDialog';
 import { FlexColumn } from './sdk/FlexElements';
 import { AuthDialog } from './dialogs/AuthDialog';
+import { Debugger } from './dialogs/Debugger';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -120,6 +121,7 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [apiTesterOpen, setApiTesterOpen] = useState(false);
+  const [debuggerIsOpen, setDebuggerIsOpen] = useState(false);
   const [aboutDialogOpen, setAboutDialogOpen] = useState(false);
   const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
@@ -147,6 +149,7 @@ export default function App() {
           isOpen={apiTesterOpen}
           onClose={() => setApiTesterOpen(false)}
         />
+        <Debugger isOpen={debuggerIsOpen} onClose={() => setDebuggerIsOpen(false)}/>
         <ArtDialog />
         <AboutDialog
           isOpen={aboutDialogOpen}
@@ -191,6 +194,7 @@ export default function App() {
             menuOptions={[
               { text: 'Settings', onClick: () => setSettingsOpen(true) },
               { text: 'API Tester', onClick: () => setApiTesterOpen(true) },
+              {text: 'Debugger', onClick:() => setDebuggerIsOpen(true)}
             ]}
           />
           <Button variant="thin" onClick={() => setDeviceDialogOpen(true)}>

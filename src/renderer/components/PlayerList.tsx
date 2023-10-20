@@ -15,6 +15,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Label from 'renderer/sdk/Label';
 import { isNil } from 'lodash';
 import { Playable } from 'renderer/representations/apiTypes';
+import { putOnRecord } from 'renderer/functions/apiFunctions';
 
 export function PlayerList() {
   const dispatch = useDispatch();
@@ -24,12 +25,6 @@ export function PlayerList() {
   const playerView = useSelector(selectPlayerView);
   const nowPlaying = useSelector(selectNowPlaying);
   const currentDevice = useSelector(selectCurrentDevice);
-
-  useEffect(() => {
-    if (!isNil(nowPlaying)) {
-      spotify.play({ uris: [nowPlaying?.current.uri ?? ''] });
-    }
-  }, [nowPlaying]);
 
   const [highlighted, setHighlighted] = useState<number>(0);
   const compileTrackInfo = useCallback(
@@ -53,23 +48,25 @@ export function PlayerList() {
         >
           {tracksInPlayer.map((itm, i) => {
             const compiledTrackInfo = compileTrackInfo(itm);
+            const playThisTrack = () => {
+              if (i === highlighted) {
+                dispatch(
+                  setNowPlaying({
+                    index: i,
+                    current: tracksInPlayer[i],
+                  })
+                );
+                putOnRecord(spotify,tracksInPlayer.slice(i,tracksInPlayer.length))
+              }
+              setHighlighted(i)
+            }
             return (
               <>
                 {playerView === 'individual' && (
                   <AlternateGrey
                     index={i}
                     isSelected={i === highlighted}
-                    onClick={() => {
-                      if (i === highlighted) {
-                        dispatch(
-                          setNowPlaying({
-                            index: i,
-                            current: tracksInPlayer[i],
-                          })
-                        );
-                      }
-                      setHighlighted(i);
-                    }}
+                    onClick={playThisTrack}
                   >
                     <div
                       style={{
@@ -124,17 +121,7 @@ export function PlayerList() {
                         flexDirection: 'row',
                         marginLeft: '2rem',
                       }}
-                      onClick={() => {
-                        if (i === highlighted) {
-                          dispatch(
-                            setNowPlaying({
-                              index: i,
-                              current: tracksInPlayer[i],
-                            })
-                          );
-                        }
-                        setHighlighted(i);
-                      }}
+                      onClick={playThisTrack}
                     >
                       <div style={{ width: '3rem' }}>
                         {formatMs(itm.duration_ms)}
@@ -196,7 +183,7 @@ export function PlayerList() {
         <Button className="toolbarButton">Shuffle</Button>
         <Button className="toolbarButton">⏴ 15s</Button>
         <Button className="toolbarButton">15s ⏵</Button>
-        <span style={{ marginLeft: '1rem' }}>someTime / runTime</span>
+        <span style={{ marginLeft: '.5rem', marginRight: '.5rem' }}>someTime / runTime</span>
       </Toolbar>
     </FlexColumn>
   );

@@ -1,7 +1,11 @@
 import SpotifyWebApi from 'spotify-web-api-js';
-import { LibraryType, SearchResultType } from '../representations/apiTypes';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
+import {
+  LibraryType,
+  Playable,
+  SearchResultType,
+} from '../representations/apiTypes';
 
 export const triggerLogin = () => {
   const clientId = '2d8d7d7d0f6241fcb7cf54fc5b2e24a8';
@@ -68,7 +72,7 @@ export async function populateLibrary(spotify: SpotifyWebApi.SpotifyWebApiJs) {
     });
     out.shows.push(...nextShows.items.map((s) => s.show));
   }
-  let playlistCount = (await spotify.getUserPlaylists()).total;
+  const playlistCount = (await spotify.getUserPlaylists()).total;
   for (let i = 0; i < playlistCount; i += 50) {
     out.playlists.push(
       ...(
@@ -168,4 +172,20 @@ export const addBearerTokenToRequest = async (
       headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
     })
   ).data;
+};
+
+export const putOnRecord = async (
+  spotify: SpotifyWebApi.SpotifyWebApiJs,
+  toAdd: Playable[]
+) => {
+  const state = await spotify.getMyCurrentPlaybackState();
+  if (state.is_playing) await spotify.pause();
+  const devices = await spotify.getMyDevices();
+  let activateFirstDevice = true;
+  for (const device of devices.devices) {
+    if (device.is_active) activateFirstDevice = false;
+  }
+  if (activateFirstDevice)
+    await spotify.transferMyPlayback([devices.devices[1].id ?? '']);
+  await spotify.play({uris:toAdd.map((playable) => playable.uri)});
 };

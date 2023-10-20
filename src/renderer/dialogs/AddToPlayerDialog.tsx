@@ -121,14 +121,14 @@ export const AddToPlayerDialog = () => {
       endLabel={`${selectedItems?.length ?? 0} item(s) selected`}
       bottomButtons={[
         {
-          text: 'Append to current player',
+          text: 'Append',
           onPress: () => {
             dispatch(appendToPlayer(selectedItems));
           },
           closesWindow: true,
         },
         {
-          text: 'Select only these item(s)',
+          text: 'Replace',
           onPress: () => {
             dispatch(setToPlayer(selectedItems));
           },
