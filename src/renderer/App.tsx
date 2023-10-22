@@ -128,7 +128,7 @@ export default function App() {
   const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
 
-  //Note: spotify is threating to remove this additional_types parameter. Scary. That'll uh, break everything.
+  //Note: spotify is threating to remove this additional_types parameter. Scary.
   // https://developer.spotify.com/documentation/web-api/reference/get-information-about-the-users-current-playback
   useClock({
     effect: useCallback(async () => {
