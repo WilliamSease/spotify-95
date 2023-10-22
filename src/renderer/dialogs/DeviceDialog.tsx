@@ -2,7 +2,7 @@ import { isNil } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Checkbox, Toolbar } from 'react95';
-import { FlexWindowModal } from 'renderer/conveniencesdk/FlexWindowModal';
+import { FlexWindowModal } from 'renderer/sdk/FlexWindowModal';
 import Label from 'renderer/sdk/Label';
 import { selectSpotify, setCurrentDevice } from 'renderer/state/store';
 

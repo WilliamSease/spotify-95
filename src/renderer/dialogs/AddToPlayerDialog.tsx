@@ -11,8 +11,8 @@ import {
   ScrollView,
   TextInput,
 } from 'react95';
-import { FlexWindowModal } from 'renderer/conveniencesdk/FlexWindowModal';
-import { AlternateGrey } from 'renderer/conveniencesdk/ThemedComponents';
+import { FlexWindowModal } from 'renderer/sdk/FlexWindowModal';
+import { AlternateGrey } from 'renderer/sdk/ThemedComponents';
 import Label from 'renderer/sdk/Label';
 import { WindowShade } from 'renderer/sdk/WindowShade';
 import {

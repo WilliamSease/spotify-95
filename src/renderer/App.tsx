@@ -13,7 +13,7 @@ import ms_sans_serif from 'react95/dist/fonts/ms_sans_serif.woff2';
 import ms_sans_serif_bold from 'react95/dist/fonts/ms_sans_serif_bold.woff2';
 import './App.css';
 import MenuButtonWithDropDown from './sdk/MenuButtonWithDropDown';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { TokenInfo } from './representations/apiTypes';
 import { triggerLogin } from './functions/apiFunctions';
 import { isNil } from 'lodash';
@@ -43,6 +43,8 @@ import { AddToPlayerDialog } from './dialogs/AddToPlayerDialog';
 import { FlexColumn } from './sdk/FlexElements';
 import { AuthDialog } from './dialogs/AuthDialog';
 import { Debugger } from './dialogs/Debugger';
+import { useClock } from './sdk/useClock';
+import axios from 'axios';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -126,6 +128,21 @@ export default function App() {
   const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
 
+  //Note: spotify is threating to remove this additional_types parameter. Scary. That'll uh, break everything.
+  // https://developer.spotify.com/documentation/web-api/reference/get-information-about-the-users-current-playback
+  useClock({
+    effect: useCallback(async () => {
+      await axios.get(
+        'https://api.spotify.com/v1/me/player?additional_types=episode',
+        {
+          headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+        }
+      );
+    }, [spotify]),
+    condition: !isNil(tokenInfo),
+    delay: 250,
+  });
+
   return (
     <ThemeProvider theme={useSelector(selectTheme)}>
       <GlobalStyles />
@@ -149,7 +166,10 @@ export default function App() {
           isOpen={apiTesterOpen}
           onClose={() => setApiTesterOpen(false)}
         />
-        <Debugger isOpen={debuggerIsOpen} onClose={() => setDebuggerIsOpen(false)}/>
+        <Debugger
+          isOpen={debuggerIsOpen}
+          onClose={() => setDebuggerIsOpen(false)}
+        />
         <ArtDialog />
         <AboutDialog
           isOpen={aboutDialogOpen}
@@ -194,7 +214,7 @@ export default function App() {
             menuOptions={[
               { text: 'Settings', onClick: () => setSettingsOpen(true) },
               { text: 'API Tester', onClick: () => setApiTesterOpen(true) },
-              {text: 'Debugger', onClick:() => setDebuggerIsOpen(true)}
+              { text: 'Debugger', onClick: () => setDebuggerIsOpen(true) },
             ]}
           />
           <Button variant="thin" onClick={() => setDeviceDialogOpen(true)}>

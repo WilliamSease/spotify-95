@@ -1,5 +1,5 @@
 import { Anchor } from 'react95';
-import { FlexWindowModal } from 'renderer/conveniencesdk/FlexWindowModal';
+import { FlexWindowModal } from 'renderer/sdk/FlexWindowModal';
 import { logo } from 'renderer/images';
 
 type IProps = {

@@ -9,7 +9,7 @@ import {
   setNowPlaying,
 } from 'renderer/state/store';
 import { formatArtists, formatMs } from 'renderer/functions/formatFunctions';
-import { AlternateGrey } from 'renderer/conveniencesdk/ThemedComponents';
+import { AlternateGrey } from 'renderer/sdk/ThemedComponents';
 import { FlexColumn } from 'renderer/sdk/FlexElements';
 import { useCallback, useEffect, useState } from 'react';
 import Label from 'renderer/sdk/Label';
@@ -56,10 +56,13 @@ export function PlayerList() {
                     current: tracksInPlayer[i],
                   })
                 );
-                putOnRecord(spotify,tracksInPlayer.slice(i,tracksInPlayer.length))
+                putOnRecord(
+                  spotify,
+                  tracksInPlayer.slice(i, tracksInPlayer.length)
+                );
               }
-              setHighlighted(i)
-            }
+              setHighlighted(i);
+            };
             return (
               <>
                 {playerView === 'individual' && (
@@ -183,7 +186,9 @@ export function PlayerList() {
         <Button className="toolbarButton">Shuffle</Button>
         <Button className="toolbarButton">⏴ 15s</Button>
         <Button className="toolbarButton">15s ⏵</Button>
-        <span style={{ marginLeft: '.5rem', marginRight: '.5rem' }}>someTime / runTime</span>
+        <span style={{ marginLeft: '.5rem', marginRight: '.5rem' }}>
+          someTime / runTime
+        </span>
       </Toolbar>
     </FlexColumn>
   );

@@ -3,7 +3,7 @@ import { Button, GroupBox, WindowContent, Window } from 'react95';
 import { isNil } from 'lodash';
 import SpotifyWebApi from 'spotify-web-api-js';
 import { TokenInfo } from '../representations/apiTypes';
-import { FlexWindowModal } from 'renderer/conveniencesdk/FlexWindowModal';
+import { FlexWindowModal } from 'renderer/sdk/FlexWindowModal';
 import { useSelector } from 'react-redux';
 import { selectSpotify } from 'renderer/state/store';
 

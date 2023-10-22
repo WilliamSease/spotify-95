@@ -4,7 +4,7 @@ import { Theme } from 'react95/dist/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectTheme, setTheme } from '../state/store';
 import Label from '../sdk/Label';
-import { FlexWindowModal } from '../conveniencesdk/FlexWindowModal';
+import { FlexWindowModal } from '../sdk/FlexWindowModal';
 import { useEffect, useState } from 'react';
 
 const ThemesArray = Object.entries(Themes.default);

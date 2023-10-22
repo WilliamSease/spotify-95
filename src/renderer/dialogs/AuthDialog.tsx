@@ -2,7 +2,7 @@ import { isNil } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Anchor, Button } from 'react95';
-import { FlexWindowModal } from 'renderer/conveniencesdk/FlexWindowModal';
+import { FlexWindowModal } from 'renderer/sdk/FlexWindowModal';
 import { addBearerTokenToRequest } from 'renderer/functions/apiFunctions';
 import { TokenInfo } from 'renderer/representations/apiTypes';
 import { selectSpotify } from 'renderer/state/store';

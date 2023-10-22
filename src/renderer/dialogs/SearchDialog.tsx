@@ -1,9 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  BottomButton,
-  FlexWindowModal,
-} from 'renderer/conveniencesdk/FlexWindowModal';
+import { BottomButton, FlexWindowModal } from 'renderer/sdk/FlexWindowModal';
 import {
   appendToPlayer,
   selectSearchResult,
@@ -24,7 +21,7 @@ import {
   Toolbar,
 } from 'react95';
 import { messages } from 'renderer/representations/messages';
-import { List } from 'renderer/conveniencesdk/List';
+import { List } from 'renderer/sdk/List';
 import { appendToSearchResult } from 'renderer/functions/apiFunctions';
 import { isEmpty, isNil } from 'lodash';
 import { current } from '@reduxjs/toolkit';

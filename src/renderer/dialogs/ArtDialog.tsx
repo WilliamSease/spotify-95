@@ -1,7 +1,7 @@
 import { isNil } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { Frame } from 'react95';
-import { FlexWindowModal } from 'renderer/conveniencesdk/FlexWindowModal';
+import { FlexWindowModal } from 'renderer/sdk/FlexWindowModal';
 import { selectArtURL, setArtURL } from 'renderer/state/store';
 
 export const ArtDialog = () => {
