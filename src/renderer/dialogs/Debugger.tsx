@@ -43,7 +43,7 @@ export const Debugger = (props: IProps) => {
   }, [timer]);
 
   useClock({
-    effect: useCallback(() => {
+    effect: useCallback(async () => {
       setTimer(Date.now());
     }, [setTimer]),
     condition: true,

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 
 type IProps = {
-  effect: () => void;
+  effect: () => Promise<void>;
   condition?: boolean;
   delay: number;
 };
@@ -11,9 +11,9 @@ export const useClock = (props: IProps) => {
   const { effect, condition = true, delay } = props;
 
   const effectCallback = useCallback(
-    (abortController: AbortController) => {
+    async (abortController: AbortController) => {
       if (!abortController.signal.aborted) {
-        effect();
+        await effect();
         setTimeout(() => effectCallback(abortController), delay);
       }
     },

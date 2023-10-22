@@ -2,11 +2,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button, Frame, ScrollView, Toolbar } from 'react95';
 import {
   selectCurrentDevice,
-  selectNowPlaying,
   selectPlayerView,
   selectSpotify,
   selectTracksInPlayer,
-  setNowPlaying,
+  selectPlaybackItem,
+  selectPlaybackState,
 } from 'renderer/state/store';
 import { formatArtists, formatMs } from 'renderer/functions/formatFunctions';
 import { AlternateGrey } from 'renderer/sdk/ThemedComponents';
@@ -23,7 +23,8 @@ export function PlayerList() {
   const tracksInPlayer = useSelector(selectTracksInPlayer);
   const spotify = useSelector(selectSpotify);
   const playerView = useSelector(selectPlayerView);
-  const nowPlaying = useSelector(selectNowPlaying);
+  const playbackState = useSelector(selectPlaybackState);
+  const nowPlaying = useSelector(selectPlaybackItem);
   const currentDevice = useSelector(selectCurrentDevice);
 
   const [highlighted, setHighlighted] = useState<number>(0);
@@ -50,12 +51,6 @@ export function PlayerList() {
             const compiledTrackInfo = compileTrackInfo(itm);
             const playThisTrack = () => {
               if (i === highlighted) {
-                dispatch(
-                  setNowPlaying({
-                    index: i,
-                    current: tracksInPlayer[i],
-                  })
-                );
                 putOnRecord(
                   spotify,
                   tracksInPlayer.slice(i, tracksInPlayer.length)
@@ -97,7 +92,7 @@ export function PlayerList() {
                           display: 'flex',
                         }}
                       >
-                        {nowPlaying?.index === i ? '💿' : ''}
+                        {nowPlaying?.id === itm.id ? '💿' : ''}
                       </div>
                     </div>
                   </AlternateGrey>
@@ -141,7 +136,7 @@ export function PlayerList() {
                           display: 'flex',
                         }}
                       >
-                        {nowPlaying?.index === i ? '💿' : ''}
+                        {nowPlaying?.id === itm.id ? '💿' : ''}
                       </div>
                     </AlternateGrey>
                   </>
@@ -157,37 +152,114 @@ export function PlayerList() {
         ) : (
           <>
             <Label style={{ marginLeft: '1rem' }}>
-              {nowPlaying.current.type === 'track' ? `Artist: ` : `Show: `}
+              {nowPlaying.type === 'track' ? `Artist: ` : `Show: `}
             </Label>
             <span>
-              {nowPlaying.current.type === 'track'
-                ? formatArtists(nowPlaying.current.artists)
-                : nowPlaying.current.show.name}
+              {nowPlaying.type === 'track'
+                ? formatArtists(nowPlaying.artists)
+                : nowPlaying.show.name}
             </span>
-            {nowPlaying.current.type === 'track' && (
+            {nowPlaying.type === 'track' && (
               <>
                 <Label style={{ marginLeft: '1rem' }}>Album:</Label>
-                <span>{nowPlaying.current.album.name}</span>
+                <span>{nowPlaying.album.name}</span>
               </>
             )}
             <Label style={{ marginLeft: '1rem' }}>Name:</Label>
-            <span>{nowPlaying.current.name}</span>
+            <span>{nowPlaying.name}</span>
           </>
         )}
       </Toolbar>
       <Toolbar style={{ marginLeft: '1rem' }}>
-        <Button className="toolbarButton">⏵</Button>
-        <Button className="toolbarButton">⏸</Button>
-        <Button className="toolbarButton">⏹</Button>
-        <Button className="toolbarButton">⏏</Button>
-        <Button className="toolbarButton">⏮</Button>
-        <Button className="toolbarButton">⏭</Button>
-        <Button className="toolbarButton">Repeat</Button>
-        <Button className="toolbarButton">Shuffle</Button>
-        <Button className="toolbarButton">⏴ 15s</Button>
-        <Button className="toolbarButton">15s ⏵</Button>
+        <Button
+          onClick={() => {
+            if (!playbackState?.is_playing) spotify.play();
+          }}
+          className="toolbarButton"
+        >
+          ⏵
+        </Button>
+        <Button
+          onClick={() => {
+            if (playbackState?.is_playing) spotify.pause();
+          }}
+          className="toolbarButton"
+        >
+          ⏸
+        </Button>
+        <Button
+          onClick={() => {
+            if (playbackState?.is_playing) spotify.pause();
+            spotify.seek(0);
+          }}
+          className="toolbarButton"
+        >
+          ⏹
+        </Button>
+        <Button
+          onClick={() => {
+            if (playbackState?.is_playing) spotify.pause();
+            spotify.seek(0);
+            spotify.queue('');
+          }}
+          className="toolbarButton"
+        >
+          ⏏
+        </Button>
+        <Button
+          onClick={() => {
+            spotify.skipToPrevious();
+          }}
+          className="toolbarButton"
+        >
+          ⏮
+        </Button>
+        <Button
+          onClick={() => {
+            spotify.skipToNext();
+          }}
+          className="toolbarButton"
+        >
+          ⏭
+        </Button>
+        <Button
+          variant={playbackState?.repeat_state === 'track' ? 'flat' : 'default'}
+          className="toolbarButton"
+        >
+          Repeat
+        </Button>
+        <Button
+          onClick={() => spotify.setShuffle(!playbackState?.shuffle_state)}
+          variant={playbackState?.shuffle_state ? 'flat' : 'default'}
+          className="toolbarButton"
+        >
+          Shuffle
+        </Button>
+        <Button
+          onClick={() => {
+            if (playbackState?.is_playing)
+              spotify.seek(playbackState?.progress_ms ?? 15000 - 15000);
+          }}
+          className="toolbarButton"
+        >
+          ⏴ 15s
+        </Button>
+        <Button
+          onClick={() => {
+            if (playbackState?.is_playing) {
+              let seek = playbackState?.progress_ms ?? 0 + 15000;
+              if (seek > (nowPlaying?.duration_ms ?? 0)) {
+                seek = nowPlaying?.duration_ms ?? 0;
+              }
+              spotify.seek(seek);
+            }
+          }}
+          className="toolbarButton"
+        >
+          15s ⏵
+        </Button>
         <span style={{ marginLeft: '.5rem', marginRight: '.5rem' }}>
-          someTime / runTime
+          {playbackState?.progress_ms} / {nowPlaying?.duration_ms}
         </span>
       </Toolbar>
     </FlexColumn>

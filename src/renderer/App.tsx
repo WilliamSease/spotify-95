@@ -14,17 +14,19 @@ import ms_sans_serif_bold from 'react95/dist/fonts/ms_sans_serif_bold.woff2';
 import './App.css';
 import MenuButtonWithDropDown from './sdk/MenuButtonWithDropDown';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { TokenInfo } from './representations/apiTypes';
+import { Playable, TokenInfo } from './representations/apiTypes';
 import { triggerLogin } from './functions/apiFunctions';
 import { isNil } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  selectNowPlaying,
+  selectPlaybackItem,
   selectSearchTerm,
   selectShowAlbumArt,
   selectSpotify,
   selectTheme,
   setArtURL,
+  setPlaybackItem,
+  setPlaybackState,
   setSearchTerm,
   setToPlayer,
   togglePlayerView,
@@ -74,20 +76,18 @@ export default function App() {
   const dispatch = useDispatch();
 
   const spotify = useSelector(selectSpotify);
-  const nowPlaying = useSelector(selectNowPlaying);
+  const nowPlaying = useSelector(selectPlaybackItem);
   const nowPlayingImage = useMemo(
     () =>
       isNil(nowPlaying)
         ? undefined
-        : nowPlaying.current.type === 'track'
-        ? nowPlaying.current.album.images[0]
-        : nowPlaying.current.images[0],
+        : nowPlaying.type === 'track'
+        ? nowPlaying.album.images[0]
+        : nowPlaying.images[0],
     [nowPlaying]
   );
   const currentAlbumArtText =
-    nowPlaying?.current.type === 'track'
-      ? nowPlaying.current.album.name
-      : nowPlaying?.current.name;
+    nowPlaying?.type === 'track' ? nowPlaying.album.name : nowPlaying?.name;
   const showAlbumArt = useSelector(selectShowAlbumArt);
   const [tokenInfo, setTokenInfo] = useState<TokenInfo>();
 
@@ -119,7 +119,6 @@ export default function App() {
   });
 
   const [tokenButtonHover, setTokenButtonHover] = useState(false);
-
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [apiTesterOpen, setApiTesterOpen] = useState(false);
@@ -140,6 +139,8 @@ export default function App() {
           }
         )
       ).data as SpotifyApi.CurrentPlaybackResponse;
+      dispatch(setPlaybackItem(data.item as Playable));
+      dispatch(setPlaybackState(data));
     }, [spotify]),
     condition: !isNil(tokenInfo),
     delay: 50,

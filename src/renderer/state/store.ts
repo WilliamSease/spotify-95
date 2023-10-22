@@ -1,4 +1,9 @@
-import { createSlice, createSelector, configureStore } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  createSelector,
+  configureStore,
+  getDefaultMiddleware,
+} from '@reduxjs/toolkit';
 import original from 'react95/dist/themes/original';
 import { Theme } from 'react95/dist/types';
 import {
@@ -19,9 +24,10 @@ interface appState {
   addToDialog?: AddDialogType;
   tracksInPlayer: Playable[];
   currentDevice?: string;
-  nowPlaying?: { index: number; current: Playable };
   playerView: 'individual' | 'group';
   showAlbumArt: boolean;
+  playBackState?: SpotifyApi.CurrentPlaybackResponse;
+  playBackItem?: Playable;
 }
 
 const initialState: appState = {
@@ -76,11 +82,14 @@ const appSlice = createSlice({
     setCurrentDevice: (state, action) => {
       state.currentDevice = action.payload;
     },
-    setNowPlaying: (state, action) => {
-      state.nowPlaying = action.payload;
-    },
     toggleShowAlbumArt: (state) => {
       state.showAlbumArt = !state.showAlbumArt;
+    },
+    setPlaybackState: (state, action) => {
+      state.playBackState = action.payload;
+    },
+    setPlaybackItem: (state, action) => {
+      state.playBackItem = action.payload;
     },
   },
 });
@@ -96,8 +105,9 @@ export const {
   appendToPlayer,
   togglePlayerView,
   setCurrentDevice,
-  setNowPlaying,
   toggleShowAlbumArt,
+  setPlaybackState,
+  setPlaybackItem,
 } = appSlice.actions;
 
 export const selectTheme = createSelector(
@@ -145,11 +155,6 @@ export const selectPlayerView = createSelector(
   (playerView) => playerView
 );
 
-export const selectNowPlaying = createSelector(
-  (state: appState) => state.nowPlaying,
-  (nowPlaying) => nowPlaying
-);
-
 export const selectShowAlbumArt = createSelector(
   (state: appState) => state.showAlbumArt,
   (showAlbumArt) => showAlbumArt
@@ -160,8 +165,21 @@ export const selectCurrentDevice = createSelector(
   (currentDevice) => currentDevice
 );
 
+export const selectPlaybackState = createSelector(
+  (state: appState) => state.playBackState,
+  (playBackState) => playBackState
+);
+
+export const selectPlaybackItem = createSelector(
+  (state: appState) => state.playBackItem,
+  (playBackItem) => playBackItem
+);
+
 const store = configureStore({
   reducer: appSlice.reducer,
+  middleware: getDefaultMiddleware({
+    serializableCheck: false,
+  }),
 });
 
 export default store;
