@@ -132,15 +132,17 @@ export default function App() {
   // https://developer.spotify.com/documentation/web-api/reference/get-information-about-the-users-current-playback
   useClock({
     effect: useCallback(async () => {
-      await axios.get(
-        'https://api.spotify.com/v1/me/player?additional_types=episode',
-        {
-          headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
-        }
-      );
+      const data = (
+        await axios.get(
+          'https://api.spotify.com/v1/me/player?additional_types=episode',
+          {
+            headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
+          }
+        )
+      ).data as SpotifyApi.CurrentPlaybackResponse;
     }, [spotify]),
     condition: !isNil(tokenInfo),
-    delay: 250,
+    delay: 50,
   });
 
   return (
