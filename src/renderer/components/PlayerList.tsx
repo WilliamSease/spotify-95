@@ -8,6 +8,7 @@ import {
   selectPlaybackItem,
   selectPlaybackState,
   setToPlayer,
+  setErrorMessage,
 } from 'renderer/state/store';
 import { formatArtists, formatMs } from 'renderer/functions/formatFunctions';
 import { AlternateGrey } from 'renderer/sdk/ThemedComponents';
@@ -54,7 +55,13 @@ export function PlayerList() {
               if (i === highlighted) {
                 putOnRecord(
                   spotify,
-                  tracksInPlayer.slice(i, tracksInPlayer.length)
+                  tracksInPlayer.slice(i, tracksInPlayer.length),
+                  () =>
+                    dispatch(
+                      setErrorMessage(
+                        'No Devices! Make sure you have a spotify client running on a device.'
+                      )
+                    )
                 );
               }
               setHighlighted(i);
@@ -204,19 +211,25 @@ export function PlayerList() {
           onClick={() => {
             if (playbackState?.is_playing) spotify.pause();
             spotify.seek(0);
-            dispatch(setToPlayer([]))
+            dispatch(setToPlayer([]));
           }}
           className="toolbarButton"
-
         >
           ⏏
         </Button>
         <Button
           onClick={() => {
             if ((playbackState?.progress_ms ?? 0) < 5000) {
-              let currentItemIndex = tracksInPlayer.findIndex((playable) => playable.id === playbackState?.item?.id)
-              let notBelowZero = currentItemIndex - 1 < 0 ? 0 : currentItemIndex - 1;
-              spotify.play({uris:tracksInPlayer.slice(notBelowZero, tracksInPlayer.length).map((playable) => playable.uri)})
+              let currentItemIndex = tracksInPlayer.findIndex(
+                (playable) => playable.id === playbackState?.item?.id
+              );
+              let notBelowZero =
+                currentItemIndex - 1 < 0 ? 0 : currentItemIndex - 1;
+              spotify.play({
+                uris: tracksInPlayer
+                  .slice(notBelowZero, tracksInPlayer.length)
+                  .map((playable) => playable.uri),
+              });
             } else spotify.seek(0);
           }}
           className="toolbarButton"
@@ -277,7 +290,8 @@ export function PlayerList() {
           15s ⏵
         </Button>
         <span style={{ marginLeft: '.5rem', marginRight: '.5rem' }}>
-          {playbackState?.progress_ms} / {nowPlaying?.duration_ms}
+          {formatMs(playbackState?.progress_ms ?? 0)} /{' '}
+          {formatMs(nowPlaying?.duration_ms ?? 0)}
         </span>
       </Toolbar>
     </FlexColumn>

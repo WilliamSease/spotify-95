@@ -28,6 +28,7 @@ interface appState {
   showAlbumArt: boolean;
   playBackState?: SpotifyApi.CurrentPlaybackResponse;
   playBackItem?: Playable;
+  errorMessage: string | null;
 }
 
 const initialState: appState = {
@@ -45,6 +46,7 @@ const initialState: appState = {
   tracksInPlayer: [],
   playerView: 'individual',
   showAlbumArt: true,
+  errorMessage: null,
 };
 
 const appSlice = createSlice({
@@ -91,6 +93,9 @@ const appSlice = createSlice({
     setPlaybackItem: (state, action) => {
       state.playBackItem = action.payload;
     },
+    setErrorMessage: (state, action) => {
+      state.errorMessage = action.payload;
+    },
   },
 });
 
@@ -108,6 +113,7 @@ export const {
   toggleShowAlbumArt,
   setPlaybackState,
   setPlaybackItem,
+  setErrorMessage,
 } = appSlice.actions;
 
 export const selectTheme = createSelector(
@@ -173,6 +179,11 @@ export const selectPlaybackState = createSelector(
 export const selectPlaybackItem = createSelector(
   (state: appState) => state.playBackItem,
   (playBackItem) => playBackItem
+);
+
+export const selectErrorMessage = createSelector(
+  (state: appState) => state.errorMessage,
+  (errorMessage) => errorMessage
 );
 
 const store = configureStore({

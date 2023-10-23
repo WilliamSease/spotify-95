@@ -15,11 +15,12 @@ import './App.css';
 import MenuButtonWithDropDown from './sdk/MenuButtonWithDropDown';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Playable, TokenInfo } from './representations/apiTypes';
-import { triggerLogin } from './functions/apiFunctions';
+import { sleep, triggerLogin } from './functions/apiFunctions';
 import { isNil } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectPlaybackItem,
+  selectPlaybackState,
   selectSearchTerm,
   selectShowAlbumArt,
   selectSpotify,
@@ -47,6 +48,8 @@ import { AuthDialog } from './dialogs/AuthDialog';
 import { Debugger } from './dialogs/Debugger';
 import { useClock } from './sdk/useClock';
 import axios from 'axios';
+import { ErrorDialog } from './dialogs/ErrorDialog';
+import Label from './sdk/Label';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -76,6 +79,7 @@ export default function App() {
   const dispatch = useDispatch();
 
   const spotify = useSelector(selectSpotify);
+  const playBackState = useSelector(selectPlaybackState);
   const nowPlaying = useSelector(selectPlaybackItem);
   const nowPlayingImage = useMemo(
     () =>
@@ -127,10 +131,15 @@ export default function App() {
   const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
 
+  const [connection, setConnection] = useState<'Good' | 'Mid' | 'Desync'>(
+    'Good'
+  );
   //Note: spotify is threating to remove this additional_types parameter. Scary.
   // https://developer.spotify.com/documentation/web-api/reference/get-information-about-the-users-current-playback
   useClock({
     effect: useCallback(async () => {
+      const bad = setTimeout(() => setConnection('Desync'), 1000);
+      const stamp = Date.now();
       const data = (
         await axios.get(
           'https://api.spotify.com/v1/me/player?additional_types=episode',
@@ -141,6 +150,12 @@ export default function App() {
       ).data as SpotifyApi.CurrentPlaybackResponse;
       dispatch(setPlaybackItem(data.item as Playable));
       dispatch(setPlaybackState(data));
+      clearInterval(bad);
+      if (Date.now() - 300 < stamp) {
+        setConnection('Good');
+      } else if (Date.now() - 1000 < stamp) {
+        setConnection('Mid');
+      }
     }, [spotify]),
     condition: !isNil(tokenInfo),
     delay: 50,
@@ -189,6 +204,7 @@ export default function App() {
           tokenInfo={tokenInfo}
           triggerLogin={triggerLogin}
         />
+        <ErrorDialog />
         <WindowHeader
           title="Spotify95"
           className="window-title dragApplication"
@@ -220,9 +236,6 @@ export default function App() {
               { text: 'Debugger', onClick: () => setDebuggerIsOpen(true) },
             ]}
           />
-          <Button variant="thin" onClick={() => setDeviceDialogOpen(true)}>
-            Device
-          </Button>
           <MenuButtonWithDropDown
             buttonText="About"
             menuOptions={[
@@ -257,6 +270,26 @@ export default function App() {
           >
             🔎
           </Button>
+          <Button onClick={() => setDeviceDialogOpen(true)}>
+            {playBackState?.device.type === 'Computer'
+              ? '🖥️'
+              : playBackState?.device.type === 'Smartphone'
+              ? '📱'
+              : playBackState?.device.type === 'Speaker'
+              ? '🔊'
+              : ''}{' '}
+            {playBackState?.device.name ?? 'No Device Playing'}
+          </Button>
+          <div className="toolbarButton">
+            <div
+              style={{
+                backgroundColor: connection === 'Desync' ? 'red' : undefined,
+                padding: '.2rem',
+              }}
+            >
+              📶 {connection} {connection === 'Mid' && '( ! )'}
+            </div>
+          </div>
           <Button
             onMouseOver={() => setTokenButtonHover(true)}
             onMouseLeave={() => setTokenButtonHover(false)}

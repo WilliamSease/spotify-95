@@ -4,7 +4,7 @@ export function formatMs(totalMilliseconds: number): string {
   const seconds = totalSeconds % 60;
 
   if (minutes < 1) {
-    return `:${seconds.toString().padStart(2, '0')}`;
+    return `0:${seconds.toString().padStart(2, '0')}`;
   } else if (minutes < 10) {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   } else {

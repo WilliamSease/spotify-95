@@ -176,7 +176,8 @@ export const addBearerTokenToRequest = async (
 
 export const putOnRecord = async (
   spotify: SpotifyWebApi.SpotifyWebApiJs,
-  toAdd: Playable[]
+  toAdd: Playable[],
+  ifNoDevices: () => void
 ) => {
   const state = await spotify.getMyCurrentPlaybackState();
   if (state.is_playing) await spotify.pause();
@@ -185,7 +186,16 @@ export const putOnRecord = async (
   for (const device of devices.devices) {
     if (device.is_active) activateFirstDevice = false;
   }
-  if (activateFirstDevice)
-    await spotify.transferMyPlayback([devices.devices[1].id ?? '']);
-  await spotify.play({uris:toAdd.map((playable) => playable.uri)});
+  if (activateFirstDevice && devices.devices.length === 0) {
+    ifNoDevices();
+  } else {
+    if (activateFirstDevice) {
+      await spotify.transferMyPlayback([devices.devices[0].id ?? '']);
+    }
+    await spotify.play({ uris: toAdd.map((playable) => playable.uri) });
+  }
 };
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
