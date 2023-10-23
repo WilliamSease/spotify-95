@@ -175,6 +175,7 @@ export function PlayerList() {
           onClick={() => {
             if (!playbackState?.is_playing) spotify.play();
           }}
+          disabled={playbackState?.is_playing}
           className="toolbarButton"
         >
           ⏵
@@ -200,7 +201,6 @@ export function PlayerList() {
           onClick={() => {
             if (playbackState?.is_playing) spotify.pause();
             spotify.seek(0);
-            spotify.queue('');
           }}
           className="toolbarButton"
         >
@@ -208,7 +208,9 @@ export function PlayerList() {
         </Button>
         <Button
           onClick={() => {
+            if ((playbackState?.progress_ms ?? 0) < 5000)
             spotify.skipToPrevious();
+          else spotify.seek(0)
           }}
           className="toolbarButton"
         >
@@ -239,8 +241,10 @@ export function PlayerList() {
         </Button>
         <Button
           onClick={() => {
-            if (playbackState?.is_playing)
-              spotify.seek(playbackState?.progress_ms ?? 15000 - 15000);
+            if (playbackState?.is_playing) {
+            let seek = (playbackState?.progress_ms ?? 15000) - 15000;
+              spotify.seek(seek >= 0 ? seek : 0);
+            }
           }}
           className="toolbarButton"
         >
@@ -249,7 +253,7 @@ export function PlayerList() {
         <Button
           onClick={() => {
             if (playbackState?.is_playing) {
-              let seek = playbackState?.progress_ms ?? 0 + 15000;
+              let seek = (playbackState?.progress_ms ?? 0) + 15000;
               if (seek > (nowPlaying?.duration_ms ?? 0)) {
                 seek = nowPlaying?.duration_ms ?? 0;
               }
