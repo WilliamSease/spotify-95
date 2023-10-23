@@ -11,7 +11,7 @@ import {
 import { formatArtists, formatMs } from 'renderer/functions/formatFunctions';
 import { AlternateGrey } from 'renderer/sdk/ThemedComponents';
 import { FlexColumn } from 'renderer/sdk/FlexElements';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import Label from 'renderer/sdk/Label';
 import { isNil } from 'lodash';
 import { Playable } from 'renderer/representations/apiTypes';
@@ -181,6 +181,7 @@ export function PlayerList() {
           ⏵
         </Button>
         <Button
+          disabled={!playbackState?.is_playing}
           onClick={() => {
             if (playbackState?.is_playing) spotify.pause();
           }}
@@ -189,6 +190,7 @@ export function PlayerList() {
           ⏸
         </Button>
         <Button
+          disabled={!playbackState?.is_playing}
           onClick={() => {
             if (playbackState?.is_playing) spotify.pause();
             spotify.seek(0);
@@ -208,9 +210,11 @@ export function PlayerList() {
         </Button>
         <Button
           onClick={() => {
-            if ((playbackState?.progress_ms ?? 0) < 5000)
-            spotify.skipToPrevious();
-          else spotify.seek(0)
+            if ((playbackState?.progress_ms ?? 0) < 5000) {
+              let currentItemIndex = tracksInPlayer.findIndex((playable) => playable.id === playbackState?.item?.id)
+              let notBelowZero = currentItemIndex - 1 < 0 ? 0 : currentItemIndex - 1;
+              spotify.play({uris:tracksInPlayer.slice(notBelowZero, tracksInPlayer.length).map((playable) => playable.uri)})
+            } else spotify.seek(0);
           }}
           className="toolbarButton"
         >
@@ -226,7 +230,10 @@ export function PlayerList() {
         </Button>
         <Button
           variant={playbackState?.repeat_state === 'track' ? 'flat' : 'default'}
-          onClick={() => spotify.setRepeat(playbackState?.repeat_state === "off" ? "track" : "off")
+          onClick={() =>
+            spotify.setRepeat(
+              playbackState?.repeat_state === 'off' ? 'track' : 'off'
+            )
           }
           className="toolbarButton"
         >
@@ -240,9 +247,10 @@ export function PlayerList() {
           Shuffle
         </Button>
         <Button
+          disabled={!playbackState?.is_playing}
           onClick={() => {
             if (playbackState?.is_playing) {
-            let seek = (playbackState?.progress_ms ?? 15000) - 15000;
+              const seek = (playbackState?.progress_ms ?? 15000) - 15000;
               spotify.seek(seek >= 0 ? seek : 0);
             }
           }}
@@ -251,6 +259,7 @@ export function PlayerList() {
           ⏴ 15s
         </Button>
         <Button
+          disabled={!playbackState?.is_playing}
           onClick={() => {
             if (playbackState?.is_playing) {
               let seek = (playbackState?.progress_ms ?? 0) + 15000;
