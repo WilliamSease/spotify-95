@@ -224,6 +224,8 @@ export function PlayerList() {
         </Button>
         <Button
           variant={playbackState?.repeat_state === 'track' ? 'flat' : 'default'}
+          onClick={() => spotify.setRepeat(playbackState?.repeat_state === "off" ? "track" : "off")
+          }
           className="toolbarButton"
         >
           Repeat

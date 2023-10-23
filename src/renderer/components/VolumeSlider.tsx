@@ -1,8 +1,12 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Button, Frame, Slider } from 'react95';
+import { selectPlaybackState, selectSpotify } from 'renderer/state/store';
 
 export const VolumeSlider = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const playbackState = useSelector(selectPlaybackState);
+  const spotify = useSelector(selectSpotify)
 
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
@@ -16,9 +20,10 @@ export const VolumeSlider = () => {
         >
           <Slider
             size="300px"
-            defaultValue={30}
+            defaultValue={playbackState?.device.volume_percent ?? 0}
             style={{ margin: 10 }}
             orientation="vertical"
+            onChangeCommitted={(value) => spotify.setVolume(value)}
           />
         </Frame>
       )}
