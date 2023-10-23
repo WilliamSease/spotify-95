@@ -270,15 +270,22 @@ export default function App() {
           >
             🔎
           </Button>
-          <Button onClick={() => setDeviceDialogOpen(true)}>
-            {playBackState?.device.type === 'Computer'
+          <Button
+            className="toolbarButton"
+            onClick={() => setDeviceDialogOpen(true)}
+          >
+            {isNil(playBackState?.device)
+              ? ''
+              : playBackState?.device.type === 'Computer'
               ? '🖥️'
               : playBackState?.device.type === 'Smartphone'
               ? '📱'
               : playBackState?.device.type === 'Speaker'
               ? '🔊'
               : ''}{' '}
-            {playBackState?.device.name ?? 'No Device Playing'}
+            {isNil(playBackState?.device)
+              ? 'No Device!'
+              : playBackState?.device.name}
           </Button>
           <div className="toolbarButton">
             <div

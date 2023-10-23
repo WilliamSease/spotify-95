@@ -37,6 +37,17 @@ export function PlayerList() {
         : [item.show.name],
     []
   );
+  const checkActionable = useCallback(() => {
+    if (isNil(playbackState?.device)) {
+      dispatch(
+        setErrorMessage(
+          'No Devices! Make sure you have a spotify client running on a device.'
+        )
+      );
+      return false;
+    }
+    return true;
+  }, [playbackState?.device]);
 
   return (
     <FlexColumn style={{ flexGrow: 1 }}>
@@ -181,6 +192,7 @@ export function PlayerList() {
       <Toolbar style={{ marginLeft: '1rem' }}>
         <Button
           onClick={() => {
+            if (!checkActionable()) return;
             if (!playbackState?.is_playing) spotify.play();
           }}
           disabled={playbackState?.is_playing}
@@ -191,6 +203,8 @@ export function PlayerList() {
         <Button
           disabled={!playbackState?.is_playing}
           onClick={() => {
+            if (!checkActionable()) return;
+
             if (playbackState?.is_playing) spotify.pause();
           }}
           className="toolbarButton"
@@ -200,6 +214,8 @@ export function PlayerList() {
         <Button
           disabled={!playbackState?.is_playing}
           onClick={() => {
+            if (!checkActionable()) return;
+
             if (playbackState?.is_playing) spotify.pause();
             spotify.seek(0);
           }}
@@ -209,6 +225,8 @@ export function PlayerList() {
         </Button>
         <Button
           onClick={() => {
+            if (!checkActionable()) return;
+
             if (playbackState?.is_playing) spotify.pause();
             spotify.seek(0);
             dispatch(setToPlayer([]));
@@ -219,6 +237,8 @@ export function PlayerList() {
         </Button>
         <Button
           onClick={() => {
+            if (!checkActionable()) return;
+
             if ((playbackState?.progress_ms ?? 0) < 5000) {
               let currentItemIndex = tracksInPlayer.findIndex(
                 (playable) => playable.id === playbackState?.item?.id
@@ -238,6 +258,8 @@ export function PlayerList() {
         </Button>
         <Button
           onClick={() => {
+            if (!checkActionable()) return;
+
             spotify.skipToNext();
           }}
           className="toolbarButton"
@@ -246,17 +268,23 @@ export function PlayerList() {
         </Button>
         <Button
           variant={playbackState?.repeat_state === 'track' ? 'flat' : 'default'}
-          onClick={() =>
-            spotify.setRepeat(
-              playbackState?.repeat_state === 'off' ? 'track' : 'off'
-            )
-          }
+          onClick={() => {
+            {
+              if (!checkActionable()) return;
+              spotify.setRepeat(
+                playbackState?.repeat_state === 'off' ? 'track' : 'off'
+              );
+            }
+          }}
           className="toolbarButton"
         >
           Repeat
         </Button>
         <Button
-          onClick={() => spotify.setShuffle(!playbackState?.shuffle_state)}
+          onClick={() => {
+            if (!checkActionable()) return;
+            spotify.setShuffle(!playbackState?.shuffle_state);
+          }}
           variant={playbackState?.shuffle_state ? 'flat' : 'default'}
           className="toolbarButton"
         >
