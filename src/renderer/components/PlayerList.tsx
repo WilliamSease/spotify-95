@@ -7,6 +7,7 @@ import {
   selectTracksInPlayer,
   selectPlaybackItem,
   selectPlaybackState,
+  setToPlayer,
 } from 'renderer/state/store';
 import { formatArtists, formatMs } from 'renderer/functions/formatFunctions';
 import { AlternateGrey } from 'renderer/sdk/ThemedComponents';
@@ -203,8 +204,10 @@ export function PlayerList() {
           onClick={() => {
             if (playbackState?.is_playing) spotify.pause();
             spotify.seek(0);
+            dispatch(setToPlayer([]))
           }}
           className="toolbarButton"
+
         >
           ⏏
         </Button>

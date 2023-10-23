@@ -32,6 +32,12 @@ export const Debugger = (props: IProps) => {
     );
   }, [spotify]);
 
+  useEffect(() => {
+    if (isOpen) {
+      refresh()
+    }
+  },[isOpen, refresh])
+
   const [timer, setTimer] = useState<number>(0);
   const [timerStack, setTimerStack] = useState<number[]>([]);
   useEffect(() => {

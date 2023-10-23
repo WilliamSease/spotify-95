@@ -358,12 +358,6 @@ export default function App() {
               >
                 Toggle Album Art
               </Button>
-              <Button
-                style={{ marginLeft: '.5rem' }}
-                onClick={() => dispatch(setToPlayer([]))}
-              >
-                Clear
-              </Button>
               <VolumeSlider />
             </Toolbar>
             <PlayerList />
