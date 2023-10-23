@@ -32,14 +32,14 @@ export const AboutDialog = (props: IProps) => {
         <div style={{ marginTop: '.25rem' }}>
           Spotify95 October 2023 [Unreleased]
         </div>
-        <Anchor href="https://WilliamASease.github.io" target="_blank">
+        <Anchor target={'_blank'} href="https://WilliamASease.github.io">
           William Sease
         </Anchor>
-        <Anchor href="https://react95.io/">React95</Anchor>
-        <Anchor href="https://github.com/JMPerez/spotify-web-api-js">
+        <Anchor target={'_blank'} href="https://react95.io/">React95</Anchor>
+        <Anchor target={'_blank'} href="https://github.com/JMPerez/spotify-web-api-js">
           JS Spotify Web API
         </Anchor>
-        <Anchor href="https://github.com/electron-react-boilerplate/electron-react-boilerplate">
+        <Anchor target={'_blank'} href="https://github.com/electron-react-boilerplate/electron-react-boilerplate">
           Electron React Boilerplate
         </Anchor>
       </div>
