@@ -32,7 +32,7 @@ export const AuthDialog = (props: IProps) => {
   return (
     <FlexWindowModal
       title={'Auth'}
-      height={400}
+      height={250}
       width={500}
       isOpen={isOpen}
       onClose={closeThisWindow}
