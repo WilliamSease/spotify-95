@@ -7,6 +7,7 @@ import {
   selectSearchTerm,
   selectSpotify,
   setAddDialog,
+  setArtistPage,
   setSearchResult,
   setToPlayer,
 } from 'renderer/state/store';
@@ -148,6 +149,13 @@ export const SearchDialog = (props: IProps) => {
         disabled: false,
         onPress: async () => {
           if (activeTab === 0) {
+            const item =
+              selected?.tab === 0
+                ? searchResult.artists[selected.item]
+                : undefined;
+            if (!isNil(item)) {
+              dispatch(setArtistPage(item.id));
+            }
           } else if (activeTab === 1) {
             const item =
               selected?.tab === 1

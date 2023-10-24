@@ -60,28 +60,34 @@ export const FlexWindowModal = (props: IProps) => {
             )}
           </WindowHeader>
           {children}
-          <Toolbar
-            style={{ flexGrow: 1, alignItems: 'end', justifyContent: 'end' }}
-          >
-            {endLabel && <Label>{endLabel}</Label>}
-            {bottomButtons?.map((bb, i) => {
-              return (
-                <Button
-                  key={i}
-                  style={{ marginLeft: '.25rem' }}
-                  onClick={() => {
-                    bb.onPress();
-                    if (bb.closesWindow) {
-                      onClose();
-                    }
-                  }}
-                  disabled={bb.disabled}
-                >
-                  {bb.text}
-                </Button>
-              );
-            })}
-          </Toolbar>
+          {(endLabel || bottomButtons) && (
+            <Toolbar
+              style={{
+                flexGrow: 1,
+                alignItems: 'end',
+                justifyContent: 'end',
+              }}
+            >
+              {endLabel && <Label>{endLabel}</Label>}
+              {bottomButtons?.map((bb, i) => {
+                return (
+                  <Button
+                    key={i}
+                    style={{ marginLeft: '.25rem' }}
+                    onClick={() => {
+                      bb.onPress();
+                      if (bb.closesWindow) {
+                        onClose();
+                      }
+                    }}
+                    disabled={bb.disabled}
+                  >
+                    {bb.text}
+                  </Button>
+                );
+              })}
+            </Toolbar>
+          )}
         </Window>
       )}
     </Modal>

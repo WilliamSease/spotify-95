@@ -22,6 +22,7 @@ interface appState {
   searchResult: SearchResultType;
   library?: LibraryType | null;
   addToDialog?: AddDialogType;
+  artistPage?: string;
   tracksInPlayer: Playable[];
   currentDevice?: string;
   playerView: 'individual' | 'group';
@@ -71,6 +72,9 @@ const appSlice = createSlice({
     setAddDialog: (state, action) => {
       state.addToDialog = action.payload;
     },
+    setArtistPage: (state, action) => {
+      state.artistPage = action.payload;
+    },
     setToPlayer: (state, action) => {
       state.tracksInPlayer = action.payload;
     },
@@ -106,6 +110,7 @@ export const {
   setSearchResult,
   setLibrary,
   setAddDialog,
+  setArtistPage,
   setToPlayer,
   appendToPlayer,
   togglePlayerView,
@@ -149,6 +154,11 @@ export const selectLibrary = createSelector(
 export const selectAddToDialog = createSelector(
   (state: appState) => state.addToDialog,
   (addToDialog) => addToDialog
+);
+
+export const selectArtistPage = createSelector(
+  (state: appState) => state.artistPage,
+  (artistPage) => artistPage
 );
 
 export const selectTracksInPlayer = createSelector(

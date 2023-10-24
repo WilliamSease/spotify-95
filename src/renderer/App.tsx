@@ -52,6 +52,7 @@ import { ErrorDialog } from './dialogs/ErrorDialog';
 import Label from './sdk/Label';
 import { NetworkGraphDialog } from './dialogs/NetworkGraphDialog';
 import { FocusModeDialog } from './dialogs/FocusModeDialog';
+import { ArtistPage } from './dialogs/ArtistPage';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -222,6 +223,7 @@ export default function App() {
           isOpen={deviceDialogOpen}
           closeThisWindow={() => setDeviceDialogOpen(false)}
         />
+        <ArtistPage />
         <AddToPlayerDialog />
         <AuthDialog
           isOpen={authDialogOpen}

@@ -19,6 +19,7 @@ import {
   selectLibrary,
   selectSpotify,
   setAddDialog,
+  setArtistPage,
   setLibrary,
 } from 'renderer/state/store';
 import SpotifyWebApi from 'spotify-web-api-js';
@@ -69,9 +70,9 @@ export const LibraryTree = (props: { token?: string }) => {
             icon: <>👨</>,
             items: [
               {
-                id: `${a.id}_topSongs_${a.name}`,
-                label: 'Top Songs',
-                icon: <>🎵</>,
+                id: `${a.id}_artistPage_${a.name}`,
+                label: 'Artist Page',
+                icon: <>🎨</>,
               },
               {
                 id: `${a.id}_artistAlbums_${a.name}`,
@@ -171,11 +172,7 @@ export const LibraryTree = (props: { token?: string }) => {
                       const toSplit = id.split('_');
                       if (toSplit.length === 3) {
                         const [id, type, label] = toSplit;
-                        if (
-                          type === 'topSongs' ||
-                          type === 'album' ||
-                          type === 'playlist'
-                        )
+                        if (type === 'album' || type === 'playlist')
                           dispatch(
                             setAddDialog({
                               type: type,
@@ -183,6 +180,9 @@ export const LibraryTree = (props: { token?: string }) => {
                               label: label,
                             })
                           );
+                        if (type === 'artistPage') {
+                          dispatch(setArtistPage(id));
+                        }
                       }
 
                       break;
