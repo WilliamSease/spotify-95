@@ -31,7 +31,7 @@ export const DeviceDialog = (props: IProps) => {
     ) => {
       const device = devices.devices[index];
       return (
-        <Toolbar>
+        <Toolbar key={index}>
           <Label>
             {device.type === 'Computer'
               ? '🖥️'
@@ -82,9 +82,13 @@ export const DeviceDialog = (props: IProps) => {
         },
       ]}
     >
-      {devices?.devices.map((d, i) => {
-        return getDeviceComponent(i, selectedIndex, devices);
-      })}
+      {!isNil(devices) && devices?.devices.length > 0 ? (
+        devices?.devices.map((d, i) => {
+          return getDeviceComponent(i, selectedIndex, devices);
+        })
+      ) : (
+        <div>No devices! Is Spotify running? Are you authenticated?</div>
+      )}
     </FlexWindowModal>
   );
 };

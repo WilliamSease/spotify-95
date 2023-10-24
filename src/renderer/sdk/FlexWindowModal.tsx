@@ -20,6 +20,7 @@ type IProps = {
   children?: ReactNode;
   endLabel?: string;
   bottomButtons?: BottomButton[];
+  screenSaverBackground?: boolean;
 };
 
 export const FlexWindowModal = (props: IProps) => {
@@ -33,9 +34,10 @@ export const FlexWindowModal = (props: IProps) => {
     children,
     endLabel,
     bottomButtons,
+    screenSaverBackground,
   } = props;
   return (
-    <Modal isOpen={isOpen}>
+    <Modal isOpen={isOpen} screenSaverBackground={screenSaverBackground}>
       {isOpen && (
         <Window
           style={{
@@ -46,7 +48,7 @@ export const FlexWindowModal = (props: IProps) => {
           }}
           shadow
         >
-          <WindowHeader title={title} className="window-title">
+          <WindowHeader title={title} className="window-title dragApplication">
             <span style={{ flexGrow: 1 }}>{title}</span>
             {provideCloseButton && (
               <Button

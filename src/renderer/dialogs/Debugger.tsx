@@ -34,9 +34,9 @@ export const Debugger = (props: IProps) => {
 
   useEffect(() => {
     if (isOpen) {
-      refresh()
+      refresh();
     }
-  },[isOpen, refresh])
+  }, [isOpen, refresh]);
 
   const [timer, setTimer] = useState<number>(0);
   const [timerStack, setTimerStack] = useState<number[]>([]);
@@ -66,7 +66,7 @@ export const Debugger = (props: IProps) => {
       provideCloseButton
       bottomButtons={[{ text: 'Refresh', onPress: refresh }]}
     >
-      <GroupBox label="State of Playback">
+      <GroupBox label="State of Playback" style={{ height: '25%' }}>
         {!isNil(playbackState) ? (
           <>
             <div>device: {JSON.stringify(playbackState.device.id)}</div>
@@ -82,11 +82,13 @@ export const Debugger = (props: IProps) => {
           </>
         ) : null}
       </GroupBox>
-      <GroupBox label="State of the Queue">
+      <GroupBox style={{ height: '25%', overflowY: 'scroll' }}>
         {!isNil(queueState) ? (
           <>
-            {queueState.queue.map((playable) => (
-              <div>{playable.name}</div>
+            <div>State of the queue:</div>
+            <hr></hr>
+            {queueState.queue.map((playable, i) => (
+              <div key={i}>{playable.name}</div>
             ))}
           </>
         ) : null}

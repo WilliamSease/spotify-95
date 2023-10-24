@@ -50,6 +50,8 @@ import { useClock } from './sdk/useClock';
 import axios from 'axios';
 import { ErrorDialog } from './dialogs/ErrorDialog';
 import Label from './sdk/Label';
+import { NetworkGraphDialog } from './dialogs/NetworkGraphDialog';
+import { FocusModeDialog } from './dialogs/FocusModeDialog';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -130,33 +132,56 @@ export default function App() {
   const [aboutDialogOpen, setAboutDialogOpen] = useState(false);
   const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [networkGraphOpen, setNetworkGraphOpen] = useState(false);
+  const [focusModeOpen, setFocusModeOpen] = useState(false);
 
-  const [connection, setConnection] = useState<'Good' | 'Mid' | 'Desync'>(
+  const [delays, setDelays] = useState<number[]>([]);
+  const pushDelay = useCallback(
+    (val: number) =>
+      setDelays((prev) => {
+        if (prev.length > 19) prev.shift();
+        prev.push(val);
+        return prev;
+      }),
+    [setDelays]
+  );
+  const [connection, setConnection] = useState<'Good' | 'Slow' | 'Desync'>(
     'Good'
   );
   //Note: spotify is threating to remove this additional_types parameter. Scary.
   // https://developer.spotify.com/documentation/web-api/reference/get-information-about-the-users-current-playback
   useClock({
     effect: useCallback(async () => {
-      const bad = setTimeout(() => setConnection('Desync'), 1000);
+      const bad = setTimeout(() => {
+        setConnection('Desync');
+        pushDelay(1000);
+      }, 1000);
       const stamp = Date.now();
-      const data = (
-        await axios.get(
+      let call = null;
+      while (isNil(call)) {
+        call = await axios.get(
           'https://api.spotify.com/v1/me/player?additional_types=episode',
           {
             headers: { Authorization: `Bearer ${spotify.getAccessToken()}` },
           }
-        )
-      ).data as SpotifyApi.CurrentPlaybackResponse;
+        );
+        if (call.status !== 200) {
+          call = null;
+          await sleep(500);
+        }
+      }
+      const data = call.data as SpotifyApi.CurrentPlaybackResponse;
       dispatch(setPlaybackItem(data.item as Playable));
       dispatch(setPlaybackState(data));
       clearInterval(bad);
       if (Date.now() - 300 < stamp) {
         setConnection('Good');
+        pushDelay(Date.now() - stamp);
       } else if (Date.now() - 1000 < stamp) {
-        setConnection('Mid');
+        setConnection('Slow');
+        pushDelay(Date.now() - stamp);
       }
-    }, [spotify]),
+    }, [spotify, setConnection, pushDelay]),
     condition: !isNil(tokenInfo),
     delay: 50,
   });
@@ -204,7 +229,16 @@ export default function App() {
           tokenInfo={tokenInfo}
           triggerLogin={triggerLogin}
         />
+        <NetworkGraphDialog
+          isOpen={networkGraphOpen}
+          closeThisWindow={() => setNetworkGraphOpen(false)}
+          delays={delays}
+        />
         <ErrorDialog />
+        <FocusModeDialog
+          isOpen={focusModeOpen}
+          closeThisWindow={() => setFocusModeOpen(false)}
+        />
         <WindowHeader
           title="Spotify95"
           className="window-title dragApplication"
@@ -255,6 +289,9 @@ export default function App() {
               },
             ]}
           />
+          <Button variant="thin" onClick={() => setFocusModeOpen(true)}>
+            Focus
+          </Button>
           <span style={{ flexGrow: 1 }} />
           <TextInput
             value={useSelector(selectSearchTerm)}
@@ -287,16 +324,19 @@ export default function App() {
               ? 'No Device!'
               : playBackState?.device.name}
           </Button>
-          <div className="toolbarButton">
+          <Button
+            onClick={() => setNetworkGraphOpen(true)}
+            className="toolbarButton"
+          >
             <div
               style={{
                 backgroundColor: connection === 'Desync' ? 'red' : undefined,
                 padding: '.2rem',
               }}
             >
-              📶 {connection} {connection === 'Mid' && '( ! )'}
+              📶 {connection}
             </div>
-          </div>
+          </Button>
           <Button
             onMouseOver={() => setTokenButtonHover(true)}
             onMouseLeave={() => setTokenButtonHover(false)}
@@ -366,6 +406,16 @@ export default function App() {
                 />
               </Window>
             )}
+            {!showAlbumArt && !leftPanelBigger && (
+              <Button
+                className="toolbarButton clickableUnderDraggable"
+                onClick={() => dispatch(toggleShowAlbumArt())}
+                style={{ width: 100, height: 30, marginTop: 5 }}
+                disabled={isNil(nowPlayingImage)}
+              >
+                Show Art
+              </Button>
+            )}
           </FlexColumn>
           <div
             style={{
@@ -391,12 +441,6 @@ export default function App() {
                 onClick={() => dispatch(togglePlayerView())}
               >
                 Player View
-              </Button>
-              <Button
-                style={{ marginLeft: '.5rem' }}
-                onClick={() => dispatch(toggleShowAlbumArt())}
-              >
-                Toggle Album Art
               </Button>
               <VolumeSlider />
             </Toolbar>

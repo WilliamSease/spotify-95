@@ -6,7 +6,7 @@ import { selectPlaybackState, selectSpotify } from 'renderer/state/store';
 export const VolumeSlider = () => {
   const [isOpen, setIsOpen] = useState(false);
   const playbackState = useSelector(selectPlaybackState);
-  const spotify = useSelector(selectSpotify)
+  const spotify = useSelector(selectSpotify);
 
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
@@ -17,6 +17,7 @@ export const VolumeSlider = () => {
         <Frame
           variant="outside"
           style={{ zIndex: 1, position: 'absolute', right: '0', top: '100%' }}
+          onMouseLeave={() => setIsOpen(false)}
         >
           <Slider
             size="300px"

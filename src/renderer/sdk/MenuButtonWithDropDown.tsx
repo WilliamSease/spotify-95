@@ -16,7 +16,12 @@ export default function MenuButtonWithDropDown(props: IProps) {
 
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
-      <Button variant="thin" onClick={() => setOpen(!open)} active={open}>
+      <Button
+        variant="thin"
+        onClick={() => setOpen(!open)}
+        onMouseLeave={() => setOpen(false)}
+        active={open}
+      >
         {buttonText}
       </Button>
       {open && (
@@ -28,6 +33,8 @@ export default function MenuButtonWithDropDown(props: IProps) {
             zIndex: 2,
           }}
           onClick={() => setOpen(false)}
+          onMouseLeave={() => setOpen(false)}
+          onMouseEnter={() => setOpen(true)}
         >
           {menuOptions.map((mo, i) => {
             return (

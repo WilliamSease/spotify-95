@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Frame, ScrollView, Toolbar } from 'react95';
+import { Button, Frame, ScrollView, Slider, Toolbar } from 'react95';
 import {
   selectCurrentDevice,
   selectPlayerView,
@@ -9,6 +9,7 @@ import {
   selectPlaybackState,
   setToPlayer,
   setErrorMessage,
+  setPlaybackItem,
 } from 'renderer/state/store';
 import { formatArtists, formatMs } from 'renderer/functions/formatFunctions';
 import { AlternateGrey } from 'renderer/sdk/ThemedComponents';
@@ -165,6 +166,7 @@ export function PlayerList() {
           })}
         </ScrollView>
       </Frame>
+
       <Toolbar style={{ justifyItems: 'center' }}>
         {isNil(nowPlaying) ? (
           `[Nothing Playing]`
@@ -189,6 +191,20 @@ export function PlayerList() {
           </>
         )}
       </Toolbar>
+      <Slider
+        size={800}
+        value={
+          ((playbackState?.progress_ms ?? 0) / (nowPlaying?.duration_ms ?? 0)) *
+          100
+        }
+        style={{ marginLeft: '1.4rem', marginBottom: '0' }}
+        orientation="horizontal"
+        onChangeCommitted={(value) =>
+          spotify.seek(
+            Math.floor(((nowPlaying?.duration_ms ?? 0) / 100) * value)
+          )
+        }
+      />
       <Toolbar style={{ marginLeft: '1rem' }}>
         <Button
           onClick={() => {
