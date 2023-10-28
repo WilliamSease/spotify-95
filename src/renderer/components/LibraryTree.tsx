@@ -181,7 +181,7 @@ export const LibraryTree = (props: { token?: string }) => {
                             })
                           );
                         if (type === 'artistPage') {
-                          dispatch(setArtistPage(id));
+                          dispatch(setArtistPage([id]));
                         }
                       }
 

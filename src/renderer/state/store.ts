@@ -22,7 +22,7 @@ interface appState {
   searchResult: SearchResultType;
   library?: LibraryType | null;
   addToDialog?: AddDialogType;
-  artistPage?: string;
+  artistPage?: string[];
   tracksInPlayer: Playable[];
   currentDevice?: string;
   playerView: 'individual' | 'group';

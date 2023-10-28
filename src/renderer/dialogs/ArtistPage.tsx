@@ -23,7 +23,8 @@ import {
 
 export function ArtistPage() {
   const dispatch = useDispatch();
-  const currentArtist = useSelector(selectArtistPage);
+  const artistArray = useSelector(selectArtistPage) ?? [];
+  const currentArtist = artistArray[artistArray.length - 1]
   const spotify = useSelector(selectSpotify);
   const [artist, setArtist] = useState<SpotifyApi.SingleArtistResponse | null>(
     null
@@ -94,8 +95,9 @@ export function ArtistPage() {
       title={!isNil(artist) ? artist.name : 'Please Wait...'}
       height={800}
       width={800}
-      isOpen={!isNil(currentArtist)}
+      isOpen={artistArray.length > 0}
       onClose={() => dispatch(setArtistPage(undefined))}
+      onBack={artistArray.length > 1 ? () => dispatch(setArtistPage(artistArray.slice(0,artistArray.length - 1))) : undefined}
       provideCloseButton
     >
       {isNil(artist) ? (
@@ -140,7 +142,7 @@ export function ArtistPage() {
                 <Label>Related Artists</Label>
                 <ScrollView style={{                  height: 175,
                   width: '100%',                  
-                  padding: '.5rem'}}>{relatedArists.map((ra) => <div><a onClick={() => dispatch(setArtistPage(ra.id))}>{ra.name}</a></div>)}</ScrollView>
+                  padding: '.5rem'}}>{relatedArists.map((ra) => <div><a onClick={() => dispatch(setArtistPage([...artistArray, ra.id]))}>{ra.name}</a></div>)}</ScrollView>
                   </FlexColumn>
             </Frame>
           </FlexRow>

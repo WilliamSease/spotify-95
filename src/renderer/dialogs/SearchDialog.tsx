@@ -154,7 +154,7 @@ export const SearchDialog = (props: IProps) => {
                 ? searchResult.artists[selected.item]
                 : undefined;
             if (!isNil(item)) {
-              dispatch(setArtistPage(item.id));
+              dispatch(setArtistPage([item.id]));
             }
           } else if (activeTab === 1) {
             const item =

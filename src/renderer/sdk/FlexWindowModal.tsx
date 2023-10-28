@@ -2,6 +2,7 @@ import { Button, Toolbar, Window, WindowHeader } from 'react95';
 import { ReactNode } from 'react';
 import { Modal } from 'renderer/sdk/Modal';
 import Label from 'renderer/sdk/Label';
+import { isNil } from 'lodash';
 
 export type BottomButton = {
   text: string;
@@ -17,6 +18,7 @@ type IProps = {
   isOpen: boolean;
   onClose: () => void;
   provideCloseButton?: boolean;
+  onBack?: () => void;
   children?: ReactNode;
   endLabel?: string;
   bottomButtons?: BottomButton[];
@@ -30,6 +32,7 @@ export const FlexWindowModal = (props: IProps) => {
     height,
     width,
     onClose,
+    onBack,
     provideCloseButton,
     children,
     endLabel,
@@ -50,6 +53,14 @@ export const FlexWindowModal = (props: IProps) => {
         >
           <WindowHeader title={title} className="window-title dragApplication">
             <span style={{ flexGrow: 1 }}>{title}</span>
+            {!isNil(onBack) && (
+              <Button
+                className="toolbarButton clickableUnderDraggable"
+                onClick={onBack}
+              >
+                {`<-`}
+              </Button>
+            )}
             {provideCloseButton && (
               <Button
                 className="toolbarButton clickableUnderDraggable"
