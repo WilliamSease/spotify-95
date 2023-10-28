@@ -1,7 +1,14 @@
 import { isNil } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Frame, GroupBox, Hourglass, ScrollView } from 'react95';
+import {
+  Button,
+  Frame,
+  GroupBox,
+  Hourglass,
+  ScrollView,
+  Toolbar,
+} from 'react95';
 import { FlexColumn, FlexRow } from 'renderer/sdk/FlexElements';
 import { FlexWindowModal } from 'renderer/sdk/FlexWindowModal';
 import Label from 'renderer/sdk/Label';
@@ -11,9 +18,10 @@ import {
   selectSpotify,
   setAddDialog,
   setArtistPage,
+  setErrorMessage,
 } from 'renderer/state/store';
 
-export const ArtistPage = () => {
+export function ArtistPage() {
   const dispatch = useDispatch();
   const currentArtist = useSelector(selectArtistPage);
   const spotify = useSelector(selectSpotify);
@@ -21,12 +29,13 @@ export const ArtistPage = () => {
     null
   );
   const [albums, setAlbums] = useState<SpotifyApi.AlbumObjectSimplified[]>([]);
+  const [relatedArists, setRelatedArtists] = useState<SpotifyApi.ArtistObjectFull[]>([])
   const getAllAlbums = useCallback(
     async (id: string) => {
       let flag = false;
       let count = 0;
       while (!flag) {
-        let next = await spotify.getArtistAlbums(id, {
+        const next = await spotify.getArtistAlbums(id, {
           offset: count,
           limit: 20,
         });
@@ -43,6 +52,9 @@ export const ArtistPage = () => {
     SpotifyApi.PlaylistObjectSimplified[]
   >([]);
   useEffect(() => {
+    setArtist(null);
+    setAlbums([]);
+    setPlaylists([]);
     if (!isNil(currentArtist)) {
       spotify.getArtist(currentArtist).then((a) => {
         setArtist(a);
@@ -50,13 +62,33 @@ export const ArtistPage = () => {
         spotify.search(a.name, ['playlist']).then((ret) => {
           setPlaylists(ret.playlists?.items ?? []);
         });
+        spotify.getArtistRelatedArtists(currentArtist).then((ret) => {
+          setRelatedArtists(ret.artists)
+        })
       });
-    } else {
-      setArtist(null);
-      setAlbums([]);
-      setPlaylists([]);
     }
   }, [currentArtist]);
+
+  const getFunctionForFindPlaylist = (formatted:string) => {
+    const failure = () =>  dispatch(setErrorMessage("There doesn't seem to be a playlist matching name '" + formatted + "'."))
+    return async () => {
+      const searchResult = await spotify.searchPlaylists(
+        formatted
+      );
+      if (searchResult.playlists.items.length > 0) {
+        const possibleResult = searchResult.playlists.items[0];
+        if (possibleResult.name === formatted) {
+        dispatch(
+          setAddDialog({
+            type: 'playlist',
+            id: possibleResult.id,
+            label: possibleResult.name,
+          }))
+        }
+         else failure()
+      } else failure()
+    }
+  }
   return (
     <FlexWindowModal
       title={!isNil(artist) ? artist.name : 'Please Wait...'}
@@ -73,23 +105,43 @@ export const ArtistPage = () => {
         />
       ) : (
         <FlexColumn style={{ height: '100%' }}>
-          <FlexRow>
+          <FlexRow style={{height:365}}>
             <img
               style={{ height: 365, width: 365 }}
               src={artist.images[0].url}
             />
-            <Frame style={{ width: '100%', height: '100%' }}>
+            <Frame style={{ width: '100%', height: '100%', }}>
               <FlexColumn>
-                <Label style={{ margin: '.5rem' }}>
+                <Label style={{ marginLeft: '.5rem', marginRight:".5rem" }}>
                   {`${artist.followers.total} Followers`}
                 </Label>
-                <Label style={{ margin: '.5rem' }}>
+                <Label style={{ marginLeft: '.5rem', marginRight:".5rem" }}>
                   {`${artist.popularity} / 100 popularity`}
                 </Label>
-                <Label style={{ margin: '.5rem' }}>{`${artist.genres.join(
-                  ', '
-                )}`}</Label>
-              </FlexColumn>
+                <Button
+                  onClick={() =>
+                    dispatch(
+                      setAddDialog({
+                        type: 'topSongs',
+                        id: artist.id,
+                        label: artist.name,
+                      })
+                    )
+                  }
+                >
+                  Top Songs
+                </Button>
+                <Button
+                  onClick={getFunctionForFindPlaylist("This Is " + artist.name)}
+                >
+                  This is {artist.name}
+                </Button>
+                <Button onClick={getFunctionForFindPlaylist(artist.name + " Radio")}>{artist.name} Radio</Button>
+                <Label>Related Artists</Label>
+                <ScrollView style={{                  height: 175,
+                  width: '100%',                  
+                  padding: '.5rem'}}>{relatedArists.map((ra) => <div><a onClick={() => dispatch(setArtistPage(ra.id))}>{ra.name}</a></div>)}</ScrollView>
+                  </FlexColumn>
             </Frame>
           </FlexRow>
           <FlexRow style={{ flexGrow: 1 }}>
@@ -115,7 +167,7 @@ export const ArtistPage = () => {
                       })
                     )
                   }
-                />{' '}
+                />
               </ScrollView>
             </Frame>
             <Frame style={{ width: '50%', height: '100%' }} variant="field">
@@ -148,4 +200,4 @@ export const ArtistPage = () => {
       )}
     </FlexWindowModal>
   );
-};
+}
