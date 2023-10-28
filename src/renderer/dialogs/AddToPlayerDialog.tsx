@@ -44,10 +44,10 @@ export const AddToPlayerDialog = () => {
       }),
     [setCheckedArray]
   );
-  useEffect(
-    () => setCheckedArray(items?.map(() => false) ?? []),
-    [setCheckedArray, items]
-  );
+  useEffect(() => {
+    setCheckedArray(items?.map(() => false) ?? []);
+    setSelectAll(true);
+  }, [setCheckedArray, items]);
 
   const selectedItems = useMemo(
     () =>

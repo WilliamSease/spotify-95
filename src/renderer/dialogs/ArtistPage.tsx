@@ -7,6 +7,7 @@ import {
   GroupBox,
   Hourglass,
   ScrollView,
+  TextInput,
   Toolbar,
 } from 'react95';
 import { FlexColumn, FlexRow } from 'renderer/sdk/FlexElements';
@@ -24,13 +25,17 @@ import {
 export function ArtistPage() {
   const dispatch = useDispatch();
   const artistArray = useSelector(selectArtistPage) ?? [];
-  const currentArtist = artistArray[artistArray.length - 1]
+  const currentArtist = artistArray[artistArray.length - 1];
   const spotify = useSelector(selectSpotify);
   const [artist, setArtist] = useState<SpotifyApi.SingleArtistResponse | null>(
     null
   );
+  const [relatedArists, setRelatedArtists] = useState<
+    SpotifyApi.ArtistObjectFull[]
+  >([]);
+
   const [albums, setAlbums] = useState<SpotifyApi.AlbumObjectSimplified[]>([]);
-  const [relatedArists, setRelatedArtists] = useState<SpotifyApi.ArtistObjectFull[]>([])
+  const [albumFilter, setAlbumFilter] = useState<string>('');
   const getAllAlbums = useCallback(
     async (id: string) => {
       let flag = false;
@@ -49,13 +54,16 @@ export function ArtistPage() {
     },
     [setAlbums, spotify]
   );
+
   const [playlists, setPlaylists] = useState<
     SpotifyApi.PlaylistObjectSimplified[]
   >([]);
+  const [playlistFilter, setPlaylistFilter] = useState<string>('');
   useEffect(() => {
     setArtist(null);
     setAlbums([]);
     setPlaylists([]);
+    setRelatedArtists([]);
     if (!isNil(currentArtist)) {
       spotify.getArtist(currentArtist).then((a) => {
         setArtist(a);
@@ -64,32 +72,38 @@ export function ArtistPage() {
           setPlaylists(ret.playlists?.items ?? []);
         });
         spotify.getArtistRelatedArtists(currentArtist).then((ret) => {
-          setRelatedArtists(ret.artists)
-        })
+          setRelatedArtists(ret.artists);
+        });
       });
     }
   }, [currentArtist]);
 
-  const getFunctionForFindPlaylist = (formatted:string) => {
-    const failure = () =>  dispatch(setErrorMessage("There doesn't seem to be a playlist matching name '" + formatted + "'."))
-    return async () => {
-      const searchResult = await spotify.searchPlaylists(
-        formatted
+  const getFunctionForFindPlaylist = (formatted: string) => {
+    const failure = () =>
+      dispatch(
+        setErrorMessage(
+          "There doesn't seem to be a playlist matching name '" +
+            formatted +
+            "'."
+        )
       );
+    return async () => {
+      const searchResult = await spotify.searchPlaylists(formatted);
       if (searchResult.playlists.items.length > 0) {
         const possibleResult = searchResult.playlists.items[0];
         if (possibleResult.name === formatted) {
-        dispatch(
-          setAddDialog({
-            type: 'playlist',
-            id: possibleResult.id,
-            label: possibleResult.name,
-          }))
-        }
-         else failure()
-      } else failure()
-    }
-  }
+          dispatch(
+            setAddDialog({
+              type: 'playlist',
+              id: possibleResult.id,
+              label: possibleResult.name,
+            })
+          );
+        } else failure();
+      } else failure();
+    };
+  };
+
   return (
     <FlexWindowModal
       title={!isNil(artist) ? artist.name : 'Please Wait...'}
@@ -97,7 +111,14 @@ export function ArtistPage() {
       width={800}
       isOpen={artistArray.length > 0}
       onClose={() => dispatch(setArtistPage(undefined))}
-      onBack={artistArray.length > 1 ? () => dispatch(setArtistPage(artistArray.slice(0,artistArray.length - 1))) : undefined}
+      onBack={
+        artistArray.length > 1
+          ? () =>
+              dispatch(
+                setArtistPage(artistArray.slice(0, artistArray.length - 1))
+              )
+          : undefined
+      }
       provideCloseButton
     >
       {isNil(artist) ? (
@@ -107,17 +128,17 @@ export function ArtistPage() {
         />
       ) : (
         <FlexColumn style={{ height: '100%' }}>
-          <FlexRow style={{height:365}}>
+          <FlexRow style={{ height: 365 }}>
             <img
               style={{ height: 365, width: 365 }}
               src={artist.images[0].url}
             />
-            <Frame style={{ width: '100%', height: '100%', }}>
+            <Frame style={{ width: '100%', height: '100%' }}>
               <FlexColumn>
-                <Label style={{ marginLeft: '.5rem', marginRight:".5rem" }}>
+                <Label style={{ marginLeft: '.5rem', marginRight: '.5rem' }}>
                   {`${artist.followers.total} Followers`}
                 </Label>
-                <Label style={{ marginLeft: '.5rem', marginRight:".5rem" }}>
+                <Label style={{ marginLeft: '.5rem', marginRight: '.5rem' }}>
                   {`${artist.popularity} / 100 popularity`}
                 </Label>
                 <Button
@@ -134,68 +155,132 @@ export function ArtistPage() {
                   Top Songs
                 </Button>
                 <Button
-                  onClick={getFunctionForFindPlaylist("This Is " + artist.name)}
+                  onClick={getFunctionForFindPlaylist('This Is ' + artist.name)}
                 >
                   This is {artist.name}
                 </Button>
-                <Button onClick={getFunctionForFindPlaylist(artist.name + " Radio")}>{artist.name} Radio</Button>
+                <Button
+                  onClick={getFunctionForFindPlaylist(artist.name + ' Radio')}
+                >
+                  {artist.name} Radio
+                </Button>
                 <Label>Related Artists</Label>
-                <ScrollView style={{                  height: 175,
-                  width: '100%',                  
-                  padding: '.5rem'}}>{relatedArists.map((ra) => <div><a onClick={() => dispatch(setArtistPage([...artistArray, ra.id]))}>{ra.name}</a></div>)}</ScrollView>
-                  </FlexColumn>
+                <Frame variant="field">
+                  <ScrollView
+                    style={{ height: 175, width: '100%', padding: '.5rem' }}
+                  >
+                    {relatedArists.map((ra) => (
+                      <div>
+                        <a
+                          onClick={() =>
+                            dispatch(setArtistPage([...artistArray, ra.id]))
+                          }
+                        >
+                          🎨 {ra.name}
+                        </a>
+                      </div>
+                    ))}
+                  </ScrollView>
+                </Frame>
+              </FlexColumn>
             </Frame>
           </FlexRow>
           <FlexRow style={{ flexGrow: 1 }}>
-            <Frame style={{ width: '50%', height: '100%' }} variant="field">
-              <ScrollView
+            <Frame
+              style={{
+                width: '50%',
+                height: 375,
+                padding: '.5rem',
+                margin: '.5rem',
+              }}
+              variant="window"
+            >
+              <Label>Albums</Label>
+              <TextInput
+                placeholder="filter..."
+                value={albumFilter}
+                onChange={(e) => setAlbumFilter(e.target.value)}
+              />
+              <Frame
                 style={{
-                  height: '100%',
+                  height: 290,
                   width: '100%',
-                  position: 'absolute',
-                  padding: '.5rem',
                 }}
+                variant="field"
               >
-                <List
-                  items={albums.map((v) => (
-                    <span>💿 {v.name}</span>
-                  ))}
-                  onSelect={(i) =>
-                    dispatch(
-                      setAddDialog({
-                        type: 'album',
-                        id: albums[i].id,
-                        label: albums[i].name,
-                      })
-                    )
-                  }
-                />
-              </ScrollView>
+                <ScrollView style={{ height: 290 }}>
+                  <List
+                    items={albums
+                      .filter(
+                        (itm) =>
+                          !isNil(itm) &&
+                          itm.name
+                            .toUpperCase()
+                            .includes(albumFilter.toUpperCase())
+                      )
+                      .map((v) => (
+                        <span>💿 {v.name}</span>
+                      ))}
+                    onSelect={(i) =>
+                      dispatch(
+                        setAddDialog({
+                          type: 'album',
+                          id: albums[i].id,
+                          label: albums[i].name,
+                        })
+                      )
+                    }
+                  />
+                </ScrollView>
+              </Frame>
             </Frame>
-            <Frame style={{ width: '50%', height: '100%' }} variant="field">
-              <ScrollView
+            <Frame
+              style={{
+                width: '50%',
+                height: 375,
+                padding: '.5rem',
+                margin: '.5rem',
+              }}
+              variant="window"
+            >
+              <Label>Playlists</Label>
+              <TextInput
+                placeholder="filter..."
+                value={playlistFilter}
+                onChange={(e) => setPlaylistFilter(e.target.value)}
+              />
+              <Frame
                 style={{
-                  height: '100%',
+                  height: 290,
                   width: '100%',
-                  position: 'absolute',
-                  padding: '.5rem',
                 }}
+                variant="field"
               >
-                <List
-                  items={playlists.map((v) => (
-                    <span>📝 {v.name}</span>
-                  ))}
-                  onSelect={(i) =>
-                    dispatch(
-                      setAddDialog({
-                        type: 'playlist',
-                        id: playlists[i].id,
-                        label: playlists[i].name,
-                      })
-                    )
-                  }
-                />
-              </ScrollView>
+                <ScrollView style={{ height: 290 }}>
+                  <List
+                    items={playlists
+                      .filter(
+                        (itm) =>
+                          !isNil(itm) &&
+                          itm.name
+                            .toUpperCase()
+                            .includes(playlistFilter.toUpperCase())
+                      )
+                      .map((v) => (
+                        <span>📝 {v.name}</span>
+                      ))}
+                    onSelect={(i) =>
+                      dispatch(
+                        setAddDialog({
+                          type: 'playlist',
+                          id: playlists[i].id,
+                          label: playlists[i].name,
+                        })
+                      )
+                    }
+                  />
+                </ScrollView>
+              </Frame>
             </Frame>
           </FlexRow>
         </FlexColumn>
