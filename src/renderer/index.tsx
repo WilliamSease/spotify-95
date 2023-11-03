@@ -8,7 +8,9 @@ document.getElementById('root')?.setAttribute('style', 'height:100%');
 const root = createRoot(container);
 root.render(
   <Provider store={store}>
+    <div style={{width:"100%", height:"100%"}} onContextMenu={(e) => e.preventDefault()}>
     <App />
+    </div>
   </Provider>
 );
 
