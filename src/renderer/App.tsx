@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   selectPlaybackItem,
   selectPlaybackState,
+  selectPlayerView,
   selectSearchTerm,
   selectShowAlbumArt,
   selectSpotify,
@@ -40,7 +41,7 @@ import { VolumeSlider } from './components/VolumeSlider';
 import { ArtDialog } from './dialogs/ArtDialog';
 import { LibraryTree } from './components/LibraryTree';
 import { PlayerList } from './components/PlayerList';
-import { AboutDialog } from './dialogs/AboutDialog';
+import { AboutDialog, TodoDialog, WhyDialog } from './dialogs/AboutDialog';
 import { DeviceDialog } from './dialogs/DeviceDialog';
 import { AddToPlayerDialog } from './dialogs/AddToPlayerDialog';
 import { FlexColumn } from './sdk/FlexElements';
@@ -84,6 +85,7 @@ export default function App() {
   const spotify = useSelector(selectSpotify);
   const playBackState = useSelector(selectPlaybackState);
   const nowPlaying = useSelector(selectPlaybackItem);
+  const playerView: 'individual' | 'group' = useSelector(selectPlayerView);
   const nowPlayingImage = useMemo(
     () =>
       isNil(nowPlaying)
@@ -131,6 +133,8 @@ export default function App() {
   const [apiTesterOpen, setApiTesterOpen] = useState(false);
   const [debuggerIsOpen, setDebuggerIsOpen] = useState(false);
   const [aboutDialogOpen, setAboutDialogOpen] = useState(false);
+  const [todoDialogOpen, setTodoDialogOpen] = useState(false);
+  const [whyDialogOpen, setWhyDialogOpen] = useState(false);
   const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [networkGraphOpen, setNetworkGraphOpen] = useState(false);
@@ -219,6 +223,14 @@ export default function App() {
           isOpen={aboutDialogOpen}
           closeThisWindow={() => setAboutDialogOpen(false)}
         />
+        <TodoDialog
+          isOpen={todoDialogOpen}
+          closeThisWindow={() => setTodoDialogOpen(false)}
+        />
+        <WhyDialog
+          isOpen={whyDialogOpen}
+          closeThisWindow={() => setWhyDialogOpen(false)}
+        />
         <DeviceDialog
           isOpen={deviceDialogOpen}
           closeThisWindow={() => setDeviceDialogOpen(false)}
@@ -277,17 +289,15 @@ export default function App() {
             menuOptions={[
               {
                 text: 'About',
-                onClick: () => {
-                  setAboutDialogOpen(true);
-                },
+                onClick: () => setAboutDialogOpen(true),
               },
               {
-                text: 'Buy me a coffee',
-                onClick: () => {},
+                text: 'Todo',
+                onClick: () => setTodoDialogOpen(true),
               },
               {
-                text: 'Buy React95 a coffee',
-                onClick: () => {},
+                text: 'Why',
+                onClick: () => setWhyDialogOpen(true),
               },
             ]}
           />
@@ -442,7 +452,9 @@ export default function App() {
                 style={{ marginLeft: '.5rem' }}
                 onClick={() => dispatch(togglePlayerView())}
               >
-                Player View
+                {playerView === 'individual'
+                  ? `Individual Tracks`
+                  : `Group Tracks By Artist/Album`}
               </Button>
               <VolumeSlider />
             </Toolbar>
