@@ -7,11 +7,11 @@ export type TokenInfo = {
 
 export type SearchResultType = {
   artists: SpotifyApi.ArtistObjectFull[];
-  albums: SpotifyApi.AlbumObjectFull[];
-  tracks: SpotifyApi.TrackObjectFull[];
-  shows: SpotifyApi.ShowObjectFull[];
-  episodes: SpotifyApi.EpisodeObjectFull[];
-  playlists: SpotifyApi.PlaylistObjectFull[];
+  albums: SpotifyApi.AlbumObjectSimplified[];
+  tracks: SpotifyApi.TrackObjectSimplified[];
+  shows: SpotifyApi.ShowObjectSimplified[];
+  episodes: SpotifyApi.EpisodeObjectSimplified[];
+  playlists: SpotifyApi.PlaylistObjectSimplified[];
 };
 
 export type Playable =

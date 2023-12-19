@@ -112,9 +112,7 @@ export async function appendToSearchResult(
         limit: 10,
       })
     ).albums.items;
-    copy.albums.push(
-      ...(await spotify.getAlbums(newAlbums.map((na) => na.id))).albums
-    );
+    copy.albums.push(...newAlbums);
   }
   if (type === 2 || type === 'ALL') {
     const newTracks = (
@@ -123,9 +121,7 @@ export async function appendToSearchResult(
         limit: 10,
       })
     ).tracks.items;
-    copy.tracks.push(
-      ...(await spotify.getTracks(newTracks.map((na) => na.id))).tracks
-    );
+    copy.tracks.push(...newTracks);
   }
   if (type === 3 || type === 'ALL') {
     const newShows = (
@@ -134,9 +130,7 @@ export async function appendToSearchResult(
         limit: 10,
       })
     ).shows.items;
-    copy.shows.push(
-      ...(await spotify.getShows(newShows.map((na) => na.id))).shows
-    );
+    copy.shows.push(...newShows);
   }
   if (type === 4 || type === 'ALL') {
     const newEpisodes = (
@@ -145,9 +139,7 @@ export async function appendToSearchResult(
         limit: 10,
       })
     ).episodes.items;
-    copy.episodes.push(
-      ...(await spotify.getEpisodes(newEpisodes.map((na) => na.id))).episodes
-    );
+    copy.episodes.push(...newEpisodes);
   }
   if (type === 5 || type === 'ALL') {
     const newPlaylists = (
@@ -156,9 +148,7 @@ export async function appendToSearchResult(
         limit: 10,
       })
     ).playlists.items;
-    for (let i = 0; i < newPlaylists.length; i++) {
-      copy.playlists.push(await spotify.getPlaylist(newPlaylists[i].id));
-    }
+    copy.playlists.push(...newPlaylists);
   }
   return copy;
 }
