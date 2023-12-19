@@ -30,7 +30,7 @@ export const AboutDialog = (props: IProps) => {
       >
         <img style={{ borderRadius: 300 }} src={logo} />
         <div style={{ marginTop: '.25rem' }}>
-          Spotify95 October 2023 [Unreleased]
+          Spotify95 December 2023 [Alpha]
         </div>
         <Anchor target={'_blank'} href="https://WilliamASease.github.io">
           William Sease
@@ -87,9 +87,7 @@ export const TodoDialog = (props: IProps) => {
           entry, for example)
         </div>
         <div>Generate new tracks based on state of player and display them</div>
-        <div>
-          Unbreak resizing and maybe make the main window resizable, someday
-        </div>
+        <div>Unbreak resizing make the main window resizable</div>
       </div>
     </FlexWindowModal>
   );
