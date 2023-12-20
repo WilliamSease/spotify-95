@@ -344,6 +344,7 @@ export default function App() {
               style={{
                 backgroundColor: connection === 'Desync' ? 'red' : undefined,
                 padding: '.2rem',
+                minWidth: '5rem',
               }}
             >
               📶 {connection}

@@ -93,9 +93,15 @@ export const AddToPlayerDialog = () => {
           setCount(out.length);
         });
       } else if (toAdd.type === 'showEpisodes') {
-        spotify.getShowEpisodes(toAdd.id).then((result) => {
+        spotify.getShowEpisodes(toAdd.id).then(async (result) => {
           setCount(result.total);
           setRange([0, result.total]);
+          if (result.items.length === result.total) {
+            setItems(
+              (await spotify.getEpisodes(result.items.map((i) => i.id)))
+                .episodes
+            );
+          }
         });
       } else if (toAdd.type === 'playlist') {
         spotify.getPlaylistTracks(toAdd.id).then((result) => {

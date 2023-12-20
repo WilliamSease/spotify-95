@@ -1,6 +1,6 @@
 {
   "name": "spotify-95",
-  "version": "0.1.0",
+  "version": "Alpha 1 Prerelease",
   "description": "A React95 frontend for spotify",
   "main": "./src/main/main.ts",
   "scripts": {

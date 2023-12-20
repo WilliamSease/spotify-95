@@ -87,7 +87,10 @@ export const DeviceDialog = (props: IProps) => {
           return getDeviceComponent(i, selectedIndex, devices);
         })
       ) : (
-        <div>No devices! Is Spotify running? Are you authenticated?</div>
+        <div style={{ height: '4rem' }}>
+          <div>No devices!</div>
+          <div>--Is Spotify running?</div> <div>--Are you authenticated?</div>
+        </div>
       )}
     </FlexWindowModal>
   );

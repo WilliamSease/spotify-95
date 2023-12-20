@@ -88,6 +88,7 @@ export const TodoDialog = (props: IProps) => {
         </div>
         <div>Generate new tracks based on state of player and display them</div>
         <div>Unbreak resizing make the main window resizable</div>
+        <div>Persistent settings & more settings</div>
       </div>
     </FlexWindowModal>
   );
