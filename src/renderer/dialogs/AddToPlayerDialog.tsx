@@ -1,4 +1,4 @@
-import { cloneDeep, isNil } from 'lodash';
+import { cloneDeep, isNil, max, min } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -6,6 +6,7 @@ import {
   Checkbox,
   Frame,
   Hourglass,
+  NumberInput,
   ProgressBar,
   Radio,
   ScrollView,
@@ -93,18 +94,20 @@ export const AddToPlayerDialog = () => {
           setCount(out.length);
         });
       } else if (toAdd.type === 'showEpisodes') {
-        spotify.getShowEpisodes(toAdd.id).then(async (result) => {
-          setCount(result.total);
-          setRange([0, result.total]);
-          if (result.items.length === result.total) {
-            setItems(
-              (await spotify.getEpisodes(result.items.map((i) => i.id)))
-                .episodes
-            );
-          }
-        });
+        spotify
+          .getShowEpisodes(toAdd.id, { limit: 50 })
+          .then(async (result) => {
+            setCount(result.total);
+            setRange([0, result.total]);
+            if (result.items.length === result.total) {
+              setItems(
+                (await spotify.getEpisodes(result.items.map((i) => i.id)))
+                  .episodes
+              );
+            }
+          });
       } else if (toAdd.type === 'playlist') {
-        spotify.getPlaylistTracks(toAdd.id).then((result) => {
+        spotify.getPlaylistTracks(toAdd.id, { limit: 50 }).then((result) => {
           setCount(result.total);
           if (result.total > 50) {
             setRange([0, result.total]);
@@ -177,11 +180,34 @@ export const AddToPlayerDialog = () => {
                     onChange={() => setRange([0, count])}
                     label={`Query all ${count} items`}
                   />
-                  <Radio
-                    checked={range[0] !== 0 || range[1] !== count}
-                    onChange={() => setRange([0, 100])}
-                    label={`Query items 0 to 100`}
-                  />
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      width: '100%',
+                    }}
+                  >
+                    <Radio
+                      style={{ width: '50%' }}
+                      checked={range[0] !== 0 || range[1] !== count}
+                      onChange={() => setRange([0, 100])}
+                      label={`Query items`}
+                    />
+                    <NumberInput
+                      min={1}
+                      max={count}
+                      onChange={(v) => setRange([max([0, v]) ?? 0, range[1]])}
+                      defaultValue={0}
+                    />
+                    <NumberInput
+                      min={1}
+                      max={count}
+                      onChange={(v) =>
+                        setRange([range[0], min([v, count]) ?? count])
+                      }
+                      defaultValue={min([100, count])}
+                    />
+                  </div>
                   <Checkbox
                     label={'Select All'}
                     checked={selectAll}

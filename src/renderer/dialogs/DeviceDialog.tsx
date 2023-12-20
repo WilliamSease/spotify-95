@@ -56,7 +56,11 @@ export const DeviceDialog = (props: IProps) => {
   return (
     <FlexWindowModal
       title={'Select Device'}
-      height={!isNil(devices) ? 100 + 50 * devices.devices.length : 500}
+      height={
+        !isNil(devices) && devices?.devices.length > 0
+          ? 150 + 50 * devices.devices.length
+          : 400
+      }
       width={500}
       isOpen={isOpen}
       onClose={closeThisWindow}
@@ -82,6 +86,8 @@ export const DeviceDialog = (props: IProps) => {
         },
       ]}
     >
+      <div>After transfering playback, play any song.</div>
+      <div>This feature is a work in progress and somewhat flaky.</div>
       {!isNil(devices) && devices?.devices.length > 0 ? (
         devices?.devices.map((d, i) => {
           return getDeviceComponent(i, selectedIndex, devices);

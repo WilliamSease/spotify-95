@@ -134,8 +134,7 @@ export const WhyDialog = (props: IProps) => {
         </div>
         <div>
           Browsing your favorite artists/albums/playlists with a tree is also
-          the only sensible way to do it, everytime I see Spotify's left panel I
-          think "why isn't this a tree?"
+          the only sensible way to do it
         </div>
       </div>
     </FlexWindowModal>
