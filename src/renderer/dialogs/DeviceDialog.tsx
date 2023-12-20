@@ -56,7 +56,7 @@ export const DeviceDialog = (props: IProps) => {
   return (
     <FlexWindowModal
       title={'Select Device'}
-      height={100 + 50 * (!isNil(devices) ? devices.devices.length : 0)}
+      height={!isNil(devices) ? 100 + 50 * devices.devices.length : 500}
       width={500}
       isOpen={isOpen}
       onClose={closeThisWindow}

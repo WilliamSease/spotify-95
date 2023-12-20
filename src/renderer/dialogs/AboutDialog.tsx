@@ -126,8 +126,7 @@ export const WhyDialog = (props: IProps) => {
           .
         </div>
         <div>
-          Less emphasis on an algorithm serving you one track after an another
-          (A behavior spotify is pretty much constantly routing you to)
+          Less emphasis on the algorithm serving you one track after an another
         </div>
         <div>
           More emphasis on having you queue up some albums and then not really
