@@ -19,7 +19,6 @@ export default function MenuButtonWithDropDown(props: IProps) {
       <Button
         variant="thin"
         onClick={() => setOpen(!open)}
-        onMouseLeave={() => setOpen(false)}
         active={open}
       >
         {buttonText}
