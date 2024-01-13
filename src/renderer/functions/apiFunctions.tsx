@@ -61,14 +61,19 @@ export async function populateLibrary(spotify: SpotifyWebApi.SpotifyWebApiJs) {
   while (nextAlbums.next) {
     nextAlbums = await spotify.getMySavedAlbums({
       after: new URLSearchParams(nextAlbums.next).get('after'),
+      limit:20,
+      offset:out.albums.length
     });
     out.albums.push(...nextAlbums.items.map((a) => a.album));
+    console.info(nextAlbums.next)
   }
   let nextShows = await spotify.getMySavedShows();
   out.shows.push(...nextShows.items.map((s) => s.show));
   while (nextShows.next) {
     nextShows = await spotify.getMySavedShows({
       after: new URLSearchParams(nextShows.next).get('after'),
+      limit:20,
+      offset:out.shows.length
     });
     out.shows.push(...nextShows.items.map((s) => s.show));
   }
@@ -76,7 +81,7 @@ export async function populateLibrary(spotify: SpotifyWebApi.SpotifyWebApiJs) {
   for (let i = 0; i < playlistCount; i += 50) {
     out.playlists.push(
       ...(
-        await spotify.getUserPlaylists(undefined, { offset: i, limit: i + 50 })
+        await spotify.getUserPlaylists(undefined, { offset: i, limit: 50 })
       ).items
     );
   }
