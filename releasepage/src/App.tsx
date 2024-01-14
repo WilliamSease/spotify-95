@@ -201,7 +201,7 @@ const App = () => {
                   <Link
                     link="https://WilliamASease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.3.0.exe"
                     linkText="spotify95 Setup 0.3.0.exe"
-                    additionalText="Some styling fixes, some more help information added"
+                    additionalText="Asks for less permissions during authentication"
                   />
                 </div>
                 <div>
