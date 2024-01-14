@@ -244,6 +244,18 @@ const App = () => {
                     textDecoration: 'underline',
                     marginRight: '1rem',
                   }}
+                  href="https://github.com/WilliamASease/spotify-95"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  Repository
+                </a>
+                <a
+                  style={{
+                    color: 'blue',
+                    textDecoration: 'underline',
+                    marginRight: '1rem',
+                  }}
                   href="https://github.com/electron-react-boilerplate/electron-react-boilerplate"
                   target="_blank"
                   rel="noreferrer noopener"
