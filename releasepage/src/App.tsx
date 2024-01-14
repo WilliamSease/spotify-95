@@ -14,6 +14,7 @@ import original from 'react95/dist/themes/original';
 // original Windows95 font (optionally)
 import ms_sans_serif from 'react95/dist/fonts/ms_sans_serif.woff2';
 import ms_sans_serif_bold from 'react95/dist/fonts/ms_sans_serif_bold.woff2';
+import { isMobile } from 'react-device-detect';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -86,8 +87,16 @@ const BlackoutModal = (props: {
             Next
           </Button>
         </div>
-        <div style={{ flexGrow: 1, marginTop: 20, alignSelf: 'center' }}>
+        <div
+          style={{
+            flexGrow: 1,
+            marginTop: 20,
+            alignSelf: 'center',
+            width: '90%',
+          }}
+        >
           <img
+            style={{ width: '100%' }}
             src={`https://WilliamASease.github.io/spotify-95/releasepage/build/screen${props.openScreen}.png`}
             alt={`screen${props.openScreen}`}
           />
@@ -122,7 +131,21 @@ const Link = (props: {
 const App = () => {
   const [openScreen, setOpenScreen] = useState(0);
   return (
-    <div style={{ height: '100%' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: isMobile ? '90%' : 1100,
+        flexGrow: 1,
+        backgroundColor: 'white',
+        marginLeft: isMobile ? 5 : undefined,
+        marginRight: isMobile ? 5 : undefined,
+        paddingLeft: 5,
+        paddingRight: 5,
+        height: '100%',
+        alignItems: 'center',
+      }}
+    >
       <GlobalStyles />
       <ThemeProvider theme={original}>
         <Window style={{ width: '100%', height: '100%' }}>
@@ -160,6 +183,13 @@ const App = () => {
               </ScrollView>
             </GroupBox>
             <GroupBox label="Downloads" style={{ marginTop: '1rem' }}>
+              <div>
+                <Link
+                  link="https://WilliamASease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.2.0.exe"
+                  linkText="spotify95 Setup 0.2.0.exe"
+                  additionalText="Some styling fixes, some more help information added"
+                />
+              </div>
               <div>
                 <Link
                   link="https://WilliamASease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.1.0.exe"

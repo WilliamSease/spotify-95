@@ -6,7 +6,6 @@ import {
   TextInput,
   Toolbar,
   Window,
-  WindowContent,
   WindowHeader,
 } from 'react95';
 import ms_sans_serif from 'react95/dist/fonts/ms_sans_serif.woff2';
@@ -26,11 +25,9 @@ import {
   selectShowAlbumArt,
   selectSpotify,
   selectTheme,
-  setArtURL,
   setPlaybackItem,
   setPlaybackState,
   setSearchTerm,
-  setToPlayer,
   togglePlayerView,
   toggleShowAlbumArt,
 } from './state/store';
@@ -50,10 +47,11 @@ import { Debugger } from './dialogs/Debugger';
 import { useClock } from './sdk/useClock';
 import axios from 'axios';
 import { ErrorDialog } from './dialogs/ErrorDialog';
-import Label from './sdk/Label';
 import { NetworkGraphDialog } from './dialogs/NetworkGraphDialog';
 import { FocusModeDialog } from './dialogs/FocusModeDialog';
 import { ArtistPage } from './dialogs/ArtistPage';
+import { HelpDialog } from './dialogs/HelpDialog';
+import { ContactDialog } from './dialogs/ContactDialog';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -135,6 +133,8 @@ export default function App() {
   const [aboutDialogOpen, setAboutDialogOpen] = useState(false);
   const [todoDialogOpen, setTodoDialogOpen] = useState(false);
   const [whyDialogOpen, setWhyDialogOpen] = useState(false);
+  const [helpDialogOpen, setHelpDialogOpen] = useState(false);
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [networkGraphOpen, setNetworkGraphOpen] = useState(false);
@@ -223,6 +223,16 @@ export default function App() {
           isOpen={aboutDialogOpen}
           closeThisWindow={() => setAboutDialogOpen(false)}
         />
+        <HelpDialog
+          isOpen={helpDialogOpen}
+          closeThisWindow={() => setHelpDialogOpen(false)}
+        />
+        {contactDialogOpen && (
+          <ContactDialog
+            isOpen={contactDialogOpen}
+            closeThisWindow={() => setContactDialogOpen(false)}
+          />
+        )}
         <TodoDialog
           isOpen={todoDialogOpen}
           closeThisWindow={() => setTodoDialogOpen(false)}
@@ -303,6 +313,12 @@ export default function App() {
           />
           <Button variant="thin" onClick={() => setFocusModeOpen(true)}>
             Focus
+          </Button>
+          <Button variant="thin" onClick={() => setHelpDialogOpen(true)}>
+            Help
+          </Button>
+          <Button variant="thin" onClick={() => setContactDialogOpen(true)}>
+            Contact
           </Button>
           <span style={{ flexGrow: 1 }} />
           <TextInput
