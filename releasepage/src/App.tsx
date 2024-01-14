@@ -138,27 +138,31 @@ const App = () => {
               </ScrollView>
             </GroupBox>
             <GroupBox label="Downloads" style={{ marginTop: '1rem' }}>
-              <a
-                style={{
-                  color: 'blue',
-                  textDecoration: 'underline',
-                  cursor: 'pointer',
-                }}
-                href="https://WilliamASease.github.io/spotify-95/releasepage/downloads/win-0.0.1.rar"
-              >
-                Windows 0.0.1
-              </a>
-              <a
-                style={{
-                  color: 'blue',
-                  textDecoration: 'underline',
-                  cursor: 'pointer',
-                }}
-                href="https://WilliamASease.github.io/spotify-95/releasepage/downloads/win-0.0.2.rar"
-              >
-                Windows 0.0.2 -- Couple of usability improvements, some edge
-                case crashes fixed
-              </a>
+              <div>
+                <a
+                  style={{
+                    color: 'blue',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                  }}
+                  href="https://WilliamASease.github.io/spotify-95/releasepage/downloads/win-0.0.1.rar"
+                >
+                  Windows 0.0.1
+                </a>
+              </div>
+              <div>
+                <a
+                  style={{
+                    color: 'blue',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                  }}
+                  href="https://WilliamASease.github.io/spotify-95/releasepage/downloads/win-0.0.2.rar"
+                >
+                  Windows 0.0.2 -- Couple of usability improvements, some edge
+                  case crashes fixed
+                </a>
+              </div>
             </GroupBox>
             <GroupBox label="Links" style={{ marginTop: '1rem' }}>
               <a
