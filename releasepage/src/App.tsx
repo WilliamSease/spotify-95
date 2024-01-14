@@ -174,6 +174,7 @@ const App = () => {
                 src="https://WilliamASease.github.io/spotify-95/releasepage/build/spotify95.png"
                 alt="Spotify95"
                 style={{ borderRadius: 300 }}
+                width={isMobile ? '80%' : undefined}
               />
               <GroupBox label="What" style={{ marginTop: '1rem' }}>
                 <ScrollView style={{ padding: '1rem', background: 'white' }}>
