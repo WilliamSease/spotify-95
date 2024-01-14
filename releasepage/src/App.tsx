@@ -148,107 +148,123 @@ const App = () => {
     >
       <GlobalStyles />
       <ThemeProvider theme={original}>
-        <Window style={{ width: '100%', height: '100%' }}>
+        <Window
+          style={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <BlackoutModal
             openScreen={openScreen}
             setOpenScreen={setOpenScreen}
           />
           <WindowHeader>Spotify95</WindowHeader>
-          <WindowContent>
-            <img
-              src="https://WilliamASease.github.io/spotify-95/releasepage/build/spotify95.png"
-              alt="Spotify95"
-              style={{ borderRadius: 300 }}
-            />
-            <GroupBox label="What" style={{ marginTop: '1rem' }}>
-              <ScrollView style={{ padding: '1rem', background: 'white' }}>
-                An electron Spotify frontend utilizing stylish React95.
-              </ScrollView>
-            </GroupBox>
-            <GroupBox
-              label="Screens (click to open)"
-              style={{ marginTop: '1rem' }}
-            >
-              <ScrollView
-                style={{ padding: '1rem', background: 'white', height: 200 }}
+          <WindowContent
+            style={{
+              flexGrow: 1,
+              flexDirection: 'column',
+              display: 'flex',
+              height: '1px',
+            }}
+          >
+            <ScrollView style={{ flexGrow: 1, height: 1, padding: '1rem' }}>
+              <img
+                src="https://WilliamASease.github.io/spotify-95/releasepage/build/spotify95.png"
+                alt="Spotify95"
+                style={{ borderRadius: 300 }}
+              />
+              <GroupBox label="What" style={{ marginTop: '1rem' }}>
+                <ScrollView style={{ padding: '1rem', background: 'white' }}>
+                  An electron Spotify frontend utilizing stylish React95.
+                </ScrollView>
+              </GroupBox>
+              <GroupBox
+                label="Screens (click to open)"
+                style={{ marginTop: '1rem' }}
               >
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <img
-                    src={`https://WilliamASease.github.io/spotify-95/releasepage/build/screen${i}.png`}
-                    alt={`screen${i}`}
-                    style={{ height: 100, marginRight: 20 }}
-                    onClick={() => setOpenScreen(i)}
+                <ScrollView
+                  style={{ padding: '1rem', background: 'white', height: 200 }}
+                >
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <img
+                      src={`https://WilliamASease.github.io/spotify-95/releasepage/build/screen${i}.png`}
+                      alt={`screen${i}`}
+                      style={{ height: 100, marginRight: 20 }}
+                      onClick={() => setOpenScreen(i)}
+                    />
+                  ))}
+                </ScrollView>
+              </GroupBox>
+              <GroupBox label="Downloads" style={{ marginTop: '1rem' }}>
+                <div>
+                  <Link
+                    link="https://WilliamASease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.2.0.exe"
+                    linkText="spotify95 Setup 0.2.0.exe"
+                    additionalText="Some styling fixes, some more help information added"
                   />
-                ))}
-              </ScrollView>
-            </GroupBox>
-            <GroupBox label="Downloads" style={{ marginTop: '1rem' }}>
-              <div>
-                <Link
-                  link="https://WilliamASease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.2.0.exe"
-                  linkText="spotify95 Setup 0.2.0.exe"
-                  additionalText="Some styling fixes, some more help information added"
-                />
-              </div>
-              <div>
-                <Link
-                  link="https://WilliamASease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.1.0.exe"
-                  linkText="spotify95 Setup 0.1.0.exe"
-                  additionalText="Initial release!"
-                />
-              </div>
-            </GroupBox>
-            <GroupBox label="Links" style={{ marginTop: '1rem' }}>
-              <a
-                style={{
-                  color: 'blue',
-                  textDecoration: 'underline',
-                  cursor: 'pointer',
-                  marginRight: '1rem',
-                }}
-                href="https://WilliamASease.github.io/"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                William Sease
-              </a>
-              <a
-                style={{
-                  color: 'blue',
-                  textDecoration: 'underline',
-                  marginRight: '1rem',
-                }}
-                href="https://react95.io/"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                React 95
-              </a>
-              <a
-                style={{
-                  color: 'blue',
-                  textDecoration: 'underline',
-                  marginRight: '1rem',
-                }}
-                href="https://github.com/electron-react-boilerplate/electron-react-boilerplate"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                Election React Boilerplate
-              </a>
-              <a
-                style={{
-                  color: 'blue',
-                  textDecoration: 'underline',
-                  marginRight: '1rem',
-                }}
-                href="https://github.com/JMPerez/spotify-web-api-js"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                JS Spotify Web API{' '}
-              </a>
-            </GroupBox>
+                </div>
+                <div>
+                  <Link
+                    link="https://WilliamASease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.1.0.exe"
+                    linkText="spotify95 Setup 0.1.0.exe"
+                    additionalText="Initial release!"
+                  />
+                </div>
+              </GroupBox>
+              <GroupBox label="Links" style={{ marginTop: '1rem' }}>
+                <a
+                  style={{
+                    color: 'blue',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    marginRight: '1rem',
+                  }}
+                  href="https://WilliamASease.github.io/"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  William Sease
+                </a>
+                <a
+                  style={{
+                    color: 'blue',
+                    textDecoration: 'underline',
+                    marginRight: '1rem',
+                  }}
+                  href="https://react95.io/"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  React 95
+                </a>
+                <a
+                  style={{
+                    color: 'blue',
+                    textDecoration: 'underline',
+                    marginRight: '1rem',
+                  }}
+                  href="https://github.com/electron-react-boilerplate/electron-react-boilerplate"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  Election React Boilerplate
+                </a>
+                <a
+                  style={{
+                    color: 'blue',
+                    textDecoration: 'underline',
+                    marginRight: '1rem',
+                  }}
+                  href="https://github.com/JMPerez/spotify-web-api-js"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  JS Spotify Web API{' '}
+                </a>
+              </GroupBox>
+            </ScrollView>
           </WindowContent>
         </Window>
       </ThemeProvider>
