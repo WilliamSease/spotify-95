@@ -11,24 +11,18 @@ export const triggerLogin = () => {
   const clientId = '2d8d7d7d0f6241fcb7cf54fc5b2e24a8';
   const redirectUri = 'spotify-95://gotToken';
   const scopes = [
-    'ugc-image-upload',
     'user-read-playback-state',
     'user-modify-playback-state',
     'app-remote-control',
     'streaming',
     'playlist-read-private',
     'playlist-read-collaborative',
-    'playlist-modify-private',
-    'playlist-modify-public',
-    'user-follow-modify',
     'user-follow-read',
     'user-read-playback-position',
     'user-top-read',
     'user-read-recently-played',
-    'user-library-modify',
     'user-library-read',
     'user-read-email',
-    'user-read-private',
   ];
 
   const authorizationUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
@@ -61,28 +55,27 @@ export async function populateLibrary(spotify: SpotifyWebApi.SpotifyWebApiJs) {
   while (nextAlbums.next) {
     nextAlbums = await spotify.getMySavedAlbums({
       after: new URLSearchParams(nextAlbums.next).get('after'),
-      limit:20,
-      offset:out.albums.length
+      limit: 20,
+      offset: out.albums.length,
     });
     out.albums.push(...nextAlbums.items.map((a) => a.album));
-    console.info(nextAlbums.next)
+    console.info(nextAlbums.next);
   }
   let nextShows = await spotify.getMySavedShows();
   out.shows.push(...nextShows.items.map((s) => s.show));
   while (nextShows.next) {
     nextShows = await spotify.getMySavedShows({
       after: new URLSearchParams(nextShows.next).get('after'),
-      limit:20,
-      offset:out.shows.length
+      limit: 20,
+      offset: out.shows.length,
     });
     out.shows.push(...nextShows.items.map((s) => s.show));
   }
   const playlistCount = (await spotify.getUserPlaylists()).total;
   for (let i = 0; i < playlistCount; i += 50) {
     out.playlists.push(
-      ...(
-        await spotify.getUserPlaylists(undefined, { offset: i, limit: 50 })
-      ).items
+      ...(await spotify.getUserPlaylists(undefined, { offset: i, limit: 50 }))
+        .items
     );
   }
 

@@ -37,7 +37,7 @@ export const AboutDialog = (props: IProps) => {
           >
             Spotify95
           </Anchor>{' '}
-          0.2.0
+          0.3.0
         </div>
         <Anchor target={'_blank'} href="https://WilliamASease.github.io">
           William Sease
