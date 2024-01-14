@@ -1,7 +1,6 @@
 import React from 'react';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import {
-  Anchor,
   GroupBox,
   styleReset,
   Window,
@@ -40,13 +39,50 @@ const App = () => (
       <Window style={{ width: '100%', height: '100%' }}>
         <WindowHeader>Spotify95 for React95</WindowHeader>
         <WindowContent>
-          <GroupBox label="Downloads">
-            <Anchor
-              href="WilliamASease.github.io/spotify-95/releasepage/downloads/win-0.0.1.rar"
-              target="_blank"
+          <img
+            src="https://WilliamASease.github.io/spotify-95/releasepage/build/spotify95.png"
+            alt="Spotify95"
+          />
+          <GroupBox label="What" style={{ marginTop: '1rem' }}>
+            <div style={{ padding: '1rem', background: 'white' }}>
+              An electron Spotify frontend written in stylish React95.
+            </div>
+          </GroupBox>
+          <GroupBox label="Screens" style={{ marginTop: '1rem' }}>
+            <div style={{ padding: '1rem', background: 'white' }}>
+              <img
+                src="https://WilliamASease.github.io/spotify-95/releasepage/build/screen1.png"
+                alt="screen1"
+              />
+              <img
+                src="https://WilliamASease.github.io/spotify-95/releasepage/build/screen2.png"
+                alt="screen2"
+              />
+              <img
+                src="https://WilliamASease.github.io/spotify-95/releasepage/build/screen3.png"
+                alt="screen3"
+              />
+              <img
+                src="https://WilliamASease.github.io/spotify-95/releasepage/build/screen4.png"
+                alt="screen4"
+              />
+              <img
+                src="https://WilliamASease.github.io/spotify-95/releasepage/build/screen5.png"
+                alt="screen5"
+              />
+            </div>
+          </GroupBox>
+          <GroupBox label="Downloads" style={{ marginTop: '1rem' }}>
+            <a
+              style={{
+                color: 'blue',
+                textDecoration: 'underline',
+                cursor: 'pointer',
+              }}
+              href="https://WilliamASease.github.io/spotify-95/releasepage/downloads/win-0.0.1.rar"
             >
               Windows 0.0.1
-            </Anchor>
+            </a>
           </GroupBox>
         </WindowContent>
       </Window>
