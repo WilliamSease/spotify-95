@@ -184,9 +184,7 @@ const App = () => {
                 label="Screens (click to open)"
                 style={{ marginTop: '1rem' }}
               >
-                <ScrollView
-                  style={{ padding: '1rem', background: 'white', height: 200 }}
-                >
+                <ScrollView style={{ padding: '1rem', background: 'white' }}>
                   {[1, 2, 3, 4, 5].map((i) => (
                     <img
                       src={`https://WilliamASease.github.io/spotify-95/releasepage/build/screen${i}.png`}
