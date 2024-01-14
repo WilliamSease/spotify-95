@@ -97,6 +97,28 @@ const BlackoutModal = (props: {
   ) : null;
 };
 
+const Link = (props: {
+  link: string;
+  linkText: string;
+  additionalText?: string;
+}) => (
+  <>
+    <a
+      style={{
+        color: 'blue',
+        textDecoration: 'underline',
+        marginRight: '1rem',
+      }}
+      href={props.link}
+      target="_blank"
+      rel="noreferrer noopener"
+    >
+      {props.linkText}
+    </a>
+    {props.additionalText && <span>{props.additionalText}</span>}
+  </>
+);
+
 const App = () => {
   const [openScreen, setOpenScreen] = useState(0);
   return (
@@ -139,29 +161,11 @@ const App = () => {
             </GroupBox>
             <GroupBox label="Downloads" style={{ marginTop: '1rem' }}>
               <div>
-                <a
-                  style={{
-                    color: 'blue',
-                    textDecoration: 'underline',
-                    cursor: 'pointer',
-                  }}
-                  href="https://WilliamASease.github.io/spotify-95/releasepage/downloads/win-0.0.1.zip"
-                >
-                  Windows 0.0.1
-                </a>
-              </div>
-              <div>
-                <a
-                  style={{
-                    color: 'blue',
-                    textDecoration: 'underline',
-                    cursor: 'pointer',
-                  }}
-                  href="https://WilliamASease.github.io/spotify-95/releasepage/downloads/win-0.0.2.zip"
-                >
-                  Windows 0.0.2 -- Couple of usability improvements, some edge
-                  case crashes fixed
-                </a>
+                <Link
+                  link="https://WilliamASease.github.io/spotify-95/releasepage/downloads/spotify95-win-0.1.0-setup.exe"
+                  linkText="spotify95-win-0.1.0-setup.exe"
+                  additionalText="Initial release!"
+                />
               </div>
             </GroupBox>
             <GroupBox label="Links" style={{ marginTop: '1rem' }}>
