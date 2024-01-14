@@ -145,7 +145,7 @@ const App = () => {
                     textDecoration: 'underline',
                     cursor: 'pointer',
                   }}
-                  href="https://WilliamASease.github.io/spotify-95/releasepage/downloads/win-0.0.1.rar"
+                  href="https://WilliamASease.github.io/spotify-95/releasepage/downloads/win-0.0.1.zip"
                 >
                   Windows 0.0.1
                 </a>
@@ -157,7 +157,7 @@ const App = () => {
                     textDecoration: 'underline',
                     cursor: 'pointer',
                   }}
-                  href="https://WilliamASease.github.io/spotify-95/releasepage/downloads/win-0.0.2.rar"
+                  href="https://WilliamASease.github.io/spotify-95/releasepage/downloads/win-0.0.2.zip"
                 >
                   Windows 0.0.2 -- Couple of usability improvements, some edge
                   case crashes fixed
