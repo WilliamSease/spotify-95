@@ -22,7 +22,6 @@ export const triggerLogin = () => {
     'user-top-read',
     'user-read-recently-played',
     'user-library-read',
-    'user-read-email',
   ];
 
   const authorizationUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
