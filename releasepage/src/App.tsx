@@ -36,9 +36,9 @@ const GlobalStyles = createGlobalStyle`
 
 const BlackoutModal = (props: {
   openScreen: number;
-  setOpenScreen: (toSet: number) => void;
+  setOpenScreen: React.Dispatch<React.SetStateAction<number>>;
 }) => {
-  return props.openScreen > 0 ? (
+  return props.openScreen > 0 && props.openScreen < 6 ? (
     <div
       style={{
         width: '100%',
@@ -63,6 +63,27 @@ const BlackoutModal = (props: {
             onClick={() => props.setOpenScreen(0)}
           >
             Back
+          </Button>
+          <Button
+            variant="default"
+            style={{ marginLeft: 10, marginTop: 10 }}
+            onClick={() =>
+              props.setOpenScreen((prev: number) => (prev > 1 ? prev - 1 : 5))
+            }
+          >
+            Prev
+          </Button>
+          <Button variant="thin" style={{ marginLeft: 10, marginTop: 10 }}>
+            {`${props.openScreen} / ${5}`}
+          </Button>
+          <Button
+            variant="default"
+            style={{ marginLeft: 10, marginTop: 10 }}
+            onClick={() =>
+              props.setOpenScreen((prev: number) => (prev < 5 ? prev + 1 : 1))
+            }
+          >
+            Next
           </Button>
         </div>
         <div style={{ flexGrow: 1, marginTop: 20, alignSelf: 'center' }}>
@@ -126,6 +147,57 @@ const App = () => {
                 href="https://WilliamASease.github.io/spotify-95/releasepage/downloads/win-0.0.1.rar"
               >
                 Windows 0.0.1
+              </a>
+            </GroupBox>
+            <GroupBox label="Links" style={{ marginTop: '1rem' }}>
+              <a
+                style={{
+                  color: 'blue',
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  marginRight: '1rem',
+                }}
+                href="https://WilliamASease.github.io/"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                William Sease
+              </a>
+              <a
+                style={{
+                  color: 'blue',
+                  textDecoration: 'underline',
+                  marginRight: '1rem',
+                }}
+                href="https://react95.io/"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                React 95
+              </a>
+              <a
+                style={{
+                  color: 'blue',
+                  textDecoration: 'underline',
+                  marginRight: '1rem',
+                }}
+                href="https://github.com/electron-react-boilerplate/electron-react-boilerplate"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                Election React Boilerplate
+              </a>
+              <a
+                style={{
+                  color: 'blue',
+                  textDecoration: 'underline',
+                  marginRight: '1rem',
+                }}
+                href="https://github.com/JMPerez/spotify-web-api-js"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                JS Spotify Web API{' '}
               </a>
             </GroupBox>
           </WindowContent>
