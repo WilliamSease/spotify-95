@@ -199,23 +199,9 @@ const App = () => {
               <GroupBox label="Downloads" style={{ marginTop: '1rem' }}>
                 <div>
                   <Link
-                    link="https://WilliamASease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.3.0.exe"
-                    linkText="spotify95 Setup 0.3.0.exe"
+                    link="https://WilliamASease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.1.2.exe"
+                    linkText="spotify95 Setup 0.1.2.exe"
                     additionalText="Asks for less permissions during authentication"
-                  />
-                </div>
-                <div>
-                  <Link
-                    link="https://WilliamASease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.2.0.exe"
-                    linkText="spotify95 Setup 0.2.0.exe"
-                    additionalText="Some styling fixes, some more help information added"
-                  />
-                </div>
-                <div>
-                  <Link
-                    link="https://WilliamASease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.1.0.exe"
-                    linkText="spotify95 Setup 0.1.0.exe"
-                    additionalText="Initial release!"
                   />
                 </div>
               </GroupBox>
