@@ -197,6 +197,7 @@ const App = () => {
                 </ScrollView>
               </GroupBox>
               <GroupBox label="Downloads" style={{ marginTop: '1rem' }}>
+                <div>Windows</div>
                 <div>
                   <Link
                     link="https://WilliamASease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.1.2.exe"
@@ -204,6 +205,8 @@ const App = () => {
                     additionalText="Asks for less permissions during authentication"
                   />
                 </div>
+                <div>Mac</div>
+                <div><Link link='/Users/williamsease/Documents/GitHub/spotify-95/releasepage/downloads/spotify95-0.1.2.dmg' linkText='spotify95 0.1.2.dmg'/></div>
               </GroupBox>
               <GroupBox label="Links" style={{ marginTop: '1rem' }}>
                 <a
