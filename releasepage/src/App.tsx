@@ -119,7 +119,7 @@ const Link = (props: {
         marginRight: '1rem',
       }}
       href={props.link}
-      target="_blank"
+      
       rel="noreferrer noopener"
     >
       {props.linkText}
@@ -217,7 +217,7 @@ const App = () => {
                     marginRight: '1rem',
                   }}
                   href="https://WilliamASease.github.io/"
-                  target="_blank"
+                  
                   rel="noreferrer noopener"
                 >
                   William Sease
@@ -229,7 +229,7 @@ const App = () => {
                     marginRight: '1rem',
                   }}
                   href="https://react95.io/"
-                  target="_blank"
+                  
                   rel="noreferrer noopener"
                 >
                   React 95
@@ -241,7 +241,7 @@ const App = () => {
                     marginRight: '1rem',
                   }}
                   href="https://github.com/WilliamASease/spotify-95"
-                  target="_blank"
+                  
                   rel="noreferrer noopener"
                 >
                   Repository
@@ -253,7 +253,7 @@ const App = () => {
                     marginRight: '1rem',
                   }}
                   href="https://github.com/electron-react-boilerplate/electron-react-boilerplate"
-                  target="_blank"
+                  
                   rel="noreferrer noopener"
                 >
                   Election React Boilerplate
@@ -265,7 +265,7 @@ const App = () => {
                     marginRight: '1rem',
                   }}
                   href="https://github.com/JMPerez/spotify-web-api-js"
-                  target="_blank"
+                  
                   rel="noreferrer noopener"
                 >
                   JS Spotify Web API{' '}
