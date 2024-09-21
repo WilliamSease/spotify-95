@@ -97,7 +97,7 @@ const BlackoutModal = (props: {
         >
           <img
             style={{ width: '100%' }}
-            src={`https://WilliamASease.github.io/spotify-95/releasepage/build/screen${props.openScreen}.png`}
+            src={`https://williamsease.github.io/spotify-95/releasepage/build/screen${props.openScreen}.png`}
             alt={`screen${props.openScreen}`}
           />
         </div>
@@ -171,7 +171,7 @@ const App = () => {
           >
             <ScrollView style={{ flexGrow: 1, height: 1, padding: '1rem' }}>
               <img
-                src="https://WilliamASease.github.io/spotify-95/releasepage/build/spotify95.png"
+                src="https://williamsease.github.io/spotify-95/releasepage/build/spotify95.png"
                 alt="Spotify95"
                 style={{ borderRadius: 300 }}
                 width={isMobile ? '80%' : undefined}
@@ -188,7 +188,7 @@ const App = () => {
                 <ScrollView style={{ padding: '1rem', background: 'white' }}>
                   {[1, 2, 3, 4, 5].map((i) => (
                     <img
-                      src={`https://WilliamASease.github.io/spotify-95/releasepage/build/screen${i}.png`}
+                      src={`https://williamsease.github.io/spotify-95/releasepage/build/screen${i}.png`}
                       alt={`screen${i}`}
                       style={{ height: 100, marginRight: 20 }}
                       onClick={() => setOpenScreen(i)}
@@ -200,7 +200,7 @@ const App = () => {
                 <div>Windows</div>
                 <div>
                   <Link
-                    link="https://WilliamASease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.1.2.exe"
+                    link="https://williamsease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.1.2.exe"
                     linkText="spotify95 Setup 0.1.2.exe"
                     additionalText="Asks for less permissions during authentication"
                   />
@@ -216,7 +216,7 @@ const App = () => {
                     cursor: 'pointer',
                     marginRight: '1rem',
                   }}
-                  href="https://WilliamASease.github.io/"
+                  href="https://williamsease.github.io/"
                   
                   rel="noreferrer noopener"
                 >
@@ -240,7 +240,7 @@ const App = () => {
                     textDecoration: 'underline',
                     marginRight: '1rem',
                   }}
-                  href="https://github.com/WilliamASease/spotify-95"
+                  href="https://github.com/williamsease/spotify-95"
                   
                   rel="noreferrer noopener"
                 >

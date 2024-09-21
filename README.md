@@ -1,3 +1,3 @@
 Runs locally from /src with npm
 
-Dedicated github page: https://williamasease.github.io/spotify-95
+Dedicated github page: https://williamsease.github.io/spotify-95

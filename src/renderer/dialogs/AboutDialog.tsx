@@ -33,13 +33,13 @@ export const AboutDialog = (props: IProps) => {
           {' '}
           <Anchor
             target={'_blank'}
-            href="https://WilliamASease.github.io/spotify-95"
+            href="https://williamsease.github.io/spotify-95"
           >
             Spotify95
           </Anchor>{' '}
           0.1.2
         </div>
-        <Anchor target={'_blank'} href="https://WilliamASease.github.io">
+        <Anchor target={'_blank'} href="https://williamsease.github.io">
           William Sease
         </Anchor>
 
