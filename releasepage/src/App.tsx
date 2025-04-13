@@ -207,6 +207,8 @@ const App = () => {
                 </div>
                 <div>Mac</div>
                 <div><Link link='/Users/williamsease/Documents/GitHub/spotify-95/releasepage/downloads/spotify95-0.1.2.dmg' linkText='spotify95 0.1.2.dmg'/></div>
+                <div>Linux Binary (New!)</div>
+                <div><Link link='/Users/williamsease/Documents/GitHub/spotify-95/releasepage/downloads/spotify95-0.1.2.dmg' linkText='spotify95 0.1.2.AppImage'/></div>
               </GroupBox>
               <GroupBox label="Links" style={{ marginTop: '1rem' }}>
                 <a
