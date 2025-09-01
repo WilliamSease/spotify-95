@@ -10,7 +10,7 @@ Runs from ./src -- npm install && npm run start
 
 ## Install
 
-I'm working on getting releases up. For now, clone this repository, run npm install && npm run package, and you'll have an executable in the build folder.
+Releases are up for Linux. Anyone else, clone this repository, run npm install && npm run package, and you'll have an executable in the build folder.
 
 ## Screens
 
