@@ -204,7 +204,8 @@
     "publish": {
       "provider": "github",
       "owner": "WilliamSease",
-      "repo": "spotify-95"
+      "repo": "spotify-95",
+      "releaseType": "release"
     }
   },
   "engines": {
