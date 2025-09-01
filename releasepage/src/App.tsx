@@ -119,7 +119,6 @@ const Link = (props: {
         marginRight: '1rem',
       }}
       href={props.link}
-      
       rel="noreferrer noopener"
     >
       {props.linkText}
@@ -196,19 +195,8 @@ const App = () => {
                   ))}
                 </ScrollView>
               </GroupBox>
-              <GroupBox label="Downloads" style={{ marginTop: '1rem' }}>
-                <div>Windows</div>
-                <div>
-                  <Link
-                    link="https://williamsease.github.io/spotify-95/releasepage/downloads/spotify95 Setup 0.1.2.exe"
-                    linkText="spotify95 Setup 0.1.2.exe"
-                    additionalText="Asks for less permissions during authentication"
-                  />
-                </div>
-                <div>Mac</div>
-                <div><Link link='/Users/williamsease/Documents/GitHub/spotify-95/releasepage/downloads/spotify95-0.1.2.dmg' linkText='spotify95 0.1.2.dmg'/></div>
-                <div>Linux Binary (New!)</div>
-                <div><Link link='/Users/williamsease/Documents/GitHub/spotify-95/releasepage/downloads/spotify95-0.1.2.dmg' linkText='spotify95 0.1.2.AppImage'/></div>
+              <GroupBox label="Install" style={{ marginTop: '1rem' }}>
+                {`Instructions to build for your system are in the Repository. I'm working on getting Releases up.`}
               </GroupBox>
               <GroupBox label="Links" style={{ marginTop: '1rem' }}>
                 <a
@@ -219,7 +207,6 @@ const App = () => {
                     marginRight: '1rem',
                   }}
                   href="https://williamsease.github.io/"
-                  
                   rel="noreferrer noopener"
                 >
                   William Sease
@@ -231,7 +218,6 @@ const App = () => {
                     marginRight: '1rem',
                   }}
                   href="https://react95.io/"
-                  
                   rel="noreferrer noopener"
                 >
                   React 95
@@ -243,7 +229,6 @@ const App = () => {
                     marginRight: '1rem',
                   }}
                   href="https://github.com/williamsease/spotify-95"
-                  
                   rel="noreferrer noopener"
                 >
                   Repository
@@ -255,7 +240,6 @@ const App = () => {
                     marginRight: '1rem',
                   }}
                   href="https://github.com/electron-react-boilerplate/electron-react-boilerplate"
-                  
                   rel="noreferrer noopener"
                 >
                   Election React Boilerplate
@@ -267,7 +251,6 @@ const App = () => {
                     marginRight: '1rem',
                   }}
                   href="https://github.com/JMPerez/spotify-web-api-js"
-                  
                   rel="noreferrer noopener"
                 >
                   JS Spotify Web API{' '}
