@@ -10,7 +10,7 @@ Runs from ./src -- npm install && npm run start
 
 ## Install
 
-Releases are up for Linux. Anyone else, clone this repository, run npm install && npm run package, and you'll have an executable in the build folder.
+Releases are up for Linux and Windows. Mac users can clone this repository and build it themselves, working on getting it up for them too.
 
 ## Screens
 
