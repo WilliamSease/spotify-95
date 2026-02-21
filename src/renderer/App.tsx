@@ -278,7 +278,11 @@ export default function App() {
           isOpen={authDialogOpen}
           closeThisWindow={() => setAuthDialogOpen(false)}
           tokenInfo={tokenInfo}
-          triggerLogin={triggerLogin}
+          triggerLogin={() => {
+            if (tokenInfo?.refreshToken) {
+              refreshAccessToken(tokenInfo.refreshToken).then(applyToken);
+            } else triggerLogin();
+          }}
         />
         <NetworkGraphDialog
           isOpen={networkGraphOpen}
