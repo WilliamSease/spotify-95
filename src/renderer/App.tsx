@@ -14,7 +14,12 @@ import './App.css';
 import MenuButtonWithDropDown from './sdk/MenuButtonWithDropDown';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Playable, TokenInfo } from './representations/apiTypes';
-import { sleep, triggerLogin } from './functions/apiFunctions';
+import {
+  exchangeCodeForToken,
+  refreshAccessToken,
+  sleep,
+  triggerLogin,
+} from './functions/apiFunctions';
 import { isNil } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -100,24 +105,46 @@ export default function App() {
 
   const [leftPanelBigger, setLeftPanelBigger] = useState(false);
 
+  const applyToken = useCallback(
+    (data: {
+      access_token: string;
+      token_type: string;
+      expires_in: number;
+      refresh_token?: string;
+    }) => {
+      setTokenInfo((prev) => ({
+        token: data.access_token,
+        type: data.token_type,
+        expiresIn: data.expires_in,
+        expirationTime: Date.now() + data.expires_in * 1000,
+        refreshToken: data.refresh_token ?? prev?.refreshToken ?? '',
+      }));
+      spotify.setAccessToken(data.access_token);
+    },
+    [spotify]
+  );
+
   useEffect(() => {
     triggerLogin();
-    const interval = setInterval(triggerLogin, 1000 * 60 * 30);
-    return () => clearInterval(interval);
   }, []);
 
+  // Silently refresh the token before it expires
+  useEffect(() => {
+    if (!tokenInfo?.refreshToken) return undefined;
+    const interval = setInterval(() => {
+      refreshAccessToken(tokenInfo.refreshToken)
+        .then(applyToken)
+        .catch(() => triggerLogin());
+    }, 1000 * 60 * 30);
+    return () => clearInterval(interval);
+  }, [tokenInfo?.refreshToken, applyToken]);
+
   window.electron.ipcRenderer.on('gotNewToken', (args) => {
-    const urlParams = new URLSearchParams(args as string).values();
-    const token = urlParams.next().value;
-    const type = urlParams.next().value;
-    const expiresIn: number = urlParams.next().value;
-    setTokenInfo({
-      token: token,
-      type: type,
-      expiresIn: expiresIn,
-      expirationTime: Date.now() + expiresIn * 1000,
-    });
-    spotify.setAccessToken(token);
+    const url = new URL(args as string);
+    const code = url.searchParams.get('code');
+    if (code) {
+      exchangeCodeForToken(code).then(applyToken);
+    }
   });
 
   window.electron.ipcRenderer.on('possiblyRevoked', (args) => {

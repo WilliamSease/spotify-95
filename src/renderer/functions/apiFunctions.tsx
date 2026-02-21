@@ -7,30 +7,89 @@ import {
   SearchResultType,
 } from '../representations/apiTypes';
 
-export const triggerLogin = () => {
-  const clientId = '2d8d7d7d0f6241fcb7cf54fc5b2e24a8';
-  const redirectUri = 'spotify-95://gotToken';
-  const scopes = [
-    'user-read-playback-state',
-    'user-modify-playback-state',
-    'app-remote-control',
-    'streaming',
-    'playlist-read-private',
-    'playlist-read-collaborative',
-    'user-follow-read',
-    'user-read-playback-position',
-    'user-top-read',
-    'user-read-recently-played',
-    'user-library-read',
-  ];
+const CLIENT_ID = '2d8d7d7d0f6241fcb7cf54fc5b2e24a8';
+const REDIRECT_URI = 'spotify-95://gotToken';
+const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';
+const SCOPES = [
+  'user-read-playback-state',
+  'user-modify-playback-state',
+  'app-remote-control',
+  'streaming',
+  'playlist-read-private',
+  'playlist-read-collaborative',
+  'user-follow-read',
+  'user-read-playback-position',
+  'user-top-read',
+  'user-read-recently-played',
+  'user-library-read',
+];
 
-  const authorizationUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
-    '%20'
-  )}&response_type=token`;
+let codeVerifier = '';
 
-  // Redirect the user to the authorization URL
+function generateRandomString(length: number): string {
+  const possible =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const values = crypto.getRandomValues(new Uint8Array(length));
+  return values.reduce((acc, x) => acc + possible[x % possible.length], '');
+}
 
+async function sha256(plain: string): Promise<ArrayBuffer> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(plain);
+  return window.crypto.subtle.digest('SHA-256', data);
+}
+
+function base64urlEncode(buffer: ArrayBuffer): string {
+  return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+}
+
+export const triggerLogin = async () => {
+  codeVerifier = generateRandomString(64);
+  const hashed = await sha256(codeVerifier);
+  const codeChallenge = base64urlEncode(hashed);
+
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    response_type: 'code',
+    redirect_uri: REDIRECT_URI,
+    code_challenge_method: 'S256',
+    code_challenge: codeChallenge,
+    scope: SCOPES.join(' '),
+  });
+
+  const authorizationUrl = `https://accounts.spotify.com/authorize?${params.toString()}`;
   window.electron.ipcRenderer.sendMessage('logintospotify', [authorizationUrl]);
+};
+
+export const exchangeCodeForToken = async (code: string) => {
+  const response = await axios.post(
+    TOKEN_ENDPOINT,
+    new URLSearchParams({
+      client_id: CLIENT_ID,
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: REDIRECT_URI,
+      code_verifier: codeVerifier,
+    }),
+    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+  );
+  return response.data;
+};
+
+export const refreshAccessToken = async (refreshToken: string) => {
+  const response = await axios.post(
+    TOKEN_ENDPOINT,
+    new URLSearchParams({
+      client_id: CLIENT_ID,
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+    }),
+    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+  );
+  return response.data;
 };
 
 export async function populateLibrary(spotify: SpotifyWebApi.SpotifyWebApiJs) {

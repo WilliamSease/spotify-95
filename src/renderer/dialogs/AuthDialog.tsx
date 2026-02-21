@@ -58,7 +58,7 @@ export const AuthDialog = (props: IProps) => {
                 (tokenInfo.expirationTime - Date.now()) / (1000 * 60)
               )} minutes.`}</div>
             )}
-            <div>It should refresh at the 30 minute mark.</div>
+            <div>It will silently refresh before expiry.</div>
           </div>
         )}
         <Button onClick={triggerLogin}>Grab new Token</Button>

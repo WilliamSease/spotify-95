@@ -3,6 +3,7 @@ export type TokenInfo = {
   type: string;
   expiresIn: number;
   expirationTime: number;
+  refreshToken: string;
 };
 
 export type SearchResultType = {
